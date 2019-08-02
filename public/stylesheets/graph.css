@@ -1,0 +1,31 @@
+.graph-container{
+    width:100%;
+    margin:0 -12px;
+}
+.graph-element{
+    width:100%;
+    color:rgba(8,128,144,1);
+    padding:12px;
+}
+.graph-element>div{
+    margin-right: 12px;
+    margin-left: 12px;
+}
+.graph-bar{
+    margin-right: 12px;
+    margin-top:4px;
+    height:20px;
+    background-color:rgba(8,128,144,1);
+    transition: width 300ms;
+    transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+.graph-percent{
+    font-size: 11px;
+    font-weight: bold;
+}
+.graph-votecount{
+    font-size: 11px;
+}
+.graph-container .graph-element:nth-child(odd) { 
+    background: rgba(0,0,0,0.05); 
+  }

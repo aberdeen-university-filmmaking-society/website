@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Posts | AUFS</title>
+    <meta property="og:title" content="Posts | AUFS">
+
+    <meta name="description" content="">
+    <meta property="og:description" content="">
+
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/cover.jpg">
+    <%- include partials/head.ejs %>
+</head>
+
+<body>
+    <%- include partials/header.ejs %>
+    <main>
+    <br>
+    <section>
+        <div class="posts-list">
+            <% var previousdate = ""; %>
+            <% posts.forEach(post=>{ %>
+                <% if(previousdate!=post.dateformatted) { previousdate = post.dateformatted %>
+                    <div class="groupheader"><%= previousdate %></div>
+                <% }  %>
+            <a class="post-anchor" href="<% if (post.redirect) { %><%= post.redirect %><% } else { %>/posts/<%= post.id %><% } %>">
+                <div class="post-container">
+                    <% if(post.image && post.image.thumb) { %>
+                    <div class="post-imagecontainer">
+                        <img class="post-image" src="<%= post.image.thumb %>" <% if(post.image.caption) { %>alt="<%= post.image.caption %>" title="<%= post.image.caption %>"<% } %>>
+                    </div>
+                    <% } %>
+                </div>
+                <div class="post-sidetext">
+                        <div class="post-title"><%= post.title %></div>
+                        <div class="post-subtitle"><%= post.subtitle %></div>
+                        <div class="post-date"><%= post.details %></div>
+                    </div>
+            </a>
+            <% }); %>
+        </div>
+     </section>
+    </main>
+     <%- include partials/footer.ejs %> 
+</body> 
+</html>

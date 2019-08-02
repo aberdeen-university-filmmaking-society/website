@@ -1,0 +1,88 @@
+<div class="firstgradient"></div>
+<div class="secondgradient"></div>
+<style>
+        .homebutton img{
+            filter: drop-shadow(0px 0px 16px rgba(120, 239, 255, 0.7));
+            transition: filter 0.2s;
+        }
+        .homebutton:hover img{
+            filter: drop-shadow(0px 0px 12px rgba(120, 239, 255, 0.85));
+        }
+        .homebutton:active img{
+            filter: drop-shadow(0px 0px 12px rgba(120, 239, 255, 1));
+        }
+        </style>
+<header class="header">
+
+    <div style="background-color:rgba(0,0,0,0.4);box-shadow: inset 0px -14px 14px -14px rgba(0,0,0,0.1);">
+        <a class="homebutton" href="/" style="margin:auto;" title="Home Page"><img class="logolarge" src="/images/logo.svg"><span style="display: none;">Home page</span></a>
+        <%- headerinsert %>
+        <div class="socialmedia">
+                <a class="smicon" target="_blank" rel="noopener" title="Facebook" href="https://www.facebook.com/aufilmmakingsociety"><img src="/images/social/fb.svg"></a>
+                <a class="smicon" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com/aufilmmaking"><img src="/images/social/tw.svg"></a>
+                <a class="smicon" target="_blank" rel="noopener" title="Instagram" href="https://www.instagram.com/aufilmmaking/"><img src="/images/social/ig.svg"></a>
+                <a class="smicon" target="_blank" rel="noopener" title="YouTube" href="https://www.youtube.com/channel/UCPIqVqALsVI6oxZSr_Hk5Zg"><img src="/images/social/yt.svg"></a>
+        </div>
+    </div>
+    <%- cssmods %>
+    <style>
+    .breakingnews{
+        display: block;
+        background-color:rgb(129, 0, 0);
+        padding: 12px 0px;
+        width:100%;
+       
+        text-decoration: none;
+        transition:all;
+        color:rgba(255, 255, 255, 0.75);
+    }
+    .breakingnews b{
+        color:white;
+    }
+    .breakingnews:hover{
+        text-decoration: underline;
+    }
+    .breakingnews div{
+        max-width: 812px;
+        margin:auto;
+        display: block;
+        padding-left:12px;
+        padding-right:12px;
+    }
+
+    .nav hr{
+        border-color:rgba(255, 255, 255, 0.2);
+        width:25%;
+    }
+    .nav{
+        box-shadow: inset 0px -14px 14px -14px rgba(0,0,0,0.2);
+    }
+    </style>
+        <div class="nav" style="background-color:rgba(0,0,0,0.25)">
+            <ul>
+                    
+              <li <% if(page=='faq') { %> class="active" <% } %>><a href="/faq">FAQ</a></li>
+              <li <% if(page=='about' || page=='privacy' || page=='constitution' || page=='founder') { %>
+                    class="active
+                    <% if(page!='about') { %> clickable <% } %>"
+                    <% } %>>
+                  <a href="/about">ABOUT US</a></li>
+              <li <% if(page=='films' || page=='film') { %> 
+                  class="active
+                  <% if(page=='film') { %> clickable <% } %>"
+                  <% } %>>
+                  <a href="/films">FILMS</a></li>
+                  
+              <li <% if(page=='aufsproductions') { %> class="active" <% } %>><a href="/productions">PRODUCTIONS</a></li>
+              <li><a href="/films">DONATE</a></li>
+            </ul>
+        </div>
+        <% console.log(settings) %>
+        <% if(settings.showbreakingnews && showbreakingnewsNow) { %>
+        <a class="breakingnews" href="<%= breakingnews.url %>">
+            <div>
+                <b><%= breakingnews.title %></b>&nbsp;&nbsp;&nbsp;<%= breakingnews.subtitle %>
+            </div>
+        </a>
+        <% } %>
+    </header>

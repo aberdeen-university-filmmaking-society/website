@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <title>Error <%= error.status %> | AUFS</title>
+      <meta property="og:title" content="Error  <%= error.status %>">
+  
+      <meta name="description" content="<%= message %>">
+      <meta property="og:description" content="<%= message %>">
+  
+      <meta property="og:type" content="website" />
+      <meta property="og:image" content="/images/cover.jpg">
+    <%- include partials/head.ejs %>
+  </head>
+  <body>
+<%- include partials/header.ejs %>
+<main>
+<section>
+    <br>
+        <span style="font-size:120px;font-weight: 100;"><%= error.status %></span><br>
+        <span style="font-size:42px;opacity:0.5"><%= message %></span>
+        <% if(locals.moreinfo) { %>
+          <p style="font-size:16px;opacity:0.5;"><%- moreinfo %></p>
+        <% } %>
+        <pre><%= error.stack %></pre>
+</section>
+</main>
+<%- include partials/footer.ejs %>
+  </body>
+  </html>
+

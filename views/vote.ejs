@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Vote</title>
+  <meta name="viewport" content="width=device-width">
+  <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+    integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+    integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+  <link rel='stylesheet' href='/stylesheets/style.css'/>
+  <link rel='stylesheet' href='/stylesheets/common.css'/>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+  <style>
+    .confirmbtn {
+      background: linear-gradient(45deg, rgba(8, 128, 144, 1) 0%, rgba(5, 24, 117, 1) 100%);
+      position: fixed;
+      left: 0;
+      width: 100%;
+      bottom: 0;
+    }
+
+    .confirmbtn>button {
+      width: 100%;
+      height: 64px;
+      font-size: 24px;
+      font-family: "Montserrat";
+      border: none;
+      color: white;
+      background: rgba(255, 255, 255, 0.05);;
+      box-shadow: 0px 0px 48px rgba(0, 0, 0, 0.25);
+      transition: all 200ms;
+    }
+
+    .confirmbtn>button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .confirmbtn>button:active {
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .resetbtn {
+      background: linear-gradient(45deg, rgb(6, 95, 107) 0%, rgb(4, 17, 78) 100%);
+      position: fixed;
+      left: 0;
+      width: 100%;
+      bottom: 64px;
+      transform:translateY(48px);
+      transition: transform 200ms;
+    }
+    .resetbtn.visible{
+      transform:translateY(0px);
+    }
+    .resetbtn>button {
+      width: 100%;
+      height: 48px;
+      font-size: 16px;
+      font-family: "Montserrat";
+      border: none;
+      color: white;
+      background: rgba(255, 255, 255, 0.05);;
+      box-shadow: 0px 0px 48px rgba(0, 0, 0, 0.25);
+      transition: all 200ms;
+    }
+    .resetbtn>button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.25);
+    }
+    .resetbtn>button:active {
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .votecontainer {
+      background: rgba(0, 0, 0, 0.25);
+      max-width: 512px;
+      width: 100%;
+      box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      height:calc(100% - 64px);
+      left: 50%;
+      transform: translateX(-50%);
+      overflow-y: auto;
+    }
+
+    .voteheader {
+      padding: 12px;
+      margin-top: 24px;
+      margin-bottom: 24px;
+      top:0;
+      position: sticky;
+    }
+
+    h1 {
+      margin: 0;
+      font-weight: 600;
+      text-align: center;
+      font-size: 24px;
+    }
+
+    h2 {
+      margin: 0;
+      font-weight: normal;
+      text-align: center;
+      opacity: 0.5;
+      font-size: 16px;
+    }
+
+    h3 {
+      font-weight: 600;
+      margin:0;
+    }
+
+    h5 {
+      font-weight: normal;
+      margin:0;
+    }
+
+    .voteoptions {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow-x:hidden;
+    }
+
+    .voteoptions a {
+      display: table;
+      color: white;
+      text-decoration: none;
+      cursor: pointer;
+      background-color: rgba(93, 187, 199, 0.05);
+      box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
+      transition: all 200ms;
+      width: 100%;
+      position: relative;
+      margin-bottom: 4px;
+      height: 72px;
+    }
+
+    .voteoptions a:hover {
+      background-color: rgba(93, 187, 199, 0.1);
+      box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.2);
+    }
+    .voteoptions.ranked a:hover{
+      transform: translateX(12px);
+    }
+
+    .voteoptions a:active {
+      background-color: rgba(93, 187, 199, 0.2);
+      box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .voteoptions.ranked a.rankchosen{
+      transform: translateX(72px);
+    }
+
+    .optionimage {
+      height: 72px;
+      width: 72px;
+      display: table-cell;
+      overflow: hidden;
+      object-fit: cover;
+    }
+    .optionrank{
+      height:72px;
+      width:72px;
+      margin-left:-72px;
+      font-size:32px;
+      line-height:72px;
+      text-align:center;
+      background-color:rgba(0,0,0,0.2);
+      position:fixed;
+    }
+
+    .voteoptions a.selected {
+      background-color: rgba(93, 187, 199, 0.25);
+    }
+
+    .voteoptions a.unselected {
+      background-color: rgba(93, 187, 199, 0.1);
+    }
+
+    .voteoptions a.selected .selectoverlay {
+      visibility: visible;
+    }
+
+    .selectoverlay {
+      visibility: hidden;
+      width: 100%;
+      height: 100%;
+      border: solid 4px white;
+      box-sizing: border-box;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .selectoverlay>div {
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 40px 40px 0;
+      border-color: transparent white transparent transparent;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    .selectoverlay>i {
+      color: rgba(5, 24, 117, 1);
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin-right: 2px;
+      margin-top: 2px;
+      font-size: 18px;
+    }
+
+    .optiondetail {
+      display: table-cell;
+      vertical-align: middle;
+      width: 100%;
+    }
+
+    .optiondetail * {
+      margin-left: 12px;
+    }
+    #rankedexplanation{
+      font-size:12px;
+      font-weight: normal;
+      opacity:1;
+      text-align: center;
+      margin-top:-12px;
+      margin-bottom:6px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="firstgradient"></div>
+  <div class="secondgradient"></div>
+  
+  <div id="placeholder" <% if(locals.alreadyvoted != true && locals.vote!=undefined) { %>class="hidden"<% } %>>
+      <img class="logo" src="/images/logo.svg">
+      <span id="placeholdertext"><% if(locals.vote==undefined) { %>There is currently no active vote<% } else if(locals.alreadyvoted === true) { %>Thank you for voting!<% } %></span>
+  </div>
+  <div class="votecontainer <% if(locals.vote==undefined || locals.alreadyvoted === true) { %>hidden<% } %>" style="height:calc(100% - 64px);">
+    <div class="voteheader">
+      <h1 id="votetitle"><% if(locals.vote!=undefined && vote.title != undefined) { %><%= vote.title %><% }%></h1>
+      <h2 id="votesubtitle"><% if(locals.vote!=undefined && vote.subtitle != undefined) { %><%= vote.subtitle %><% }%></h2>
+    </div>
+    <h3 id="rankedexplanation" <% if(locals.vote != undefined && vote.type!='rank') { %>class="hidden"<% } %>>SELECT OPTIONS IN ORDER OF RANKING:</h3>
+    <ul id="options" class="voteoptions <% if(locals.vote != undefined && vote.type=='rank') { %>ranked<% } %>">
+        <% if(locals.vote != undefined && vote.options!=undefined) { vote.options.forEach(option=>{ %>
+      <a onclick="vote(this)" data-id="<%= option.title %>">
+          <div class="optionrank">1</div>
+          <% if(option.image != undefined && option.image.trim() != "") { %>
+        <img class="optionimage" src="<%= option.image %>">
+        <% }%>
+        <div class="optiondetail">
+          <h3><%= option.title %></h3>
+          <h5><% if(option.subtitle!=undefined) { %><%= option.subtitle %><% }%></h5>
+        </div>
+        <div class="selectoverlay">
+          <div></div>
+          <i class="fas fa-check"></i>
+        </div>
+      </a>
+      <% })}; %>
+    </ul>
+  </div>
+  <div class="resetbtn <% if(locals.vote==undefined || locals.alreadyvoted === true) { %>hidden<% } %>">
+    <button onclick="resetrank()">RESET ORDER</button>
+  </div>
+  <div class="confirmbtn <% if(locals.vote==undefined || locals.alreadyvoted === true) { %>hidden<% } %>">
+    <button onclick="confirmvote()">VOTE</button>
+  </div>
+  <script>
+
+    var voteid<% if(locals.vote!=undefined) { %>=<%= vote.id %><% }%>;
+    var votetype<% if(locals.vote!=undefined) { %>="<%= vote.type %>"<% }%>;
+    function shuffle(array) {
+      var m = array.length,
+        t, i;
+      // While there remain elements to shuffle…
+      while (m) {
+        // Pick a remaining element…
+        i = Math.floor(Math.random() * m--);
+        // And swap it with the current element.
+        t = array[m];
+        array[m] = array[i];
+        array[i] = t;
+      }
+
+      return array;
+    }
+    function confirmvote(){
+      document.cookie = "cookietest=1";
+      var cookieEnabledDoubleCheck = document.cookie.indexOf("cookietest=") != -1;
+      document.cookie = "cookietest=1; expires=Thu, 01-Jan-1970 00:00:01 GMT";
+
+      if(navigator.cookieEnabled && cookieEnabledDoubleCheck){
+        var myballot;
+      if(votetype=="rank"){
+        myballot = rankedselections;
+      }
+      else{
+        myballot = $(".voteoptions a.selected").attr("data-id");
+      }
+      $.ajax({
+                type: "POST",
+                url: '/vote/',
+                contentType:"application/json",
+                async: false,
+                //json object to sent to the authentication url
+                data: JSON.stringify({ballot:myballot, id:voteid}),
+                success: function (res) {
+                    $(".votecontainer").addClass("hidden");
+                    $(".confirmbtn").addClass("hidden");
+                    $(".resetbtn").addClass("hidden");
+                    $("#placeholder").removeClass("hidden");
+                    $("#placeholdertext").text("Thank you for voting!")
+                },
+                error:function (res) {
+                    if(res.errors != undefined){
+                        var alertText="";
+                        alert(res.errors.join("\n"));
+                    }
+                },
+            });
+      }
+      else{
+        alert("Please enable cookies!")
+      }
+      
+    }
+    var rankedselections = [];
+    function vote(element) {
+      if(votetype=="fpp"){
+        $(".voteoptions a").removeClass("selected");
+        $(element).addClass("selected");
+      }
+      else if(votetype=="rank"){
+        var chosen = $(element);
+        var chosenid = chosen.attr("data-id");
+        if(chosen.hasClass("rankchosen")){
+          //remove rank and reorder
+          chosen.removeClass("rankchosen");
+          var chosenindex = rankedselections.indexOf(chosenid);
+          if (chosenindex > -1) { rankedselections.splice(chosenindex, 1); }
+          var newrank = 1;
+          rankedselections.forEach(optionid=>{
+            $(`.voteoptions [data-id='${optionid}'] .optionrank`).text(newrank);
+            newrank++;
+          });
+        }
+        else{
+          rankedselections.push(chosenid);
+          chosen.addClass("rankchosen");
+          chosen.find(".optionrank").text(rankedselections.length);
+        }
+        if(rankedselections.length<1) {
+          $(".resetbtn").removeClass("visible");
+          $(".votecontainer").attr("style","height:calc(100% - 64px);");
+        }
+        else {
+          $(".resetbtn").addClass("visible");
+          $(".votecontainer").attr("style","height:calc(100% - 112px);");
+        }
+      }
+    }
+    function resetrank(){
+      rankedselections=[];
+      $(".rankchosen").removeClass("rankchosen");
+      $(".resetbtn").removeClass("visible");
+      $(".votecontainer").attr("style","height:calc(100% - 64px);");
+    }
+    const socket = io();
+    socket.on('vote.stop', function (vote) {
+      $(".votecontainer").addClass("hidden");
+      $(".confirmbtn").addClass("hidden");
+      $(".resetbtn").addClass("hidden");
+      $("#placeholder").removeClass("hidden");
+      $("#placeholdertext").text("There is currently no active vote");
+      voteid = undefined;
+    });
+    socket.on('vote.start', function (vote) {
+      rankedselections=[];
+      votetype=vote.type;
+      voteid = vote.id;
+      $(".votecontainer").removeClass("hidden");
+      $(".confirmbtn").removeClass("hidden");
+      $(".resetbtn").removeClass("hidden");
+      $(".resetbtn").removeClass("visible");
+      $(".votecontainer").attr("style","height:calc(100% - 64px);");
+      $("#placeholder").addClass("hidden");
+      $("#placeholdertext").text("There is currently no active vote");
+
+      $("#votetitle").text(vote.title);
+      $("#votesubtitle").text(vote.subtitle);
+      $("#options").html("");
+      shuffle(vote.options).forEach(option => {
+        var imagetag = "";
+        if(option.image != undefined && option.image.trim() != ""){
+          imagetag = "<img class='optionimage' src='"+option.image+"'>";
+
+        }
+        $("#options").append(`<a onclick="vote(this)" data-id="${option.title}">
+            <div class="optionrank">1</div>
+          ${imagetag}
+        <div class="optiondetail">
+          <h3>${option.title}</h3>
+          <h5>${option.subtitle}</h5>
+        </div>
+        <div class="selectoverlay">
+          <div></div>
+          <i class="fas fa-check"></i>
+        </div>
+      </a>`);
+      });
+      if(vote.type!="rank"){
+          console.log("adding hidden");
+          $("#rankedexplanation").addClass("hidden");
+          $(".voteoptions").addClass("ranked");
+          $("#options").removeClass("ranked");
+      }
+      else{
+        console.log("removing hidden");
+        $("#options").addClass("ranked");
+        $("#rankedexplanation").removeClass("hidden");
+        $(".voteoptions").addClass("ranked");
+      }
+    });
+  </script>
+</body>
+</html>

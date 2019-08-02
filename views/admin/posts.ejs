@@ -1,0 +1,272 @@
+<%- include header.ejs %>
+<style>
+    textarea {
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+        min-height: 96px;
+    }
+
+    .postitem a {
+        color: black;
+    }
+</style>
+<div class="section sectionstretch" style="flex-basis:100%;max-width: none;">
+        <div class="sectionheader">Settings</div>
+        <input type="number" id="settings-postcount" value="<%=settings.homepage_postcount %>"><label for="settings-postcount">&nbsp;&nbsp;Posts on the home page (excluding hero post)</label>
+        <button class="smallbtn" onclick="changedsettings()">SAVE</button>
+    </div>
+<div class="section">
+    <div class="sectionheader"><span id="newpost-header">New post</span>
+        <div id="editpost-warning" style="display: none;font-size:12px;font-weight: normal;margin-top:4px;">Editing
+            post&nbsp;<a target="_blank" style="color:white;" id="editpost-url"></a>
+        </div>
+    </div>
+    <input id="createpost-title" type="text" class="smaller" placeholder="Title*" required><br>
+    <input id="createpost-subtitle" type="text" class="smaller" placeholder="Subtitle" required><br>
+    <div id="uploadedHero">
+    </div>
+    <div>
+        <input type="file" accept="image/*" onchange="choseFile(this, '#uploadedHero', true, 'hero')" style="display:none"/>
+        <button class="smallbtn" onclick="openFile(this)" style="margin-bottom:12px;">UPLOAD HERO IMAGE</button>
+    </div>
+    <input id="createpost-author" type="text" class="smaller" placeholder="Author" required><br>
+    <div id="toolbar-container"></div>
+    <div id="editor-container" class="quillcontainer"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <br>
+    
+    <input id="createpost-redirect" type="text" class="smaller" placeholder="Redirection URL" required><br>
+    <div style="font-size:12px;margin-bottom:12px;">If a redirection URL is specified, any content above is inaccessible. Clicking on the post anywhere in the site will just open the redirection url.</div>
+    <input id="createpost-hidden" type="checkbox"><label for="createpost-hidden">Hidden post</label><br>
+    
+    <input id='tags' placeholder='Tags'>
+    <script>
+        var availabletags = [];
+        <% if(tags) { %>
+            availabletags = JSON.parse(`<%- tags %>`)
+        <% } %>
+         $("#tags").tagit({
+             availableTags:availabletags,
+             autocomplete: {delay: 0, minLength: 1},
+             placeholderText: "Tags"
+         });
+    </script>
+    <button class="bigbtn" id="createvote" onclick="createpost()">PUBLISH</button>
+    <button class="bigbtn" style="display: none;" id="editpost-cancel" onclick="stopedit()">CANCEL</button>
+</div>
+<div class="section sectionstretch">
+    <div class="sectionheader">Published</div>
+    <ul class="postlist">
+        <% posts.forEach(post=>{ %>
+        <li class="postitem  <% if(settings.heropost==post.id) { %>hero<% } %>" data-id="<%= post.id %>">
+            <div style="margin-right:174px;">
+                <h4><% if(post.hidden) {%><i class="far fa-eye-slash"></i>&nbsp;<% } %><a <% if(post.hidden) {%>style="opacity:0.5"<% } %> target="_blank" href="/posts/<%= post.id %>"><%= post.title %></a></h4>
+                <h5><%= post.subtitle %></h5>
+
+                <h6 style="margin-top:4px;"><%= new Date(Number.parseInt(post.id)).toLocaleString() %></h6>
+
+            </div>
+            <div class="actions">
+                <button title="Toggle post as hero post" class="herobtn" onclick="togglehero(<%= post.id %>)"><i class="far fa-newspaper"></i></button>
+                <button onclick="editpost(<%= post.id %>)"><i class="far fa-edit"></i></button>
+                <button onclick="deletepost(<%= post.id %>)"><i class="far fa-trash-alt"></i></button>
+            </div>
+        </li>
+        <% }); %>
+    </ul>
+</div>
+<script src="/javascripts/fileupload.js"></script>
+<script>
+    const editquery = new URL(window.location).searchParams.get('edit');
+    if(editquery) editpost(editquery);
+
+    function changedsettings(){
+        $.ajax({
+            type: "POST",
+            url: '/admin/settings',
+            contentType: "application/json",
+            async: false,
+            //json object to sent to the authentication url
+            data: JSON.stringify({
+                key: "homepage_postcount",
+                value: $("#settings-postcount").val()
+            }),
+            success: function (res) {
+                alert("Saved new post count");
+            },
+            error: function (res) {
+                alert("Failed to change post count");
+            },
+        });
+    }
+    var toolbarOptions = [
+    [{ 'font': [] }, { 'size': [] }],
+          [ 'bold', 'italic', 'underline', 'strike' ],
+          [{ 'color': [] }, { 'background': [] }],
+          [{ 'script': 'super' }, { 'script': 'sub' }],
+          [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block' ],
+          [{ 'list': 'ordered' }, { 'list': 'bullet'}, { 'indent': '-1' }, { 'indent': '+1' }],
+          [ 'direction', { 'align': [] }],
+          [ 'link', 'image', 'video', 'formula' ],
+          [ 'clean' ]
+    ];
+    var quill = new Quill('#editor-container', {
+        modules: {
+            syntax: true,
+            toolbar: toolbarOptions
+        },
+        placeholder: 'Content',
+        theme: 'snow'
+    });
+
+    function generatePostObject() {
+        return {
+            title: $("#createpost-title").val(),
+            subtitle: $("#createpost-subtitle").val(),
+            sessionid: getSessionId(),
+            files: JSON.stringify(getUploadedFiles()), 
+            author: $("#createpost-author").val(),
+            content: JSON.stringify(quill.getContents()),
+            hidden: $('#createpost-hidden').is(":checked"),
+            redirect:  $("#createpost-redirect").val(),
+            tags: $("#tags").tagit("assignedTags").join(",")
+        };
+    }
+
+    function fillWithPostObject(post) {
+        $("#uploadedHero").empty();
+        $("#createpost-title").val(post.title);
+        $("#createpost-subtitle").val(post.subtitle);
+        $("#createpost-author").val(post.author);
+        $("#createpost-redirect").val(post.redirect);
+        $("#createpost-hidden").prop("checked", post.hidden);
+        quill.setContents(JSON.parse(post.content));
+        $("#tags").tagit("removeAll");
+        post.tags.split(",").forEach(tag=>{
+            $("#tags").tagit("createTag", tag);
+        });
+        if(post.files){
+            var parsedFiles = JSON.parse(post.files);
+            if(parsedFiles){
+                parsedFiles.forEach(file=>{
+                    if(file.type=="hero"){
+                        appendFileUi("#uploadedHero", file.name, '/files/'+file.name+"_thumb."+file.extension, file.type, file.extension, file.caption)
+                    }
+                })
+            }
+        }
+    }
+
+    function togglehero(id) {
+        $.ajax({
+            type: "POST",
+            url: '/admin/settings',
+            contentType: "application/json",
+            async: false,
+            //json object to sent to the authentication url
+            data: JSON.stringify({
+                key: "heropost",
+                value: id
+            }),
+            success: function (res) {
+                var wastoggled = $("[data-id='" + id + "']").hasClass('hero');
+                $(".postitem").removeClass("hero");
+                if(!wastoggled)
+                    $("[data-id='" + id + "']").addClass("hero");
+            },
+            error: function (res) {
+                alert("Failed to change hero post");
+            },
+        });
+    }
+
+    function deletepost(id) {
+        if(confirm("Are you sure you want to delete this post?")){
+            $.ajax({
+            type: "POST",
+            url: '/admin/posts/remove/' + id,
+            success: function (res) {
+                $("[data-id='" + id + "']").remove();
+                if (editingid = id) {
+                    stopedit();
+                }
+            }
+        });
+        }
+    }
+    var editingid = undefined;
+
+    function editpost(id) {
+        newFileSession();
+        $.ajax({
+            type: "POST",
+            url: '/admin/posts/get/' + id,
+            success: function (res) {
+                editingid = id;
+                $("#editpost-url").attr("href", "/posts/" + id).text(id);
+                $("#editpost-warning").show(0);
+                $("#editpost-cancel").show(0);
+                $("#newpost-header").text("Edit post");
+                var post = JSON.parse(res);
+                fillWithPostObject(post);
+            }
+        });
+    }
+
+    function stopedit() {
+        editingid = undefined;
+        $("#editpost-warning").hide(0);
+        $("#editpost-cancel").hide(0);
+        $("#newpost-header").text("New post");
+        window.location = '/admin/posts';
+    }
+
+    function createpost() {
+        var postobject = generatePostObject();
+        console.log(postobject)
+        if (editingid) {
+            $.ajax({
+                type: "POST",
+                url: '/admin/posts/edit/' + editingid,
+                dataType: 'text',
+                contentType: "application/json",
+                async: true,
+                //json object to sent to the authentication url
+                data: JSON.stringify(postobject),
+                success: function (res) {
+                    console.log("edit successful");
+                    stopedit();
+                    console.log("stopped edit")
+                    window.location = '/admin/posts';
+                },
+                error: function (res) {
+                    if (res.errors != undefined) {
+                        var alertText = "";
+                        alert(res.errors.join("\n"));
+                    }
+                },
+            });
+        } else {
+            $.ajax({
+                type: "POST",
+                url: '/admin/posts/create/',
+                dataType: 'text',
+                contentType: "application/json",
+                async: true,
+                //json object to sent to the authentication url
+                data: JSON.stringify(postobject),
+                success: function (res) {
+                    console.log(res);
+                },
+                error: function (res) {
+                    if (res.errors != undefined) {
+                        var alertText = "";
+                        alert(res.errors.join("\n"));
+                    }
+                },
+            });
+        }
+    }
+</script>

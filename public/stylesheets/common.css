@@ -1,0 +1,73 @@
+body {
+  background: #074C83;
+    color: white;
+    padding: 0px;
+    font: 14px "Montserrat", Helvetica, Arial, sans-serif;
+    margin:0;
+  }
+.firstgradient{
+    background: url('/images/noisetexture.png'), linear-gradient(45deg, rgba(8, 128, 144, 1) 0%, rgba(5, 24, 117, 1) 100%);
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: -4;
+}
+  .secondgradient {
+    background: radial-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.25));
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: -3;
+  }
+  a{
+    color:white;
+  }
+
+  .logo{
+    max-width: 96px;
+    margin: auto;
+    padding-top:24px;
+    padding-bottom:24px;
+    display: block;
+  }
+  .logolarge{
+    max-width: 148px;
+    margin: auto;
+    padding-right: 12px;
+    padding-left:12px;
+    padding-top:32px;
+    margin-bottom:12px;
+    display: block;
+  }
+ 
+  #placeholder{
+    margin:auto;
+    text-align: center;
+    position: fixed;
+top: 50%;
+left: 50%;
+/* bring your own prefixes */
+transform: translate(-50%, -50%);
+  }
+
+  #placeholder .logo{
+    max-height: 72px;
+    margin-bottom:-12px;
+    transform: translateX(-4px);
+  }
+  .hidden{
+    display: none;
+  }
+  button{
+    cursor: pointer;
+   }
+   .clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+
+.clearfix {display: inline-block;}

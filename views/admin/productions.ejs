@@ -1,0 +1,215 @@
+<%- include header.ejs %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+<div class="section">
+    <style>
+        h3{
+            margin-top:12px;
+            margin-bottom: 6px;
+        }
+        .timeline-element input, .timeline-element textarea, .pastproject-element input{
+            font-size:12px;
+            margin-bottom:2px;
+            padding:6px;
+        }
+        .timeline-element > .timeline-date{
+            width:  calc(100% - 36px);
+        }
+        .timeline-element{
+            position:relative;
+        }
+        .timeline-element > .smallbtn, .pastproject-element > .smallbtn{
+            position:absolute;
+            top:0;
+            right:0;
+            margin:0;
+            padding:0;
+            height:25px;
+            width:34px;
+        }
+        .pastproject-element{
+            position:relative;
+            margin-top:4px;
+        }
+        .pastproject-element input{
+            font-size:12px;
+            padding: 6px;
+        }
+        .pastproject-element .pastproject-year {
+            width: calc(100% - 36px);
+        }
+    </style>
+    <% console.log(productionspage) %>
+    <div class="sectionheader">Current Project</div>
+    <input id="currentproject-year" type="text" style="font-weight:bold;" placeholder="Current year" <% if(productionspage.current.yearname) { %>value="<%= productionspage.current.yearname %>"<% } %>>
+    <input id="currentproject-filmid" type="text" placeholder="Film ID (optional)" <% if(productionspage.current.filmid) { %>value="<%= productionspage.current.filmid %>"<% } %>>
+    <label style="font-size:12px;padding-bottom:0px;display:inline-block;">Date from which posts with #aufsproductions are shown as updates:</label>
+    <input type="text" id="currentproject-startdate" placeholder="Start date (used to only show relevant updates)" <% if(productionspage.current.startdate) { %>value="<%= new Date(productionspage.current.startdate).toISOString() %>"<% } %>>
+    <script>
+    flatpickr("#currentproject-startdate", {altInput: true, altFormat: "F j, Y"});
+    </script>
+    <h3>Description of AUFS Productions:</h3>
+    <div id="description-container" class="quillcontainer" style="max-height:128px;"><% if(productionspage.current.description) { %><%- productionspage.current.description %><% } %></div>
+    <h3>Roadmap of AUFS Productions:</h3>
+    <div id="roadmap-container" class="quillcontainer" style="max-height:128px;"><% if(productionspage.current.roadmap) { %><%- productionspage.current.roadmap %><% } %></div>
+    <h3>Timeline</h3>
+    <div id="timeline-list">
+        <% if(productionspage.current.timeline && productionspage.current.timeline.length>0) { %>
+            <% productionspage.current.timeline.forEach(element=>{ %>
+                <div class="timeline-element">
+                        <% console.log(element) %>
+                        <input type="text" class="timeline-date" placeholder="Date" <% if(element.date) { %>value="<%= new Date(element.date).toISOString() %>"<% } %>>
+                        <input type="text" class="timeline-description" placeholder="Event name" <% if(element.description) { %>value="<%- element.description %>"<% } %>>
+                        <textarea class="timeline-anticipation" placeholder="Anticipation message"><% if(element.anticipation) { %><%- element.anticipation %><% } %></textarea>
+                        <button class="smallbtn" style="position:absolute;font-weight:normal;" onclick="deleteTimelineElement(this)"><i class="far fa-trash-alt"></i></button>
+                    </div>
+            <% }); %>
+        <% } else { %>
+        <div class="timeline-element">
+            <input type="text" class="timeline-date" placeholder="Date">
+            <input type="text" class="timeline-description" placeholder="Event name">
+            <textarea class="timeline-anticipation" placeholder="Anticipation message"></textarea>
+            <button class="smallbtn" style="position:absolute;font-weight:normal;" onclick="deleteTimelineElement(this)"><i class="far fa-trash-alt"></i></button>
+        </div>
+        <% } %>
+    </div>
+    <button class="smallbtn" onclick="addTimelineElement()" style="margin-top:0px;margin-bottom:12px;">ADD EVENT</button>
+    <div>
+<label>Height of a month (in pixels):</label><input type="number" min="75" max="500" id="timeline-monthheight" style="margin-bottom:24px;display: inline-block; width:96px;" value="<% if(productionspage.current.monthheight) { %><%= productionspage.current.monthheight %><% } else { %>125<% } %>">
+    </div>
+    <script>
+        flatpickr(".timeline-date", {altInput: true, altFormat: "F j, Y"});
+        function deleteTimelineElement(el){
+            $(el).parent().remove();
+        }
+        function addTimelineElement(el){
+            var id="date-"+Date.now();
+            $("#timeline-list").append(`
+            <div class="timeline-element">
+                <input id="${id}" class="timeline-date" placeholder="Date">
+                <input type="text" class="timeline-description" placeholder="Event name">
+                <textarea class="timeline-anticipation" placeholder="Anticipation message"></textarea>
+                <button class="smallbtn" style="position:absolute;font-weight:normal;" onclick="deleteTimelineElement(this)"><i class="far fa-trash-alt"></i></button>
+            </div>
+            `)
+            flatpickr("#"+id, {altInput: true, altFormat: "F j, Y"});
+        }
+    </script>
+    <button onclick="saveCurrentProject()" class="bigbtn" style="font-weight:bold;">SAVE</button>
+</div>
+<div class="section">
+    <div class="sectionheader">Past Projects</div>
+    <div id="pastproject-list">
+            <% if(productionspage.past && productionspage.past.length && productionspage.past.length>0) { %>
+            <% productionspage.past.forEach(project=>{ %>
+                <div class="pastproject-element">
+                    <input class="pastproject-year" type="text" placeholder="Year" <% if(project.year) { %>value="<%= project.year %>"<% } %>>
+                    <input class="pastproject-filmid" type="text" placeholder="Film ID" <% if(project.filmid) { %>value="<%= project.filmid %>"<% } %>>
+                    <button class="smallbtn" style="position:absolute;font-weight:normal;" onclick="deleteProjectElement(this)"><i class="far fa-trash-alt"></i></button>
+                </div>
+            <% }); %>
+            <% } else { %>
+                <div class="pastproject-element">
+                    <input class="pastproject-year" type="text" placeholder="Year">
+                    <input class="pastproject-filmid" type="text" placeholder="Film ID">
+                    <button class="smallbtn" style="position:absolute;font-weight:normal;" onclick="deleteProjectElement(this)"><i class="far fa-trash-alt"></i></button>
+                </div>
+            <% } %>
+    </div>
+    <button class="smallbtn" onclick="addProjectElement()" style="margin-top:12px;">ADD</button>
+    <script>
+        function deleteProjectElement(el){
+            $(el).parent().remove();
+        }
+        function addProjectElement(el){
+            $("#pastproject-list").append(`
+            <div class="pastproject-element">
+                <input class="pastproject-year" type="text" placeholder="Year">
+                <input class="pastproject-filmid" type="text" placeholder="Film ID">
+                <button class="smallbtn" style="position:absolute;font-weight:normal;" onclick="deleteProjectElement(this)"><i class="far fa-trash-alt"></i></button>
+            </div>
+            `)
+        }
+        </script>
+    <button class="bigbtn" style="font-weight:bold;" onclick="savePastProjects()">SAVE</button>
+</div>
+<script>
+    var toolbarOptions = [
+    [{ 'font': [] }, { 'size': [] }],
+          [ 'bold', 'italic', 'underline', 'strike' ],
+          [{ 'color': [] }, { 'background': [] }],
+          [{ 'script': 'super' }, { 'script': 'sub' }],
+          [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block' ],
+          [{ 'list': 'ordered' }, { 'list': 'bullet'}, { 'indent': '-1' }, { 'indent': '+1' }],
+          [ 'direction', { 'align': [] }],
+          [ 'link', 'image', 'video', 'formula' ],
+          [ 'clean' ]
+    ];
+    var productionsEditor = new Quill('#description-container', {
+        modules: {
+            syntax: true,
+            toolbar: toolbarOptions
+        },
+        placeholder: 'Content',
+        theme: 'snow'
+    });
+    var roadmapEditor = new Quill('#roadmap-container', {
+        modules: {
+            syntax: true,
+            toolbar: toolbarOptions
+        },
+        placeholder: 'Content',
+        theme: 'snow'
+    });
+    function saveCurrentProject(){
+        var currentproject = generateCurrentProject();
+        if(currentproject){
+            $.post("/admin/productions/current", generateCurrentProject(), function(){
+                alert("Saved!");
+            },"text");
+        }
+    }
+    function savePastProjects(){
+        $.post("/admin/productions/past", generatePastProjects(), function(){
+           alert("Saved!");
+       },"text");
+    }
+    function generateCurrentProject(){
+        var obj = {};
+        obj.yearname = $("#currentproject-year").val();
+        obj.filmid = $("#currentproject-filmid").val();
+        obj.description = productionsEditor.root.innerHTML;
+        obj.roadmap = roadmapEditor.root.innerHTML;
+        obj.monthheight = $("#timeline-monthheight").val();
+        obj.startdate = $("#currentproject-startdate")[0]._flatpickr.selectedDates[0];
+        if(obj.startdate) obj.startdate=obj.startdate.getTime();
+        var timeline = [];
+        $(".timeline-element").each(function(){
+            var element = {};
+            var date= this.children[0]._flatpickr.selectedDates[0];
+            if(date == undefined){
+                alert("All timeline events must have a date!");
+                return undefined;
+            }
+            element.date = date.getTime();
+            element.description = $(this).find(".timeline-description").val();
+            element.anticipation =$(this).find(".timeline-anticipation").val();
+            timeline.push(element);
+        })
+        obj.timeline = JSON.stringify(timeline);
+        console.log(obj);
+        return obj;
+    }
+    function generatePastProjects(){
+        var pastprojects = [];
+        $(".pastproject-element").each(function(){
+            var project = {};
+            project.year = $(this).find(".pastproject-year").val();
+            project.filmid =$(this).find(".pastproject-filmid").val();
+            pastprojects.push(project);
+        });
+        return {projects: JSON.stringify(pastprojects)};
+    }
+</script>
+<%- include footer.ejs %>

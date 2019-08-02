@@ -1,0 +1,55 @@
+<style>
+footer{
+    width:100%;
+    margin-top:72px;
+    background-color:rgba(0, 0, 0, 0.2);
+    position: relative;
+    box-shadow: inset 0px 14px 14px -14px rgba(0,0,0,0.15);
+    text-align: center;
+    font-size:12px;
+    padding-bottom:24px;
+    padding-top:24px;
+    align-self: flex-end;
+    margin-top:auto;
+}
+footer a{
+    opacity:0.6;
+    text-decoration: underline;
+   text-decoration-color: transparent;
+    transition:all 0.2s;
+}
+
+footer a:hover{
+   opacity:0.75;
+   text-decoration-color: white;
+}
+footer a:active{
+    opacity:1;
+}
+.links{
+    margin-bottom:12px;
+}
+.links a{
+    font-size:13px;
+    margin-left:8px;
+    margin-right:8px;
+}
+
+.copyright{
+    color:rgba(255,255,255,0.4);
+    margin-bottom:12px;
+}
+.opensource{
+    color:rgba(255,255,255,0.4);
+}
+</style>
+
+<footer class="footer">
+    <div class="lowerfooter">
+        <div class="links"><a href="/about/constitution">Constitution</a><a href="/vote">Voting Page</a></div>
+        
+        <div class="copyright">&copy; <%= new Date().getFullYear() %> Aberdeen University Filmmaking Society</div>
+        <div class="opensource"><a href="https://github.com/aberdeen-university-filmmaking-society/website">This website is open-source</a></div>
+    </div>
+    
+</footer>

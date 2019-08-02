@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+        <title>Founder's statement | AUFS</title>
+        <meta property="og:title" content="Founder's statement">
+        
+        <meta property="description" content="Why was AUFS founded, back in January 2000?">
+        <meta property="og:description" content="Why was AUFS founded, back in January 2000?"/>
+
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="/images/cover.jpg">
+
+    <%- include partials/head.ejs %>
+  </head>
+  <body>
+    <%- include partials/header.ejs %>
+    <main>
+    <section>
+        <p style="color:white;font-size:16px;margin-top:24px;">What follows was written around 2001 by the founder of Cinergi (renamed to AUFS in 2018).</p>
+    </section>
+    <style>
+        .holy-text{
+            position: relative;
+            padding-left:120px;
+            padding-right:120px;
+            margin-top:48px;
+        }
+    .holy-text::before{
+      content: '\201C';
+      position: absolute;
+      color: rgba(255,255,255,0.1);
+      font-size: 200px;
+      top:-40px;
+      left:24px;
+      z-index: -1;
+    }
+    .holy-text::after{
+      content: '\201D';
+      position: absolute;
+      color: rgba(255,255,255,0.1);
+      font-size: 200px;
+      bottom:-148px;
+      right:24px;
+      z-index: -1;
+    }
+    blockquote:before{
+        content: '— '
+    }
+    blockquote{
+        font-size:18px;float:right;
+        font-style:italic;
+        text-align:right;
+    }
+    blockquote a{
+        display:block;
+        font-size:12px;
+        opacity:0.5;
+        font-style:normal;
+    }
+    @media only screen and (max-width: 812px) {
+        .holy-text{
+            padding-left:100px;
+            padding-right:100px;
+        }
+        .holy-text:before{
+            left:12px;
+        }
+        .holy-text:after{
+            right:12px;
+        }
+    }
+    @media only screen and (max-width: 600px) {
+        .holy-text{
+            padding-left:60px;
+            padding-right:60px;
+        }
+        .holy-text:before{
+            left:0px;
+            top:-60px;
+        }
+        .holy-text:after{
+            right:0px;
+            bottom:-200px;
+        }
+    }
+    @media only screen and (max-width: 400px) {
+        .holy-text{
+            padding-left:22px;
+            padding-right:22px;
+        }
+        .holy-text::before{
+            left:0px;
+            content:''
+        }
+        .holy-text::after{
+            right:0px;
+            content:''
+        }
+    }
+    </style>
+    <section class="holy-text">
+            <p >I founded Cinergi Film Association in January 2000, with the help of a couple of good friends who backed my idea and believed in me. It was hard work at first persuading people that this society was going to work, as there had been societies in the past which had failed. By this stage the Society did not even have a name, but I did not see that as a problem. The problem was launching this society half way through the year. </p>
+            <p >I started a campaign of postering around the campus, by now I had Cinergi Film Association as the name for the society, so all I did was run up about 100 A3 posters just saying Cinergi. I had no idea if this would take peoples notice. It was only a few weeks ago that someone told me, "When I saw the word Cinergi I was trying to work out what it meant, I was intrigued to find out." I then started a second set of posters a week later, this time giving all the information I could about the society, what it was all about and all the rest. </p>
+            <p >It was the first meeting, I was worried telling my friends every two seconds, "What if only ten people
+            turn up?" But when I walked through the doors of the lecture theatre I saw a mass of people filling the whole room, I couldn't believe it. I was completely unprepared, but I had to talk to them, these were the future members of Cinergi, I had to inspire them to join. Essentially I used my skills as a diving instructor to overcome that vast number of people, I thought to myself it is no different than giving a diving lecture. I therefore proceeded to tell them why I set up Cinergi and what I expected the society to be and stated the aims of Cinergi: to create, develop and produce films. </p>
+            <p >What gave me the drive to achieve this was the growing ambition to make films and for the most part
+            to learn all I could in the process. I wanted to see at the University a society that would be producing films to the highest standard possible, while having fun along the way. I think I have achieved my goal, I have done my best over the last year to build Cinergi into a society that not only provides students with an opportunity to express their creative imagination
+            but also to teach them the basics of film production. </p>
+            <p >It has become apparent to me over the last few months that when you give people encouragement
+            that is when they perform to their best standards. I have been working hard on two films this last semester and I have enjoyed working with all the other people that make the production come together. I hope that other people will have a great time in the production of their films. </p>
+            <p >Since the beginning the society has come along way, it has produced two videos of the student acting society's work. It has been asked to make a publicity film for the Union, it has seen the completion of two films both of which have been submitted to film festivals, and it has plans underway for The Oscar Ball. Who knows what will come in the future? </p>
+            <p >Many people may think that their idea isn't worth filming but there is nothing stopping anyone from
+            producing a great piece of work within Cinergi, only your imagination. Obstacles are there to be overcome as I have found over the last year and if you put your mind to it you can get over them. </p>
+            <p >I think over what I have done and I am very proud of the work that has come out of Cinergi over the last year and I hope in the future Cinergi gets bigger and better. </p>
+            <p>
+                <blockquote target="_blank" style="">Euan Mackenzie<a href="https://web.archive.org/web/20020801235915/http://www.abdn.ac.uk:80/~src199/">Source</a></blockquote>
+                
+    </section>
+  </main>
+    <%- include partials/footer.ejs %>
+  </body>
+</html>

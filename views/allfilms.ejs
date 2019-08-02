@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Films | AUFS</title>
+    <meta property="og:title" content="All Films | AUFS">
+
+    <meta name="description" content="These are all the films that have ever been made by students within the context of AUFS. Please note that these films are individual projects and do not represent the ethos and capabilities of the entire society.">
+    <meta property="og:description" content="These are all the films that have ever been made by students within the context of AUFS. Please note that these films are individual projects and do not represent the ethos and capabilities of the entire society.">
+
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/cover.jpg">
+
+    <%- include partials/head.ejs %>
+</head>
+
+<body>
+    <%- include partials/header.ejs %>
+    <main>
+    <br>
+    <section>
+        <div style="font-size:16px;margin-bottom:4px;">These are all the films that have ever been made by students within the context of AUFS</div>
+        <p>Please note that these films are individual projects and do not represent the ethos and capabilities of the entire society.</p>
+        <div class="films-list">
+                <% function formatDate(e){var r=e.getMonth(),t=e.getFullYear();return["January","February","March","April","May","June","July","August","September","October","November","December"][r]+" "+t} %>
+                <% var previousdate = ""; %>
+                <% films.forEach(film=>{ %>
+                    <% if(previousdate!=film.dateformatted) { previousdate = film.dateformatted %>
+                        <div class="groupheader"><%= previousdate %></div>
+                    <% }  %>
+                    <a class="film-anchor" href="/films/<%= film.slug %>">
+                        <div class="film-container">
+                            <div class="film-imagecontainer">
+                                
+                              <img class="film-image" src="<% if(film.youtubeid) { %>https://i.ytimg.com/vi/<%= film.youtubeid %>/mqdefault.jpg<% } else { %>/images/blankthumbnail.png<% } %>">
+                              
+                            </div>
+                            <div class="film-text">
+                                    <div class="film-title"><%= film.title %></div>
+                                </div>
+                          </div>
+                     </a>
+                  <% }); %>
+        </div>
+     </section>
+    </main>
+     <%- include partials/footer.ejs %> 
+</body> 
+</html>

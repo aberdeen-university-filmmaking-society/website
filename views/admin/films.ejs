@@ -1,0 +1,420 @@
+<%- include header.ejs %>
+<style>
+    .createfilm-credit{
+        margin-top:4px;
+    }
+    .autoaddlist input{
+        font-weight: 600;
+        padding:8px;
+        font-size:14px;
+        margin-bottom:0;
+        border-radius: 4px 0px 0px 4px;
+        width:30%;
+        display: inline-block;
+    }
+    .autoaddlist input:last-child{
+        width:70%;
+        border-radius: 0px 4px 4px 0px;
+        font-weight: normal;
+    }
+</style>
+    <div class="section" style="flex-basis:100%;max-width: none;">
+            <div class="sectionheader">Settings</div>
+            <input type="number" id="settings-filmcount" value="<%=settings.homepage_filmcount %>"><label for="settings-filmcount">&nbsp;&nbsp;Films on the home page (excluding)</label>
+            <button class="smallbtn" onclick="changedsettings()">SAVE</button>
+        </div>
+<div class="section">
+    <div class="sectionheader"><span id="newpost-header">New Film</span>
+        <div id="editpost-warning" style="display: none;font-size:12px;font-weight: normal;margin-top:4px;">Editing
+            film&nbsp;<a target="_blank" style="color:white;" id="editpost-url"></a>
+        </div>
+    </div>
+    <input id="createfilm-title" type="text" class="smaller" placeholder="Title" onkeyup="updateslug()" autocomplete="off"><br>
+    <div style="position:relative;">
+        <label style="font-size:11px; font-family:Consolas, 'Courier New', Courier, monospace;padding-left:6px;position:absolute; top:2px;" for="createfilm-slug">/films/</label>
+            <input id="createfilm-slug" autocomplete="off" type="text" class="smallest" style="display:inline-block;font-family:Consolas, 'Courier New', Courier, monospace;padding-left:49px;" onchange="verifyslug()">
+    </div>
+    
+    <input id="createfilm-date" type="text" class="smaller" placeholder="Date"><br>
+    <script>
+        const datepicker = flatpickr("#createfilm-date", {altInput: true, altFormat: "F j, Y",});
+    </script>
+    <input id="createfilm-youtubeid" type="text" class="smaller" placeholder="YouTube URL" autocomplete="off"><br>
+    <div id="uploadedPosters">
+    </div>
+    <div>
+        <input type="file" accept="image/*" onchange="choseFile(this, '#uploadedPosters', true, 'poster')" style="display:none"/>
+        <button class="smallbtn" onclick="openFile(this)" style="margin-bottom:12px;">UPLOAD POSTER</button>
+    </div>
+    <div id="createfilm-description" class="quillcontainer" style="min-height: 128px;margin-bottom:12px;"></div>
+    <h3>CREDITS</h3>
+    <div id="createfilm-creditlist">
+        <div class="createfilm-credit autoaddlist">
+            <input type="text" class="credit-role" placeholder="Role" onchange="autoAddList(this)"><input type="text" class="credit-name" placeholder="Name" onchange="autoAddList(this)">
+        </div>
+    </div><br>
+    <h3>BEHIND THE SCENES</h3>
+    <div id="createfilm-bts-story" class="quillcontainer" style="min-height: 128px;margin-bottom:12px;"></div>
+    <div id="uploadedBtsPics">
+        </div>
+        <div>
+            <input type="file" accept="image/*" onchange="choseFile(this, '#uploadedBtsPics', false, 'btspic')" style="display:none"/>
+            <button class="smallbtn" onclick="openFile(this)" style="margin-bottom:12px;">UPLOAD BTS PIC</button>
+        </div>
+    <br>
+    <h3>TECHNICAL SPECS</h3>
+    <div id="createfilm-bts-techspecs">
+        <div class="createfilm-techspec autoaddlist">
+            <input type="text" class="techspecs-type" placeholder="Type" onchange="autoAddList(this)"><input type="text" class="techspecs-option" placeholder="Content" onchange="autoAddList(this)">
+        </div>
+    </div>
+    <br>
+    <input id='tags' placeholder='Tags'>
+    <script>
+        var availabletags = [];
+        <% if(tags) { %>
+            availabletags = JSON.parse(`<%- tags %>`)
+        <% } %>
+         $("#tags").tagit({
+             availableTags:availabletags,
+             autocomplete: {delay: 0, minLength: 1},
+             placeholderText: "Tags"
+         });
+    </script>
+    <input id="createfilm-hidden" type="checkbox"><label for="createfilm-hidden">Hidden post</label><br>
+    <button class="bigbtn" id="createvote" onclick="createfilm()">PUBLISH</button>
+    <button class="bigbtn" style="display: none;" id="editpost-cancel" onclick="stopedit()">CANCEL</button>
+</div>
+<div class="section">
+        <div class="sectionheader">Published</div>
+        <ul class="filmlist">
+            <% films.forEach(film=>{ %>
+            <li class="filmitem" data-id="<%= film.id %>">
+                <div style="margin-right:174px;">
+                    <h4><% if(film.hidden) {%><i class="far fa-eye-slash"></i>&nbsp;<% } %><a <% if(film.hidden) {%>style="opacity:0.5"<% } %> target="_blank" href="/films/<%= film.slug %>"><%= film.title %></a></h4>
+                    <h5>ID: <%= film.id %></h5>
+                    <h6 style="margin-top:4px;"><%= new Date(Number.parseInt(film.id)).toLocaleString() %></h6>
+                </div>
+                <div class="actions">
+                    <button onclick="editfilm(<%= film.id %>)"><i class="far fa-edit"></i></button>
+                    <button onclick="deletefilm(<%= film.id %>)"><i class="far fa-trash-alt"></i></button>
+                </div>
+            </li>
+            <% }); %>
+        </ul>
+    </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script src="/javascripts/fileupload.js"></script>
+<script>
+    var oldslugs = JSON.parse(`<%- slugs %>`);
+function slugify(string) {
+  const a = 'àáäâãåăæçèéëêǵḧìíïîḿńǹñòóöôœøṕŕßśșțùúüûǘẃẍÿź·/_,:;';
+  const b = 'aaaaaaaaceeeeghiiiimnnnooooooprssstuuuuuwxyz------';
+  const p = new RegExp(a.split('').join('|'), 'g');
+
+  var output = string.toString().toLowerCase()
+    .replace(/\s+/g, '-') // Replace spaces with -
+    .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
+    .replace(/&/g, '-and-') // Replace & with 'and'
+    .replace(/[^\w\-]+/g, '') // Remove all non-word characters
+    .replace(/\-\-+/g, '-') // Replace multiple - with single -
+    .replace(/^-+/, '') // Trim - from start of text
+    .replace(/-+$/, ''); // Trim - from end of text
+    if(oldslugs.indexOf(output)!=-1){
+        if(editingid && output == editingslug){
+            //continue
+        }
+        else{
+            var indexnb = 0;
+            var numberedOutput = output;
+            while(oldslugs.indexOf(numberedOutput) != -1){
+                indexnb++;
+                numberedOutput = output + "-"+ indexnb;
+            }
+            output = numberedOutput;
+        }
+    }
+    return output;
+}
+</script>
+<script>
+    function updateslug(){
+        if(!editingid)
+            $("#createfilm-slug").val(slugify($("#createfilm-title").val()));
+    }
+    function verifyslug(){
+        $("#createfilm-slug").val(slugify($("#createfilm-slug").val()));
+    }
+
+    const editquery = new URL(window.location).searchParams.get('edit');
+    if(editquery) editfilm(editquery);
+
+    function changedsettings(){
+        $.ajax({
+            type: "POST",
+            url: '/admin/settings',
+            contentType: "application/json",
+            async: false,
+            //json object to sent to the authentication url
+            data: JSON.stringify({
+                key: "homepage_filmcount",
+                value: $("#settings-filmcount").val()
+            }),
+            success: function (res) {
+                alert("Saved new film count");
+            },
+            error: function (res) {
+                alert("Failed to change film count");
+            },
+        });
+    }   
+
+    function autoAddList(input){
+        var $container = $(input).parent();
+        var $inputs = $container.children();
+        if($inputs[0].value=="" && $inputs[1].value==""){
+            //It's empty, if it's not last delete it
+            if(!$container.is(":last-child")) 
+                $container.remove();
+        }
+        else{
+            //It's not empty, if it's last add an empty item
+            if($container.is(":last-child")){
+                $container.parent().append($container.clone().find('input').val(undefined).parent());
+            }
+        }
+    }
+
+    var toolbarOptions = [
+    [{ 'font': [] }, { 'size': [] }],
+          [ 'bold', 'italic', 'underline', 'strike' ],
+          [{ 'color': [] }, { 'background': [] }],
+          [{ 'script': 'super' }, { 'script': 'sub' }],
+          [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block' ],
+          [{ 'list': 'ordered' }, { 'list': 'bullet'}, { 'indent': '-1' }, { 'indent': '+1' }],
+          [ 'direction', { 'align': [] }],
+          [ 'link', 'image', 'video', 'formula' ],
+          [ 'clean' ]
+    ];
+    var pastematcher = (node, delta) => {
+        delta.ops = delta.ops.map(op => {
+            return {
+                insert: op.insert
+            }
+        })
+        return delta
+    };
+    var quillDescription = new Quill('#createfilm-description', {
+        modules: {
+            syntax: true,
+            toolbar: toolbarOptions
+        },
+        placeholder: 'Description',
+        theme: 'snow'
+    });
+    quillDescription.clipboard.addMatcher(Node.ELEMENT_NODE, pastematcher);
+    var quillBts = new Quill('#createfilm-bts-story', {
+        modules: {
+            syntax: true,
+            toolbar: toolbarOptions
+        },
+        placeholder: 'Story',
+        theme: 'snow'
+    });
+    quillBts.clipboard.addMatcher(Node.ELEMENT_NODE, pastematcher);
+
+    function extractVideoID(url){
+        var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
+        var match = url.match(regExp);
+        if ( match && match[7].length == 11 ){
+            return match[7];
+        }else{
+            return url;
+        }
+    }
+
+    function generateFilmObject() {
+        var behindthescenes = {};
+        behindthescenes.story = JSON.stringify(quillBts.getContents());
+        var credits = {};  
+        $(".createfilm-credit").each(function(){
+            console.log(this);
+            if($(this).find(".credit-role").val())
+                credits[$(this).find(".credit-role").val()]=$(this).find(".credit-name").val();
+        });
+        var techspecs = {};
+        $(".createfilm-techspec").each(function(){
+            if($(this).find(".techspecs-type").val())
+                techspecs[$(this).find(".techspecs-type").val()]=$(this).find(".techspecs-option").val();
+        });
+        var filmdate=undefined;
+        if(datepicker.selectedDates[0]) filmdate=datepicker.selectedDates[0].getTime();
+        var filmobject= {
+            title: $("#createfilm-title").val(),
+            date: filmdate,
+            youtubeid: extractVideoID($("#createfilm-youtubeid").val()),
+            files: JSON.stringify(getUploadedFiles()),
+            sessionid: getSessionId(),
+            slug: $("#createfilm-slug").val(),
+            description: JSON.stringify(quillDescription.getContents()),
+            hidden: $('#createfilm-hidden').is(":checked"),
+            techspecs: JSON.stringify(techspecs),
+            credits:JSON.stringify(credits),
+            behindthescenes:JSON.stringify(behindthescenes),
+            tags: $("#tags").tagit("assignedTags").join(","),
+        };
+        return filmobject;
+    }
+    function autofillrowCredit(role, name){
+        return `<div class="createfilm-credit autoaddlist">
+                    <input type="text" class="credit-role" value="${role}" placeholder="Role" onchange="autoAddList(this)"><input type="text"  value="${name}" class="credit-name" placeholder="Name" onchange="autoAddList(this)">
+                </div>`
+    }
+    function autofillrowTechspecs(type, option){
+        return `<div class="createfilm-techspec autoaddlist">
+                    <input type="text" class="techspecs-type" value="${type}" placeholder="Type" onchange="autoAddList(this)"><input type="text" value="${option}" class="techspecs-option" placeholder="Content" onchange="autoAddList(this)">
+                </div>`
+    }
+    function fillWithFilmObject(film) {
+        $("#uploadedPosters").empty();
+        $("#uploadedBtsPics").empty();
+        $("#createfilm-title").val(film.title);
+        console.log(Number.parseInt(film.date));
+        datepicker.setDate(new Date(Number.parseInt(film.date)));
+        if(film.youtubeid)
+            $("#createfilm-youtubeid").val("https://youtu.be/"+film.youtubeid);
+        else
+            $("#createfilm-youtubeid").val("");
+        $("#createfilm-poster").val(film.poster);
+        $("#createfilm-slug").val(film.slug);
+        $("#createfilm-hidden").prop("checked", film.hidden);
+        $("#tags").tagit("removeAll");
+        film.tags.split(",").forEach(tag=>{
+            $("#tags").tagit("createTag", tag);
+        });
+        quillDescription.setContents(JSON.parse(film.description));
+        
+        $("#createfilm-creditlist").empty();
+        var filmcredits = JSON.parse(film.credits);
+        for(var credit in filmcredits){
+            $("#createfilm-creditlist").append(autofillrowCredit(credit, filmcredits[credit]))
+        }
+        $("#createfilm-creditlist").append(autofillrowCredit("", ""));
+        filmbehindthescenes = JSON.parse(film.behindthescenes);
+        quillBts.setContents(JSON.parse(filmbehindthescenes.story));
+        $("#createfilm-bts-techspecs").empty();
+        var filmtechspecs = JSON.parse(film.techspecs)
+        for(var type in filmtechspecs){
+            $("#createfilm-bts-techspecs").append(autofillrowTechspecs(type, filmtechspecs[type]))
+        }
+        $("#createfilm-bts-techspecs").append(autofillrowTechspecs("", ""));
+        if(film.files){
+            var parsedFiles = JSON.parse(film.files);
+            if(parsedFiles){
+                parsedFiles.forEach(file=>{
+                    if(file.type=="poster"){
+                        appendFileUi("#uploadedPosters", file.name, '/files/'+file.name+"_thumb."+file.extension, file.type, file.extension, file.caption)
+                    }
+                    else if(file.type=="btspic"){
+                        appendFileUi("#uploadedBtsPics", file.name, '/files/'+file.name+"_thumb."+file.extension, file.type, file.extension, file.caption)
+                    }
+                })
+            }
+        }
+    }
+
+    
+    function deletefilm(id) {
+        if(confirm("Are you sure you want to delete this film?")){
+            $.ajax({
+            type: "POST",
+            url: '/admin/films/remove/' + id,
+            success: function (res) {
+                $("[data-id='" + id + "']").remove();
+                if (editingid = id) {
+                    stopedit();
+                }
+            }
+        });
+        }
+    }
+    var editingid = undefined;
+    var editingslug = undefined;
+    function editfilm(id) {
+        newFileSession();
+        $.ajax({
+            type: "POST",
+            url: '/admin/films/get/' + id,
+            success: function (res) {
+                editingid = id;
+                $("#editpost-url").attr("href", "/films/" + id).text(id);
+                $("#editpost-warning").show(0);
+                $("#editpost-cancel").show(0);
+                $("#newpost-header").text("Edit film");
+                var film = JSON.parse(res);
+                fillWithFilmObject(film);
+                editingslug = film.slug;
+                window.history.replaceState({}, null, '/admin/films?edit='+id);
+            }
+        });
+    }
+
+    function stopedit() {
+        editingid = undefined;
+        $("#editpost-warning").hide(0);
+        $("#editpost-cancel").hide(0);
+        $("#newpost-header").text("New film");
+        window.location = '/admin/films';
+    }
+
+    function createfilm() {
+        var filmobject = generateFilmObject();
+        console.log(filmobject)
+        if (editingid) {
+            $.ajax({
+                type: "POST",
+                url: '/admin/films/edit/' + editingid,
+                dataType: 'text',
+                contentType: "application/json",
+                async: true,
+                //json object to sent to the authentication url
+                data: JSON.stringify(filmobject),
+                success: function (res) {
+                    console.log("edit successful");
+                    stopedit();
+                    console.log("stopped edit")
+                    location.replace('/admin/films');
+                },
+                error: function (res) {
+                    if (res.errors != undefined) {
+                        var alertText = "";
+                        alert(res.errors.join("\n"));
+                    }
+                },
+            });
+        } else {
+            $.ajax({
+                type: "POST",
+                url: '/admin/films/create/',
+                dataType: 'text',
+                contentType: "application/json",
+                async: true,
+                //json object to sent to the authentication url
+                data: JSON.stringify(filmobject),
+                success: function (res) {
+                    console.log(res);
+                    location.replace('/admin/films');
+                },
+                error: function (res) {
+                    if (res.errors != undefined) {
+                        var alertText = "";
+                        alert(res.errors.join("\n"));
+                    }
+                },
+            });
+        }
+    }
+</script>
+<%- include footer.ejs %>

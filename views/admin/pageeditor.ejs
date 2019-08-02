@@ -1,0 +1,188 @@
+<%- include header.ejs %>
+<div class="section">
+    <div class="sectionheader">Edit page</div>
+    <select id="pageselection" onchange="changedpageselection()">
+        <option>Please choose a page</option>
+        <option value="faq">FAQ</option>
+        <option value="homepageinsert">Home page</option>
+        <option value="headerinsert">Header logo</option>
+        <option value="cssmods">Site-wide CSS modifications</option>
+    </select>
+    <style type="text/css" media="screen">
+        .faq-template{
+            position: relative;
+        }
+        .faq-template input{
+            font-weight: 600;padding:8px;font-size:14px;margin-bottom:0;border-radius: 4px 4px 0 0;z-index:10;
+        }
+        .faq-template textarea{
+            font-weight: 600;padding:8px;font-size:12px;margin-bottom:0;border-radius: 0 0 4px 4px
+        }
+        .faq-template .smallbtn{
+            margin:0;
+            height:32px;
+            position:absolute;
+            right:0;
+            top:0;
+            padding:0;
+            font-size:14px;
+            width:32px;
+        }
+        .faq-template .move{
+            position: absolute;
+    display: block;
+    right: -2px;
+    top: 36px;
+    padding: 6px;
+    font-size: 24px;
+    opacity: 0.4;
+    cursor: move;
+    color: rgba(5,24,117,1);
+        }
+    </style>
+    <div id="hint" style="margin-top:12px;"></div>
+    <div id="faqeditor" style="display: none;margin-top:12px;">
+        <div id="faqeditor-list">
+        </div>
+        <button class="smallbtn" onclick="addFaqQuestion()">ADD QUESTION</button>
+        <script>
+            function addFaqQuestion(){
+                $("#faqeditor-list").append(buildFaqTemplate("",""));
+                preparefaqeditor();
+            }
+            function buildFaqTemplate(question, answer){
+                return `<div class="faq-template">
+                            <div style="margin-right:36px;">
+                                <input type="text" style="" placeholder="Question" value="${question}" onkeyup="buildFaqHtml()">
+                                <textarea class="autogrow" style="" name="Text1" placeholder="Answer" onkeyup="buildFaqHtml()">${answer}</textarea>
+                            </div>
+                            <button class="smallbtn" style="position:absolute;font-weight: normal;" onclick="deleteQuestion(this)"><i class="far fa-trash-alt"></i></button>
+                            <i class="move fas fa-arrows-alt"></i>
+                        </div>`
+            }
+            function deleteQuestion(btn){
+                $(btn).parent().remove();
+                buildFaqHtml();
+
+            }
+            function buildFaqDisplay(question,answer){
+                return `<div class="accordion" data-accordion>
+                            <div data-control>${question}</div>
+                            <div data-content>
+                                <p>${answer}</p>
+                            </div>
+                        </div>`
+            }
+            function preparefaqeditor(){
+                $('#faqeditor-list').sortable({
+                    stop:function(){
+                        buildFaqHtml();
+                    }
+                });
+                $('.autogrow').autogrow({vertical: true, horizontal: false});
+            }
+            function loadFaqHtml(html){
+                $("#invisibletestzone").html(html);
+                $("#invisibletestzone .accordion").each(function(){
+                    $("#faqeditor-list").append(buildFaqTemplate($(this).find("[data-control]").html(),$(this).find("[data-content]>p").html()));
+                });
+                preparefaqeditor();
+            }
+            function buildFaqHtml(){
+                var html="";
+                $("#faqeditor-list .faq-template").each(function(){
+                    html+=buildFaqDisplay($(this).find("input").val(),$(this).find("textarea").val());
+                });
+                editor.session.setValue(html);
+            }
+        </script>
+    </div>
+    <div id="headerpresets" style="display:none;margin-top:12px">
+        <h3>Presets:</h3>
+        <button class="smallbtn" onclick="setpreset('pride')">Pride flag</button>
+        <script>
+        function setpreset(preset){
+            if(preset == "pride"){
+                editor.session.setValue(`<div title="AUFS x Pride Month" style="background: linear-gradient(90deg, #f00000, #f00000 16.67%, #ff8000 16.67%, #ff8000 33.33%, #ffff00 33.33%, #ffff00 50%, #007940 50%, #007940 66.67%, #4040ff 66.67%, #4040ff 83.33%, #a000c0 83.33%, #a000c0);
+width:148px;
+height:4px;
+position:absolute;
+left:50%;
+transform: translateX(-50%);
+margin:auto;
+margin-top:-4px;
+filter: blur(5px);
+margin-bottom:12px;">
+</div>
+<div title="AUFS x Pride Month" style="background: linear-gradient(90deg, #f00000, #f00000 16.67%, #ff8000 16.67%, #ff8000 33.33%, #ffff00 33.33%, #ffff00 50%, #007940 50%, #007940 66.67%, #4040ff 66.67%, #4040ff 83.33%, #a000c0 83.33%, #a000c0);
+width:148px;
+height:4px;
+position:absolute;
+left:50%;
+transform: translateX(-50%);
+margin:auto;
+margin-top:-4px;
+filter: blur(5px);
+margin-bottom:12px;">
+</div>
+<div title="AUFS x Pride Month" style="background: linear-gradient(90deg, #f00000, #f00000 16.67%, #ff8000 16.67%, #ff8000 33.33%, #ffff00 33.33%, #ffff00 50%, #007940 50%, #007940 66.67%, #4040ff 66.67%, #4040ff 83.33%, #a000c0 83.33%, #a000c0);
+width:148px;
+height:4px;
+margin:auto;
+margin-top:-4px;
+margin-bottom:12px;">
+</div>`);
+            }
+            
+        }
+        </script>
+    </div>
+    <div style="margin-top:24px;font-size:14px;margin-bottom:4px;">HTML CODE</div>
+    <div id="codeeditor"></div>
+    <button class="bigbtn" id="createvote" onclick="savepage()">SAVE</button>
+</div>
+<div id="invisibletestzone" class="hidden"></div>
+<br><br>
+<script>
+    var editor = ace.edit("codeeditor");
+    //editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/html");
+    function changedpageselection(){
+        var selection = $("#pageselection").val();
+        $.get("/admin/pages/"+selection, function(data){
+            if(selection == "faq"){
+                $("#faqeditor").show(0);
+                loadFaqHtml(data.content);
+            }
+            else{
+                $("#faqeditor").hide(0);
+            }
+            if(selection=="headerinsert"){
+                $("#headerpresets").show(0);
+            }
+            else{
+                $("#headerpresets").hide(0);
+            }
+            editor.session.setValue(data.content);
+            if(data.hint==undefined) $("#hint").html(" ");
+            else $("#hint").html(data.hint);
+        });
+    }
+    function generateFilmObject(){
+        
+    }
+    function savepage(){
+        $.ajax({
+                type: "POST",
+                url: '/admin/pages/'+$("#pageselection").val(),
+                dataType: 'text',
+                contentType: "application/json",
+                async: true,
+                //json object to sent to the authentication url
+                data: JSON.stringify({content:editor.getValue()}),
+                success: function (res) {
+                    console.log("post successful");
+                }
+            });
+    }
+</script>

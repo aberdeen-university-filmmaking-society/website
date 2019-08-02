@@ -1,0 +1,138 @@
+<head>
+    <title>Coming soon...</title>
+    <meta name="robots" content="noindex">
+    <%- include partials/head.ejs %>
+</head>
+
+<body>
+
+</body>
+<style>
+
+</style>
+<div class="firstgradient"></div>
+<div class="secondgradient"></div>
+<style>
+    .homebutton img {
+        filter: drop-shadow(0px 0px 16px rgba(120, 239, 255, 0.7));
+        transition: filter 0.2s;
+    }
+
+    #clockdiv {
+        filter: drop-shadow(0px 0px 16px rgba(120, 239, 255, 0.7));
+    }
+
+    .homebutton:hover img {
+        filter: drop-shadow(0px 0px 12px rgba(120, 239, 255, 0.85));
+    }
+
+    .homebutton:active img {
+        filter: drop-shadow(0px 0px 12px rgba(120, 239, 255, 1));
+    }
+
+    .logolarge {
+        padding-top: 0;
+    }
+    .socialmedia{
+        padding-bottom:12px;
+    }
+</style>
+<header class="header" style="height:100%;position:absolute;width:100%;">
+
+    <div style="height:100%;">
+        <div style="position: absolute;width:100%;top:50%;transform:translateY(-50%)">
+            <a class="homebutton" style="margin:auto;" title="Home Page"><img class="logolarge"
+                    src="/images/logo.svg" style="max-width:200px;"><span style="display: none;">Home page</span></a>
+            <div class="socialmedia" style="margin-top:24px;">
+                <a class="smicon" target="_blank" rel="noopener" title="Facebook"
+                    href="https://www.facebook.com/aufilmmakingsociety"><img src="/images/social/fb.svg"></a>
+                <a class="smicon" target="_blank" rel="noopener" title="Twitter"
+                    href="https://twitter.com/aufilmmaking"><img src="/images/social/tw.svg"></a>
+                <a class="smicon" target="_blank" rel="noopener" title="Instagram"
+                    href="https://www.instagram.com/aufilmmaking/"><img src="/images/social/ig.svg"></a>
+                <a class="smicon" target="_blank" rel="noopener" title="YouTube"
+                    href="https://www.youtube.com/channel/UCPIqVqALsVI6oxZSr_Hk5Zg"><img
+                        src="/images/social/yt.svg"></a>
+            </div>
+            <style>
+                .monospace{
+                    text-align:center;
+                    color:rgba(255,255,255,1);
+                    font-size:12vw;
+                    font-family: monospace;
+                }
+                @media screen and (min-width: 500px) {
+                    .monospace {
+                       font-size: 60px;
+                    }
+                }
+            </style>
+            <div class="monospace" id="clockdiv"></div>
+            <a class="monospace" id="enterbtn" style="display:none;" href="/">ENTER</a>
+        </div>
+    </div>
+    <script>
+        var offset = new Date().getTime() - new Date("<%= serverTime %>").getTime();
+        console.log("offset from server is " + offset);
+
+        function getTimeRemaining(endtime) {
+            var t = (new Date(endtime)).getTime() - (new Date().getTime()-offset);
+            var totalseconds = t/1000;
+            var seconds = Math.floor((t / 1000) % 60);
+            var timecode = Math.floor((t % 1000)/41.67);
+            var minutes = Math.floor((t / 1000 / 60) % 60);
+            var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+            var days = Math.floor(t / (1000 * 60 * 60 * 24));
+            return {
+                'totalseconds':totalseconds,
+                'total': t,
+                'days': days,
+                'hours': hours,
+                'minutes': minutes,
+                'seconds': seconds,
+                'timecode': timecode
+            };
+        }
+
+        function initializeClock(id, endtime) {
+            var clock = document.getElementById(id);
+            var enterbtn = document.getElementById("enterbtn");
+            function updateClock() {
+                var t = getTimeRemaining(endtime);
+                var days = "";
+                var hours = "";
+                var minutes = "";
+                var seconds = "";
+                if(t.totalseconds>=86400)
+                    days = t.days +" days<br>";
+                if(t.totalseconds>=3600)
+                    hours = ('0' + t.hours).slice(-2);
+                if(t.totalseconds>=60)
+                    minutes = ('0' + t.minutes).slice(-2);
+                t.seconds = ('0' + t.seconds).slice(-2);
+                t.timecode = ('0' + t.timecode).slice(-2);
+
+                if(t.totalseconds<60)
+                    clock.innerHTML=t.seconds+":"+t.timecode;
+                else if(t.totalseconds<3600)
+                    clock.innerHTML=minutes+":"+t.seconds+":"+t.timecode;
+                else
+                    clock.innerHTML=days+hours+":"+minutes+":"+t.seconds+":"+t.timecode;
+                
+                if (t.total <= 0) {
+                    clearInterval(timeinterval);
+                    clock.setAttribute("style","display:none;");
+                    enterbtn.setAttribute("style","display:block;");
+                }
+            }
+            updateClock();
+            var timeinterval = setInterval(updateClock, 40);
+        }
+        var dateoffset = new Date()
+        //What follows is pretty approximate, but we're trying to make a cool looking UI, not launch a rocket.
+        //It's not an issue if the displayed time is a few hundred milliseconds later than the exact launch time of the website.
+        
+        var deadline = new Date((new Date("<%= launchTime %>")).getTime());
+        initializeClock('clockdiv', deadline);
+    </script>
+</header>

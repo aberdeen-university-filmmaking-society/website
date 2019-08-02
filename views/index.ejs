@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Aberdeen University Filmmaking Society | AUFS</title>
+    <meta property="og:title" content="Aberdeen University Filmmaking Society">
+
+    <meta name="description" content="AUFS is a place for its members to learn filmmaking (by making films) while having fun and acquiring valuable skills.">
+    <meta property="og:description" content="">
+
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/cover.jpg">
+    
+    <%- include partials/head.ejs %>
+  </head>
+  <body>
+
+    <%- include partials/header.ejs %>
+    <main>
+        <%- homepageinsert %>
+    <% if(locals.heropost) { %>
+    <section class="mobilemargin-none">
+      <a class="hero-anchor" href="<% if (heropost.redirect) { %><%= heropost.redirect %><% } else { %>/posts/<%= heropost.id %><% } %>">
+      <div class="hero-container" >
+          <% if(heropost.image && heropost.image.full) { %>
+          <div class="hero-imagecontainer">
+            <img class="hero-image" src="<%= heropost.image.full %>" <% if(heropost.image.caption) { %>alt="<%= heropost.image.caption %>"<% } %>>
+              <div class="hero-gradient"></div>
+            </div>
+            <% } %>
+        <div class="hero-text" style="position:absolute;bottom:0; padding:12px;">
+          <div class="hero-title"><%= heropost.title %></div>
+          <div class="hero-subtitle"><%= heropost.subtitle %></div>
+          <div class="hero-date"><%= heropost.details %></div>
+        </div>
+      </div>
+    </a>
+    </section>
+    <% } %>
+    <% if(locals.posts) { %>
+    <section class="mobilemargin-none">
+      <div class="allposts">
+      <div class="posts-container" >
+        <% posts.forEach(post=>{ %>
+          <a class="post-anchor" href="<% if (post.redirect) { %><%= post.redirect %><% } else { %>/posts/<%= post.id %><% } %>">
+            <div class="post-container" style="">
+                <% if(post.image && post.image.thumb) { %>
+                <div class="post-imagecontainer">
+                  <img class="post-image" src="<%= post.image.thumb %>" <% if(post.image.caption) { %>alt="<%= post.image.caption %>"<% } %>>
+                    <div class="post-gradient"></div>
+                  </div>
+                  <% } %>
+              <div class="post-text" style="position:absolute;bottom:0; padding:12px;">
+                <div class="post-title"><%= post.title %></div>
+                <div class="post-subtitle"><%= post.subtitle %></div>
+                <div class="post-date"><%= post.details %></div>
+              </div>
+            </div>
+          </a>
+          <% }); %>
+      </div>
+      </div>
+      <a href="/posts" class="link-viewall mobilemargin-right">VIEW ALL&nbsp;<i class="fas fa-arrow-right"></i></a><br>
+    </section>
+    <% } %>
+    <% if(locals.films) { %>
+    <section class="mobilemargin-none">
+      <div class="mobilemargin-right mobilemargin-left">
+          <h1 class="sectionheader">OUR FILMS</h1>
+          <p>These are the shorts created by our members during the term. AUFS provides opportunities and ressources, however the content of the movies is entirely up to our members!</p>
+      </div>
+
+ <div class="carousell mobilepadding-left">
+    <% function formatDate(e){var r=e.getMonth(),t=e.getFullYear();return["January","February","March","April","May","June","July","August","September","October","November","December"][r]+" "+t} %>
+    
+   <% films.forEach(film=>{ %>
+      <a class="film-anchor" href="/films/<%= film.slug %>">
+          <div class="film-container">
+              <div class="film-imagecontainer">
+                <img class="film-image" src="<% if(film.youtubeid) { %>https://i.ytimg.com/vi/<%= film.youtubeid %>/mqdefault.jpg<% } else { %>/images/blankthumbnail.png<% } %>">
+              </div>
+              <div class="film-text">
+                  <div class="film-title"><%= film.title %></div>
+                  <div class="film-details"><%= formatDate(new Date(Number.parseInt(film.date))) %></div>
+              </div>
+            </div>
+       </a>
+    <% }); %>
+     </a>
+   </div>
+   <a href="/films" class="link-viewall mobilemargin-right" style="color:white;float:right;margin-top:12px;text-decoration: none;">VIEW ALL&nbsp;<i class="fas fa-arrow-right"></i></a><br>
+    </section>
+    <% } %>
+    <section class="mobilemargin-none">
+      <div class="mobilemargin-right mobilemargin-left">
+        <h1 class="sectionheader">AUFS PRODUCTIONS</h1>
+        <p>This is a more serious branch of the society; a subset of our members will spend the entire year in a more serious and intensive environment, creating a movie that is voted upon at the beginning of the year. <a style="color:white;" href="/productions">More Info</a></p>
+    </div>
+        <div class="carousell carousell-productions mobilepadding-left">
+            <% if(productionsfilms) { productionsfilms.forEach(film=>{ %>
+            <a class="film-anchor" href="/films/<%= film.slug %>">
+               <div class="film-container">
+                   <div class="film-imagecontainer">
+                     <img class="film-image" src="<% if(film.poster && film.poster.thumb) { %><%= film.poster.thumb %><% } else { %>/images/blankposter.png<% } %>">
+                   </div>
+                   <div class="film-text">
+                      <div class="film-title"><%= film.title %></div>
+                      <div class="film-details"><%= formatDate(new Date(Number.parseInt(film.date))) %></div>
+                  </div>
+                 </div>
+            </a>
+            <% }); } %>
+            </div>
+      </section>
+    </main>
+      <%- include partials/footer.ejs %>
+  </body>
+</html>

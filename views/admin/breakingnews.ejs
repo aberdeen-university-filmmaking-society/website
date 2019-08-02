@@ -1,0 +1,127 @@
+<%- include header.ejs %>
+<style>
+        .toggle + label {
+            width:80px;
+            height:40px;
+            border-radius: 40px;
+        }
+        input.toggle + label:after {
+  width: 42px;
+  background-color: #fff;
+  border-radius: 100%;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s;
+}
+input.toggle:checked + label:after {
+  margin-left: 40px;
+}
+input.toggle + label:before {
+    border-radius: 20px;
+}
+input.toggle:checked + label:before {
+    background-color: rgb(129, 0, 0);
+}
+.togglecontainer{
+    margin-left:50%;
+    transform: translateX(-44px);
+}
+.bn-togglelabel{
+    font-size:16px;
+    display: block;
+    font-weight: bold;
+    text-align: center;
+    width:100%;
+    user-select: none;
+    cursor: pointer;
+}
+.togglecontainercontainer{
+    width:100%;
+    padding:12px;
+    background-color:rgba(0, 0, 0, 0.025);
+    box-sizing: border-box;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+    </style>
+<div class="section">
+<div class="sectionheader">Breaking News Banner</div>
+<div>
+        <p>If enabled, this banner will be displayed on every single page of the website, below the header.</p>
+    <div class="togglecontainercontainer">
+            <div class="togglecontainer">
+                    <div>
+                        <input id="showBreakingNews" class="toggle" type="checkbox" onchange="changedsettings()" <% if(settings.showresults){ %>checked<% } %>>
+                        <label for="showBreakingNews"></label>
+                    </div>
+                </div>
+                <label class="bn-togglelabel" for="showBreakingNews">SHOW BANNER</label>
+                <p style="opacity:0.5;margin:0 12px;text-align:center;">Banner will only show at scheduled times</p>
+    </div>
+    <button class="smallbtn" onclick="reset()">RESET FIELDS</button><br>
+    <input id="breakingnews-title" type="text" style="font-weight: bold;" placeholder="Title" value="<%= breakingnews.title %>">
+    <input id="breakingnews-subtitle" type="text" placeholder="Subtitle" value="<%= breakingnews.subtitle %>">
+    <input id="breakingnews-url" type="text" placeholder="URL" value="<%= breakingnews.url %>">
+    Starting time:
+    <input id="breakingnews-start" type="text" value="<%= breakingnews.start %>">
+    Ending time:
+    <input id="breakingnews-end" type="text" value="<%= breakingnews.end %>">
+    <button class="bigbtn" onclick="save()">SAVE</button>
+    <script>
+        const breakingnews_start = flatpickr("#breakingnews-start",
+            {
+                enableTime: true,
+                dateFormat: "d/m - H:i",
+                time_24hr: true,
+                onReady() { this.showTimeInput = true }
+            });
+            var today = new Date();
+            var tomorrow = new Date();
+            tomorrow.setDate(today.getDate()+1);
+            const breakingnews_end = flatpickr("#breakingnews-end",
+            {
+                enableTime: true,
+                dateFormat: "d/m - H:i",
+                time_24hr: true,
+                onReady() { this.showTimeInput = true }
+            });
+        function reset(){
+            $("#breakingnews-title").val("");
+            $("#breakingnews-subtitle").val("");
+            $("#breakingnews-url").val("");
+            breakingnews_start.setDate(Date.now());
+            var today = new Date();
+            var tomorrow = new Date();
+            tomorrow.setDate(today.getDate()+1);
+            breakingnews_end.setDate(tomorrow);
+        }
+        function save(){
+            $.post('/admin/breakingnews', {
+                    title: $("#breakingnews-title").val(),
+                    subtitle: $("#breakingnews-subtitle").val(),
+                    url: $("#breakingnews-url").val(),
+                    start: breakingnews_start.selectedDates[0],
+                    end: breakingnews_end.selectedDates[0] });
+        }
+        function changedsettings(){
+            $.ajax({
+                type: "POST",
+                url: '/admin/settings',
+                contentType: "application/json",
+                async: false,
+                //json object to sent to the authentication url
+                data: JSON.stringify({
+                    key: "showbreakingnews",
+                    value: $("#showBreakingNews").is(":checked")
+                }),
+                success: function (res) {
+
+                },
+                error: function (res) {
+
+                },
+            });
+        }
+        </script>
+</div>
+</div>

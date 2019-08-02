@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Results</title>
+  <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+    integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+    integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+  <script src="/javascripts/isotope.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/2.0.5/velocity.min.js"
+    integrity="sha256-NtPQd/Jy7Ze2E72YS8WJDGMu6xFYomLYibE0hpyLTjs=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.2/howler.min.js"
+    integrity="sha256-El7dyxdVp1e1v0xgjrrpzr5+BO29pwP0Qfl40VDffiI=" crossorigin="anonymous"></script>
+
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link rel='stylesheet' href='/stylesheets/common.css' />
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600" rel="stylesheet">
+  <style>
+    h1 {
+      text-align: center;
+      font-size: 48px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      opacity: 0.5;
+      margin: 0;
+    }
+
+    h3 {
+      margin: 0;
+    }
+
+    h4 {
+      margin: 0;
+    }
+
+    h5 {
+      margin: 0;
+    }
+
+    .options-container {
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .graph-element {
+      width: 100%;
+      margin: auto;
+    }
+
+    .graph-element h4 {
+      font-size: 28px;
+      margin-right: -78px;
+      font-weight: normal;
+    }
+
+    .graph-element h5 {
+      font-size: 14px;
+      margin-right: -78px;
+      font-weight: normal;
+      opacity: 0.5;
+    }
+
+    .graph-element {
+      padding: 12px;
+      padding-right: 120px;
+      box-sizing: border-box;
+      display: flex;
+    }
+    .graph-image{
+      object-fit: cover;
+      width:96px;
+      height:96px;
+      margin-right: 12px;
+      border-radius: 4px;
+      margin-top:6px;
+    }
+    .graph-element>div {
+      flex-grow:1;
+      position: relative;
+    }
+
+    @keyframes pending {
+      0% {
+        width: 0%;
+      }
+
+      50% {
+        width: 100%;
+      }
+
+      100% {
+        width: 0%;
+      }
+    }
+
+    .graph-bar {
+      margin-top: 6px;
+      margin-bottom: 6px;
+      background-color: white;
+      height: 24px;
+      transition: width 300ms;
+      transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+
+    .graph-element.pending .graph-bar {
+      animation-name: pending;
+      animation-duration: 1.739s;
+      animation-iteration-count: infinite;
+      animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    .graph-element.pending.slower .graph-bar {
+      animation-name: pending;
+      animation-duration: 2s;
+      animation-iteration-count: infinite;
+      animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+
+    .graph-element.pending .graph-votecount {
+      visibility: hidden;
+    }
+
+    .graph-element.pending .graph-percent {
+      visibility: hidden;
+    }
+
+    .graph-percent {
+      font-size: 20px;
+      position: absolute;
+      transition: left 300ms;
+      transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+
+    .graph-votecount {
+      font-size: 14px;
+      opacity: 0.5;
+    }
+
+    .results {
+      margin-top: 24px;
+      margin-bottom: 88px;
+    }
+
+    #connectedcount {
+      font-weight: normal;
+      opacity: 0.75;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      padding: 24px;
+    }
+
+    @keyframes newvote {
+      0% {
+        transform: scale(1.5);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 0.75;
+      }
+    }
+
+    @keyframes newvote2 {
+      0% {
+        opacity: 0.1;
+      }
+
+      100% {
+        opacity: 0;
+      }
+    }
+
+    #votecount {
+      font-weight: normal;
+      opacity: 0.75;
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      padding: 24px;
+    }
+
+    #votecount.run-animation {
+      animation: newvote 500ms 1;
+      animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);
+    }
+
+    #whiteoverlay {
+      background: white;
+      opacity: 0;
+      position: fixed;
+      height: 100%;
+      width: 100%;
+      z-index: -1;
+    }
+
+    #whiteoverlay.run-animation {
+      animation: newvote2 500ms 1;
+      animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);
+    }
+    .thirdgradient{
+      background: radial-gradient(rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 1));
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: -2;
+    opacity:0;
+    transition: opacity;
+    }
+    .thirdgradient.dramatic{
+      opacity:0.5;
+    }
+    .faded{
+      opacity:0.6;
+    }
+    #resultcontainer{
+      position:absolute;
+      display: flex;
+      flex-direction: column;
+      /*align-items: center;
+      justify-content: center;*/
+      width:100%;
+      height: 100%;
+    }
+    .hidden{
+      display:none !important;
+    }
+    #resultcontainer>div{
+      margin: auto;
+      width: 100%;
+    }
+    #resultcontainer[data-votestate='armed'] .graph-container{
+      display: none;
+    }
+    #questionHeader{
+      align-self: flex-start;
+      margin-top:32px;
+    }
+    .dramaticgradient{
+      background: linear-gradient(45deg, rgba(58,20,142,0.75) 0%, rgba(120,15,108,0.5) 100%);
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      z-index:-4;
+    }
+    .firstgradient{
+      transition:opacity 500ms;
+    }
+    body.dramatic .firstgradient{
+      opacity:0;
+    }
+    body.dramatic h1{
+      font-weight: normal;
+      opacity:0.75;
+    }
+    body.dramatic h2{
+      font-weight: 100;
+    }
+    body.dramatic #connectedcount{
+      opacity:0.25;
+    }
+    body.dramatic #votecount{
+      opacity:0.25;
+    }
+    body.dramatic .graph-bar{
+      opacity:0.5;
+    }
+  </style>
+  <script>
+    // transition-to-from-auto 0.5.2
+    // https://github.com/75lb/transition-to-from-auto
+    // Copyright 2015 Lloyd Brookes <75pound@gmail.com>
+    !function(e,t){"use strict";function n(e,t){var n,o,i=e.element,a=e.val,s=e.prop,l=i.style;if(!d)return l[s]=a;if(i.hasAttribute(u))i.removeEventListener(f,t.l);else{if(l[d]="none",n=r(i)[s],l[s]="auto",o=r(i)[s],n===a||"auto"===a&&n===o)return;t.auto=o,i.setAttribute(u,1),l[s]=n,i.offsetWidth,l[d]=e.style}l[s]="auto"===a?t.auto:a,t.l=function(e){e.propertyName===s&&(i.removeAttribute(u),i.removeEventListener(f,t.l),"auto"===a&&(l[d]="none",l[s]=a))},i.addEventListener(f,t.l)}function o(e){var o,i,r=e.element;"string"==typeof r&&(r=t.querySelector(r)),r=e.element=r instanceof Node?r:!1,e.prop=e.prop||"height",e.style=e.style||"",r&&(i=a.indexOf(r),~i?o=s[i]:(o={},a.push(r),s.push(o)),n(e,o))}var i,r=e.getComputedStyle,u="data-ttfaInTransition",a=[],s=[],d=!1,f=!1,l=t.createElement("a").style;void 0!==l[i="webkitTransition"]&&(d=i,f=i+"End"),void 0!==l[i="transition"]&&(d=i,f=i+"end"),o.prop=d,o.end=f,"object"==typeof module&&module.exports?module.exports=o:"function"==typeof define&&define.amd?define(function(){return o}):e.transition=o}(window,document);
+  </script>
+</head>
+
+<body style="background-color:black;" <% if(settings.votingmusic==2) { %> class="dramatic"<% } %>>
+  <div class="dramaticgradient"></div>
+  <div class="firstgradient"></div>
+  <div class="secondgradient"></div>
+  <div class="thirdgradient"></div>
+  <div id="whiteoverlay"></div>
+  <div id="placeholder" <% if(locals.vote!=undefined) { %>class="hidden" <% } %>>
+    <img class="logo" src="/images/logo.svg">
+    <span id="placeholdertext">There is currently no active vote</span>
+  </div>
+      <div id="resultcontainer" style="width:100%;" class="<% if(locals.vote==undefined) { %>hidden<% } %>" data-votestate="none">
+        <div>
+        <div id="questionHeader">
+          <h1 id="title"><% if(locals.vote!=undefined && vote.title != undefined) { %><%= vote.title %><% }%></h1>
+          <h2 id="subtitle"><% if(locals.vote!=undefined && vote.subtitle != undefined) { %><%= vote.subtitle %><% } %></h2>
+        </div>
+        <div class="results">
+          <div id="av-options" class="options-container">
+    
+          </div>
+        </div>
+      </div>
+      </div>
+  
+  <b id="fraudWarning" style="display:none;position: fixed;bottom:48px;width:100%;font-size:32px;color:white;opacity:0.5;text-align: center;margin:auto;">FRAUDULENT VOTING IS ENABLED</b>
+  <h3 id="connectedcount">0 Connected</h3>
+  <h3 id="votecount">0 Votes</h3>
+  <script>
+    <% if (locals.activeId != undefined) { %>
+      var activevoteid = <%= activeId %> ; 
+      <% } else { %>
+      var activevoteid; 
+      <% } %>
+    const socket = io.connect('/', {
+      page: "result"
+    });
+
+    var votestate = 'none';
+    function newvotestate(newstate){
+      votestate=newstate;
+      $("#resultcontainer").attr("data-votestate",newstate);
+    }
+    var voteresults;
+    var activevote;
+    var totalvotecount;
+    var realsettings = JSON.parse('<%- realsettings %>');
+    if(realsettings.multiplevotes) $("#fraudWarning").show(0);
+    else $("#fraudWarning").hide(0);
+    var sound_start = new Howl({
+      src: ['/sounds/start.mp3'],
+      loop: false,
+    });
+
+    var sound_stress = new Howl({
+      src: ['/sounds/stress.mp3'],
+      loop: true,
+    });
+    if(realsettings.votingmusic == 2){
+      console.log()
+      sound_stress = new Howl({
+      src: ['/sounds/muchstress.mp3'],
+      loop: true,
+    });
+    }
+    var sound_interrogation = new Howl({
+      src: ['/sounds/interrogation.mp3'],
+      loop: false,
+    });
+    var sound_answer = new Howl({
+      src: ['/sounds/answer.mp3'],
+      loop: false,
+    });
+    
+    function addoptions(options) {
+      let position = 0;
+      $("#av-options").html('');
+      $("#av-options").isotope('destroy');
+      options.forEach(option => {
+        position++;
+        var imagetag = "";
+        var hasimage = "";
+        if(option.image){
+          imagetag = "<img class='graph-image' src='"+option.image+"'>"
+          hasimage = "hasimage";
+        }
+        $("#av-options").append(`<div class="graph-element ${hasimage}" data-id="${option.title}" data-position="${position}">
+          ${imagetag}
+                  <div class="graph-text">
+                      <h4>${option.title}</h4>
+                      <h5>${option.subtitle}</h5>
+                      <div class="graph-container">
+                        <span class="graph-percent"></span>
+                        <div class="graph-bar" style="width:0%"></div>
+                      </div>
+                      <span class="graph-votecount">&nbsp;&nbsp;</span>
+                  </div>
+              </div>`);
+      });
+      $("#av-options").isotope({
+        // options
+        itemSelector: '.graph-element',
+        getSortData: {
+          position:  function( elem ) {
+            console.log("position of " + $(elem).data('id') + " = "+$( elem ).data('position'))
+    return $( elem ).data('position');
+  }
+        },
+        sortBy: "position",
+        transitionDuration: 300
+      });
+    }
+    
+    socket.on('vote.start', function (vote) {
+      activevoteid = vote.id;
+      activevote = vote;
+      newvotestate("active");
+      $(".thirdgradient").fadeTo(200,0);
+      $("#title").text(vote.title);
+      $("#subtitle").text(vote.subtitle);
+      $("#placeholder").addClass("hidden");
+      $("#resultcontainer").removeClass("hidden");
+      $("#av-options").html('');
+      if ($("#av-options [data-id='" + vote.options[0].title + "']").length == 0)
+        addoptions(vote.options);
+      if (!realsettings.showresults) {
+        var animationinterval = 217;
+        if(realsettings.votingmusic == 2) animationinterval=500;
+        $("#av-options .graph-element").each(function (index, el) {
+          setTimeout(function () {
+            $(el).addClass("pending");
+            if(realsettings.votingmusic == 2){$(el).addClass("slower");}else{$(el).removeClass("slower")}
+          }, index * animationinterval);
+        });
+      }
+      if (realsettings.votingmusic > 0) {
+        sound_stress.stop();
+        sound_stress.play();
+        sound_stress.fade(0,1,500);
+      }
+    });
+    var displayedResultsId;
+    
+    socket.on('vote.result.show', function (id) {
+      if (activevote.id == id) {
+        newvotestate("results");
+        displayedResultsId = id;
+        showresults(activevote, voteresults, totalvotecount, realsettings.dramaticreveal);
+      }
+    });
+    socket.on('vote.stop', function (id) {
+      newvotestate("none");
+      if (displayedResultsId != id) {
+        displayedResultsId = undefined;
+        activevoteid = undefined;
+        $("#placeholder").removeClass("hidden");
+        $("#resultcontainer").addClass("hidden");
+        $(".thirdgradient").fadeTo(200,0);
+        sound_stress.stop();
+      }
+    });
+    socket.on('vote.arm.start', function (vote) {
+      newvotestate("armed");
+      $(".thirdgradient").fadeTo(200,0);
+      $("#title").text(vote.title);
+      $("#subtitle").text(vote.subtitle);
+      $("#placeholder").addClass("hidden");
+      $("#resultcontainer").removeClass("hidden");
+      addoptions(vote.options);
+      sound_stress.stop();
+    });
+    socket.on('vote.arm.stop', function (id) {
+      newvotestate("none");
+      $("#placeholder").removeClass("hidden");
+      $("#resultcontainer").addClass("hidden");
+    });
+
+    function compare(a, b) {
+      if (a.result > b.result) {
+        return -1;
+      }
+      if (a.result < b.result) {
+        return 1;
+      }
+      return 0;
+    }
+    socket.on('other.connectedcount', function (count) {
+      $("#connectedcount").text(count + " connected");
+    });
+    socket.on('other.settings.update', function (newsettings) {
+      realsettings = newsettings;
+      if(realsettings.multiplevotes){
+        $("#fraudWarning").show(0);
+      } 
+      else{
+        $("#fraudWarning").hide(0);
+      } 
+      sound_stress.stop();
+      if(realsettings.votingmusic == 2){
+        $("body").addClass("dramatic");
+        sound_stress = new Howl({
+          src: ['/sounds/muchstress.mp3'],
+          loop: true,
+        });
+      }
+      else{
+        $("body").removeClass("dramatic");
+        sound_stress = new Howl({
+          src: ['/sounds/stress.mp3'],
+          loop: true,
+        });
+      }
+      if (votestate=="active") {
+        if(realsettings.votingmusic > 0){
+          sound_stress.play();
+        }
+        if (realsettings.showresults) {
+          showresults(activevote, voteresults, totalvotecount);
+        } else {
+          $("#av-options .graph-element").each(function (index, el) {
+            setTimeout(function () {
+              $(el).addClass("pending");
+            }, index * 108);
+          });
+        }
+      }
+    });
+    socket.on('vote.result.update', function (vote, results, totalvotes, show) {
+      var totalvotetext = "No votes";
+      if (totalvotes > 0) {
+        if (totalvotes == 1) totalvotetext = "1 vote";
+        else totalvotetext = totalvotes + " votes";
+      }
+      if ($("#votecount").text() != totalvotetext) {
+        $("#votecount").text(totalvotetext);
+        element = document.getElementById("votecount");
+        element.classList.remove("run-animation");
+        void element.offsetWidth;
+        element.classList.add("run-animation");
+        element = document.getElementById("whiteoverlay");
+        element.classList.remove("run-animation");
+        void element.offsetWidth;
+        element.classList.add("run-animation");
+      }
+
+      if (vote.id == activevoteid) {
+        voteresults = results;
+        activevote = vote;
+        totalvotecount = totalvotes;
+        if (realsettings.showresults) showresults(vote, results, totalvotes);
+      };
+    });
+    function randomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min) ) + min;
+}
+    function showresults(vote, results, totalvotes, dramaticreveal) {
+      $("#av-options .graph-element").removeClass("pending");
+      var timeoutdelay = 0;
+      $(".graph-percent").text("0%");
+      if (realsettings.dramaticreveal){
+        if(realsettings.votingmusic ==2){
+          timeoutdelay = randomNumber(4000, 16000);
+        }
+        else{
+          timeoutdelay = randomNumber(3000,12000);
+        }
+        
+        console.log("timeout delay is " + timeoutdelay);
+        $(".thirdgradient").attr("style", "transition-duration:1000ms;");
+        $(".thirdgradient").addClass("dramatic");
+      }
+      if (realsettings.votingmusic>0) {
+        sound_stress.fade(1, 0, 200);
+        sound_interrogation.volume(1);
+        sound_interrogation.play();
+      }
+      setTimeout(function () {
+        var secondtimeout = 0;
+        if(realsettings.votingmusic>0){
+          sound_interrogation.fade(1, 0, 300)
+          sound_answer.play();
+          secondtimeout=1200;
+        }
+        setTimeout(function () {
+          $(".thirdgradient").attr("style", "transition-duration:200ms;");
+          $(".thirdgradient").removeClass("dramatic")
+          var sortedResults = [];
+          var mostvotes = 0;
+          results.forEach(option => {
+            for (var i in vote.options) {
+              if (vote.options[i].title == option[0]) {
+                vote.options[i].result = option[1];
+                var percentnumber = (Math.round(((option[1] * 1000) / totalvotes)) / 10);
+                vote.options[i].percent = percentnumber;
+                vote.options[i].displaypercent = percentnumber+"%";
+                var singleunit="vote";
+                var multipleunits="votes";
+                if(vote.type=="rank"){
+                  singleunit="point";
+                  multipleunits="points";
+                }
+                vote.options[i].votestext = "No "+multipleunits;
+                  if (option[1] > 0) {
+                    if (option[1] == 1) vote.options[i].votestext = "1 "+singleunit;
+                    else vote.options[i].votestext = Math.round(option[1] * 100) / 100  + " "+multipleunits;
+                }
+                
+                sortedResults.push(vote.options[i]);
+                break;
+              }
+            }
+          });
+          sortedResults.sort(compare);
+          if ($("[data-id='" + sortedResults[0].title + "']").length == 0) {
+            $("#av-options").html('');
+            let position = 0;
+            addoptions(sortedResults);
+          } else {
+            let position = 0;
+            sortedResults.forEach(option => {
+              position++;
+              $("#av-options [data-id='" + option.title + "']").data("position", position)
+            });
+            setTimeout(function(){
+              $("#av-options").isotope('updateSortData').isotope();
+            },100)
+            var dropinpercent = false;
+            var previouspercent=-1;
+            sortedResults.forEach(option => {
+              var existingoption = $("#av-options [data-id='" + option.title + "']");
+              if(option.percent<previouspercent || dropinpercent){
+                  existingoption.addClass("faded");
+                  dropinpercent=true;
+              }
+              else{
+                existingoption.removeClass("faded");
+              }
+              var leftmargin="0px;";
+              if(option.displaypercent!="0%") leftmargin="8px"
+              existingoption.find(".graph-bar").attr("style", "width:" + option.displaypercent);
+              existingoption.find(".graph-percent").text(option.displaypercent).attr("style", `left:${option.displaypercent};margin-left:${leftmargin}`);
+              existingoption.find(".graph-votecount").text(option.votestext);
+              previouspercent = option.percent;
+            });
+          }
+        }, secondtimeout);
+      }, timeoutdelay);
+    }
+  </script>
+</body>
+
+</html>

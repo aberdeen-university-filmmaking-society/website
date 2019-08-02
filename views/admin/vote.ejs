@@ -1,0 +1,294 @@
+<%- include header.ejs %>
+ <div class="section">
+        <div class="sectionheader">New vote</div>
+        <input id="creatorTitle" type="text" style="font-weight: 600" placeholder="Title*" required><br>
+        <input id="creatorSubtitle" type="text" placeholder="Subtitle"><br>
+        <div class='switch'>
+            <div class='type' title="Everyone gets a single vote, the winner is the one with the most votes">
+                <input checked id='votetype-fpp' name='q' type='radio' value='votetype-fpp'>
+                <label for='votetype-fpp'><i class="fas fa-vote-yea">&nbsp;&nbsp;</i>Standard (FPP)</label>
+            </div>
+            <div class='type' title="Everyone orders the candidates from most to least favourite.">
+                <input id='votetype-rank' name='q' type='radio' value='votetype-rank'>
+                <label for='votetype-rank'><i class="fas fa-list-ol">&nbsp;&nbsp;</i>Ranked</label>
+            </div>
+        </div>
+        <br>
+        <label>Options</label>
+        <div id="optionlist">
+            <div id="optioncontainer_template" class="optioncontainer">
+                <button class="removebutton" onclick="removeoption(this)"><i class="fas fa-times"></i></button>
+                <input type="text" class="optiontitle" placeholder="title*" required><br>
+                <input type="text" class="optionsubtitle" placeholder="subtitle"><br>
+                <input type="text" class="optionimage" placeholder="image url">
+            </div>
+            <div class="optioncontainer">
+                <button class="removebutton hidden" onclick="removeoption(this)"><i class="fas fa-times"></i></button>
+                <input type="text" class="optiontitle" placeholder="title*" required><br>
+                <input type="text" class="optionsubtitle" placeholder="subtitle"><br>
+                <input type="text" class="optionimage" placeholder="image url">
+            </div>
+            <div class="optioncontainer">
+                <button class="removebutton hidden" onclick="removeoption(this)"><i class="fas fa-times"></i></button>
+                <input type="text" class="optiontitle" placeholder="title*" required><br>
+                <input type="text" class="optionsubtitle" placeholder="subtitle"><br>
+                <input type="text" class="optionimage" placeholder="image url">
+            </div>
+            <button id="addOption" class="addoption" onclick="addoption()">+</button>
+        </div>
+        <button class="bigbtn" id="createvote" onclick="createvote()"><i
+                class="fas fa-save">&nbsp;&nbsp;</i>SAVE</button>
+        <button class="bigbtn" id="armvote" onclick="createvote('arm')"><i
+                class="fas fa-hourglass-start">&nbsp;&nbsp;</i>ARM</button>
+        <button class="bigbtn" id="startvote" style="font-weight: 600;" onclick="createvote('start')"><i
+                class="fas fa-play">&nbsp;&nbsp;</i>START NOW</button>
+    </div>
+    <div class="section sectionstretch" style="display:flex;flex-direction: column;">
+        <div class="sectionheader">Settings</div>
+        <div>
+        <div class="togglecontainer">
+            <div>
+                <input id="settingsShowLive" class="toggle" type="checkbox" onchange="changedsettings('showresults',$('#settingsShowLive').is(':checked'))" <% if(settings.showresults){ %>checked<% } %>>
+                <label for="settingsShowLive"></label>
+            </div>
+            <label for="settingsShowLive">Display results in real-time</label>
+        </div>
+        <div class="togglecontainer">
+                <div>
+                    <input id="settingsMultiplevotes" class="toggle" type="checkbox" onchange="changedsettings('multiplevotes',$('#settingsMultiplevotes').is(':checked'))" <% if(settings.multiplevotes){ %>checked<% } %>>
+                    <label for="settingsMultiplevotes"></label>
+                </div>
+                <label for="settingsMultiplevotes">Allow fraudulent voting</label>
+            </div>
+            <div class="togglecontainer">
+                    <label for="settingsDramaticmusic">Stressful music:</label>
+                    <select id="settingsMusic" onchange="changedsettings('votingmusic',$(this).val());">
+                        <option value="0">Disabled</option>
+                        <option value="1">Ambient</option>
+                        <option value="2">Intense</option>
+                    </select>
+                </div>
+                <div class="togglecontainer">
+                        <div>
+                            <input id="settingsDramaticreveal" class="toggle" type="checkbox" onchange="changedsettings('dramaticreveal',$('#settingsDramaticreveal').is(':checked'))" <% if(settings.dramaticreveal){ %>checked<% } %>>
+                            <label for="settingsDramaticreveal"></label>
+                        </div>
+                        <label for="settingsDramaticreveal">Dramatic reveal delay</label>
+                    </div>
+            <div class="av-stats">
+                <p>
+                        <strong>Connected:&nbsp;</strong><span id="av-connectedcount">0</span><br>
+                        <strong>Votes:&nbsp;</strong><span id="av-votecount">0</span><br>
+                </p>
+            </div>
+        </div>
+        <button class="bigbtn" style="margin-top:auto;font-weight: bold;" onclick="showresults()">STOP AND SHOW RESULTS</button>
+
+    </div>
+    <div class="section sectionstretch">
+        <div class="sectionheader">Saved</div>
+        <ul id="allsavedvotes" empty="NO SAVED VOTES" class="savedvotes">
+            <% if(votes != undefined && votes.size>0) { Array.from(votes.keys()).reverse().forEach(function(id) { var vote = votes.get(id) %>
+            <% if(id==activeId) { %>
+            <li class="savedvote active" data-id="<%= id %>">
+                <% } else if(id==armedId) { %>
+            <li class="savedvote armed" data-id="<%= id %>">
+                <% } else { %>
+            <li class="savedvote" data-id="<%= id %>">
+                <% } %>
+                <div>
+                    <% var voteicon = "fa-vote-yea"; if(vote.type=='rank') voteicon = "fa-list-ol"; %>
+                    <h4><i class="fas <%= voteicon %>">&nbsp;&nbsp;</i><%= vote.title %></h4>
+                    <h5><%= vote.subtitle %></h5>
+                    <div class="actions">
+                        <button onclick="votelistRemove(<%= id %>)"><i class="far fa-trash-alt"></i></button>
+                        <button class="armbtn" onclick="votelistArm(<%= id %>)"><i
+                                class="fas fa-hourglass-start"></i></button>
+                        <button class="startbtn" onclick="votelistStart(<%= id %>)"><i class="fas fa-play"></i></button>
+                    </div>
+                </div>
+            </li>
+            <% }); } %>
+        </ul>
+    </div><br><br>
+    <script>
+        var armedItems = [];
+        <% if(locals.activeId!=undefined) { %>
+        var activevoteid = <%= activeId %>;
+        <% } else { %>
+        var activevoteid;
+        <% } %>
+
+        function showresults(){
+            $.post("/admin/vote/show/"+activevoteid);
+        }
+
+        function votelistRemove(id) {
+            $.post("/admin/vote/remove/" + id);
+        }
+
+        function votelistStart(id) {
+            if ($("[data-id='" + id + "']").hasClass("active"))
+                $.post("/admin/vote/stop/" + id);
+            else
+                $.post("/admin/vote/start/" + id);
+        }
+        function restartvote() {
+            var activevotecopy=activevoteid;
+            $.ajax({
+                type: "POST",
+                url: '/admin/vote/stop/' + activevoteid,
+                dataType: 'text',
+                async: false,
+                success: function (res) {
+                    $.post("/admin/vote/start/" + activevotecopy);
+                },
+                error: function (res) {
+                    $.post("/admin/vote/start/" + activevotecopy);
+                },
+            });
+        }
+
+        function votelistArm(id) {
+            if ($("[data-id='" + id + "']").hasClass("armed"))
+                $.post("/admin/vote/unarm/" + id);
+            else
+                $.post("/admin/vote/arm/" + id);
+        }
+
+        function addoption() {
+            $("#addOption").before($("#optioncontainer_template").clone().attr("id", ""))
+            updateRemoveButtons();
+        }
+
+        function removeoption(e) {
+            $(e).parent().remove();
+            updateRemoveButtons();
+        }
+
+        function updateRemoveButtons() {
+            var elements = $("#optionlist .optioncontainer:not('#optioncontainer_template')");
+            if (elements.length < 3) {
+                elements.children(".removebutton").addClass("hidden");
+            } else {
+                elements.children(".removebutton").removeClass("hidden");
+            }
+        }
+
+        function createvote(postop) {
+            var options = [];
+            var elements = $("#optionlist .optioncontainer:not('#optioncontainer_template')");
+            elements.each(i => {
+                options.push({
+                    title: $(elements[i]).children(".optiontitle").val(),
+                    subtitle: $(elements[i]).children(".optionsubtitle").val(),
+                    image: $(elements[i]).children(".optionimage").val()
+                })
+            });
+            var type = "fpp";
+            if ($("#votetype-rank").is(":checked")) {
+                type = "rank";
+            }
+            var voteobject = {
+                title: $("#creatorTitle").val(),
+                subtitle: $("#creatorSubtitle").val(),
+                type: type,
+                options: options,
+                operation: postop
+            };
+            console.log("created vote:")
+            console.log(voteobject);
+            $.ajax({
+                type: "POST",
+                url: '/admin/vote/create/' + postop,
+                dataType: 'json',
+                contentType: "application/json",
+                async: false,
+                //json object to sent to the authentication url
+                data: JSON.stringify(voteobject),
+                success: function (res) {
+                    console.log(res);
+                },
+                error: function (res) {
+                    if (res.errors != undefined) {
+                        var alertText = "";
+                        alert(res.errors.join("\n"));
+                    }
+                },
+            });
+        }
+        function changedsettings(key,value){
+            $.ajax({
+                type: "POST",
+                url: '/admin/settings',
+                dataType: 'json',
+                contentType: "application/json",
+                async: false,
+                //json object to sent to the authentication url
+                data: JSON.stringify({key:key, value:value}),
+                success: function (res) {
+                    console.log(res);
+                },
+                error: function (res) {
+                    if (res.errors != undefined) {
+                        var alertText = "";
+                        alert(res.errors.join("\n"));
+                    }
+                },
+            });
+        }
+        const socket = io();
+        socket.on('vote.create', function (vote) {
+            var voteicon = "fa-vote-yea"
+            if(vote.type=='rank') voteicon = "fa-list-ol";
+            var html = `<li class="savedvote" data-id="${vote.id}">
+                <h4><i class="fas ${voteicon}">&nbsp;&nbsp;</i>${vote.title}</h4>
+                <h5>${vote.subtitle}</h5>
+                <div class="actions">
+                    <button onclick="votelistRemove(${vote.id})"><i class="far fa-trash-alt"></i></button>
+                    <button class="armbtn" onclick="votelistArm(${vote.id})"><i class="fas fa-hourglass-start"></i></button>
+                    <button class="startbtn" onclick="votelistStart(${vote.id})"><i class="fas fa-play"></i></button>
+                </div>
+            </li>`
+            $("#allsavedvotes").prepend(html);
+        });
+        
+        socket.on('vote.delete', function (id) {
+            $("[data-id='" + id + "']").remove();
+        });
+        socket.on('vote.start', function (vote) {
+            activevoteid = vote.id;
+            $(".savedvote").removeClass("armed active");
+            $("[data-id='" + vote.id + "']").removeClass("armed").addClass("active");
+        });
+        socket.on('vote.stop', function (id) {
+            activevoteid = undefined;
+            $("[data-id='" + id + "']").removeClass("active");
+        });
+        socket.on('vote.arm.start', function (vote) {
+            $(".savedvote").removeClass("armed active");
+            $("[data-id='" + vote.id + "']").removeClass("active").addClass("armed");
+        });
+        socket.on('vote.arm.stop', function (id) {
+            $("[data-id='" + id + "']").removeClass("armed");
+        });
+        socket.on('other.connectedcount', function (count) {
+            $("#av-connectedcount").text(count);
+        });
+
+        function compare(a, b) {
+            if (a.result > b.result) {
+                return -1;
+            }
+            if (a.result < b.result) {
+                return 1;
+            }
+            return 0;
+        }
+        socket.on('vote.result.update', function (vote, results, totalvotes) {
+            if (vote.id == activevoteid) {
+                $("#av-votecount").text(totalvotes);
+            }
+        });
+    </script>
+<%- include footer.ejs %>

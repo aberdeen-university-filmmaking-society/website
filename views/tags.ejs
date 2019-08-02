@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><% if(tag.fullname) { %><%= tag.fullname %><% } else { %>#<%= tag.id %><% } %> | AUFS</title>
+    <title>Aberdeen University Filmmaking Society | AUFS</title>
+
+    <% if(tag.shortdesc) { %>
+    <meta name="description" content="<%= tag.shortdesc %>">
+    <meta property="og:description" content="<%= tag.shortdesc %>">
+    <% } %>
+
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/cover.jpg">
+
+
+    <%- include partials/head.ejs %>
+    <link rel='stylesheet' href='/stylesheets/niceselect.css' />
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+    integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+    <script src="/javascripts/niceselect.min.js"></script>
+  </head>
+  <body>
+    <style>
+      .taginput{
+        background-color:transparent;
+        border:none;
+        outline:none;
+        border-bottom: solid 1px rgba(255, 255, 255, 0.6);
+        padding:6px;
+        font-size:16px;
+        font-family: "Montserrat"
+      }
+      .taginput::placeholder{
+        color:rgba(255, 255, 255, 0.4);
+        font-style: italic;
+      }
+      .taginput:focus{
+        border-bottom: solid 1px rgba(255, 255, 255, 0.8);
+      }
+      .tagtitle{
+        font-size:32px;
+            font-weight: normal;
+            margin-top:0px;
+            color:white;
+      }
+      .tagdescription{
+        color:rgba(255, 255, 255, 0.6);
+      }
+    </style>
+    <%- include partials/header.ejs %>
+    <main>
+    <section style="color:rgba(255, 255, 255, 0.6);padding-top:24px;">
+    <% if(tag.fullname) { %>
+      <div>
+        <style>
+          .nice-select{
+            font-size:12px;
+            margin-bottom:-3px;
+            margin-left:4px;
+          }
+        </style>
+          <div style="font-size:12px;display: inline-block;">#<%= tag.id %></div>
+          <div style="display:inline-block;font-size:12px;">
+              <select onchange="updatefilter(this.value)">
+                <option value="all">films+posts</option>
+                <option value="films" <% if(filter=="films") {%>selected<% } %>>films</option>
+                <option value="posts" <% if(filter=="posts") {%>selected<% } %>>posts</option>
+              </select>
+          </div>
+      </div>
+      <div class="tagtitle" style="margin-top:24px;"><%= tag.fullname %></div>
+    <% } else { %>
+      <div class="tagtitle">#<%= tag.id %></div>
+      <div style="margin-bottom:24px;height:24px;">
+          <select onchange="updatefilter(this.value)">
+              <option value="all">films+posts</option>
+              <option value="films" <% if(filter=="films") {%>selected<% } %>>films</option>
+              <option value="posts" <% if(filter=="posts") {%>selected<% } %>>posts</option>
+            </select>
+      </div>
+    <% } if(tag.description) { %>
+      <div class="tagdescription" style="margin-bottom: 24px;"><%- tag.description %></div>
+    <% } %>
+
+    <% function formatDate(e){var r=e.getMonth(),t=e.getFullYear();return["January","February","March","April","May","June","July","August","September","October","November","December"][r]+" "+t} %>
+    <% var previousdate = ""; %>
+    <style>
+    .films-list>.groupheader:first-child{
+      margin-top:0;
+    }
+    </style>
+    <div class="posts-list films-list">
+    <% results.forEach(result=>{ %>
+        <% if(previousdate!=result.dateformatted) { previousdate = result.dateformatted %>
+            <div class="groupheader"><%= previousdate %></div>
+        <% }  %>
+        <% if(result.type=="film") { %>
+        <a class="film-anchor" href="/films/<%= result.slug %>">
+            <div class="film-container">
+                <div class="film-imagecontainer">
+                  <img class="film-image" src="<% if(result.youtubeid) { %>https://i.ytimg.com/vi/<%= result.youtubeid %>/mqdefault.jpg<% } else { %>/images/blankthumbnail.png<% } %>">
+                </div>
+                <div class="film-text">
+                    <div class="film-title"><%= result.title %></div>
+                </div>
+              </div>
+         </a>
+         <% } else { %>
+          <a class="post-anchor" style="flex-basis:100%;" href="<% if (result.redirect) { %><%= result.redirect %><% } else { %>/posts/<%= result.id %><% } %>">
+            <div class="post-container">
+                <% if(result.image && result.image.thumb) { %>
+                <div class="post-imagecontainer">
+                    <img class="post-image" src="<%= result.image.thumb %>"  <% if(result.image.caption) { %>alt="<%= result.image.caption %>" title="<%= result.image.caption %>"<% } %>>
+                </div>
+                <% } %>
+            </div>
+            <div class="post-sidetext">
+                    <div class="post-title"><%= result.title %></div>
+                    <div class="post-subtitle"><%= result.subtitle %></div>
+                    <div class="post-date"><%= result.details %></div>
+                </div>
+        </a>
+         <% } %>
+      <% }); %>
+    </div>
+    </section>
+  </main>
+    <%- include partials/footer.ejs %>
+    <script>
+      $("select").niceSelect();
+      function updatefilter(val){
+        if(val == "all") window.location = window.location.href.split('?')[0];
+        else window.location.search = "filter="+val;
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <title>About us | AUFS</title>
+      <meta property="og:title" content="About us">
+      <meta name="description" content="Aberdeen University Filmmaking Society is a place for its members to learn filmmaking (by making films) while having fun and acquiring valuable skills.">
+      <meta property="og:description" content="Aberdeen University Filmmaking Society is a place for its members to learn filmmaking (by making films) while having fun and acquiring valuable skills.">
+
+      <meta property="og:type" content="article"/>
+      <meta property="og:image" content="/images/cover.jpg">
+
+ <%- include partials/head.ejs %>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  </head>
+  <body>
+
+    <%- include partials/header.ejs %>
+    <main>
+    <section>
+      <style>
+        a[data-fancybox] img{
+          object-fit:cover;
+          width:100%;
+          height:100%;
+        }
+        .fancybox-bg{
+          background-color:rgba(0,0,0,0.8)
+        }
+        .img1{
+          float:left;
+          margin-right:12px;
+          width:210px;
+          height:262.5px;
+          margin-bottom:6px;
+        }
+        .img2container{
+          float:right;
+          height:100px;
+          margin-bottom:6px;
+          margin-left:12px;
+        }
+        .aboutsection{
+    display: block;
+    margin-bottom:24px;clear:both;overflow:auto;
+  }
+  .img4{
+    width:256px;
+    height:144px;
+    float:left;
+    margin-right:12px;
+    margin-top:18px;
+  }
+  .img4 img{
+    width:256px;
+    height:144px;
+  }
+@media screen and (max-width: 450px){
+  .img4{
+    width:100%;
+    margin-bottom:12px;
+    margin-right:0px;
+  }
+  .img4 img{
+    width:100%;
+  }
+}
+@media screen and (max-width: 400px){
+  .img1{
+    width:100%;
+    height:200px;
+  }
+  .img1 img{
+    object-position: top;
+  }
+}
+@media screen and (max-width: 350px){
+  .img2container{
+    float:none;
+    margin-left:0;
+  }
+}
+      </style>
+        <div class="pagetitle" style="margin-bottom:6px">About Us</div>
+        <p style="color:white;">AUFS is a place for its members to:</p>
+        <div class="clearfix">
+            <a class="img1" data-fancybox="images" data-fancybox-index="1" href="/images/about/1.jpg" style=""><img src="/images/about/1.jpg"></a>
+            <h3 style="margin-top:0px;">Learn filmmaking (by making films)</h3>
+        <p>We offer access to equipement, hold workshops, organize film challenges, and above all offer an opportunity for students to meet and share skills with each other.</p>
+        
+                <p>Every term, we form small groups which each aim to create a short film: actually getting out there and shooting is the best way to learn about filmmaking.</p>
+                <div class="img2container">
+                    <a data-fancybox="images" href="/images/about/3.jpg" style="height:100px;width:100px;"><img style="width:100px;" src="/images/about/3.jpg"></a>
+                    <a data-fancybox="images" href="/images/about/2.jpg" style="height:100px;width:100px;margin-left:6px;"><img style="width:100px;" src="/images/about/2.jpg"></a>
+    
+                </div>
+
+        <p>For the more ambitious students, you can join <a href="/productions">AUFS Productions</a>, a branch of the society that spends the whole year creating one short film which is good enough to be submitted to film festivals.</p>
+       
+      </div>
+        <div class="clearfix">
+            <h3>Have fun</h3>
+            <p>During the year we arrange various socials, ranging from pub/flat crawls to cinema outings. We also spend a weekend in late February at the Glasgow Film Festival.</p>
+            <p>In 20 years of existence, a countless number of life-long friendships (and even marriages) started in AUFS meetings and events. Nothing gets people closer together than the stress and fun of making a film!</p>    
+          </div>
+  <div class="clearfix">
+      <a data-fancybox="images" class="img4" href="/images/about/4.jpg"><img src="/images/about/4.jpg"></a>
+
+            <h3>Get into the film industry</h3>
+
+            <p>It's no secret that the film industry is extremely competitive and can be difficult to get into. Although not all our members wish to work in it, AUFS can serve as an extremely favourable place to train and acquire skills, network with society alumni, go on trips to networking events, and especially meet like-minded people.</p>
+          </div>
+          <div class="aboutsection">
+              <div class="pagetitle" style="margin-bottom:6px">History &amp; Awards</div>
+              <a data-fancybox="images"  href="/images/about/5.jpg" style="width:128px;height:103.3px;float:right;margin-left:12px;"><img style="width:128px;height:103.3px;" src="/images/about/5.jpg"></a>
+
+              <p>AUFS was founded in January 2000 by Euan Mackenzie. How and why did he found it? <a href="/about/founder">Nobody could explain better than him</a>, but in short he had a simple aim: set up a society which makes good films, and where people have fun and learn along the way.</p>
+              <p>The society has had its ups and downs, gone through a couple of rebrandings and quite a few recording formats (everything from tapes to sd cards), but the core spirit of the society remains the same: <b> help people make short films, have fun, and learn useful skills.</b></p>
+              <p>In the process AUFS has received several awards and signs of recognition:</p>
+              <ul>
+                <li><b>2013:</b> AUSA Alison Johnston Award</li>
+                <li><b>2014:</b> AUSA Most Accessible Society Award</li>
+                <li><b>2019:</b> Nominated for the National Societies Awards as Best Arts Society</li>
+              </ul>
+             
+  
+          </div>
+
+
+        <% if(locals.committee) { %>
+          <div class="pagetitle" style="margin-bottom:6px;text-align: center;margin:auto;"><%= committee.name %></div>
+          <style>
+            .com-list{
+              display:flex;
+              flex-wrap: wrap;
+              justify-content: space-evenly;
+            }
+            @supports (-ms-flow-from: thingy){
+              .com-list{
+                justify-content: space-around;
+              }
+            }
+            .com-member{
+              position:relative;
+            }
+            .com-memberavatar{
+              margin:auto;
+              display: block;
+              width: 96px;
+              height: 96px;
+              border-radius: 50%;
+              object-fit: cover;
+            }
+            .com-title{
+              margin-top:12px;
+              font-weight: bold;
+              text-align:center;
+              font-size:16px;
+            }
+            .com-member{
+              margin:16px;
+              flex-basis:26%;
+            }
+            .com-fullwidth{
+              flex-basis: 100%;
+            }
+            .com-name{
+              text-align:center;
+              color:rgba(255,255,255,0.5);
+            }
+            @media screen and (max-width: 600px){
+              .com-memberavatar{
+                width:74px;
+                height:74px;
+              }
+              .com-title{
+                font-size:14px;
+              }
+              .com-name{
+                font-size:12px;
+              }
+            }
+            @media screen and (max-width: 400px){
+              .com-member{
+                flex-basis:100%;
+                margin: 6px 0px;
+              }
+              .com-memberavatar{
+                width:48px;
+                height:48px;
+                margin-left:0;
+              }
+              .com-title{
+                position:absolute;
+                left:64px;
+                top:0px;
+                text-align: left;
+              }
+              .com-name{
+                position:absolute;
+                text-align: left;
+                left:64px;
+                top:28px;
+              }
+            }
+          </style>
+          <div class="com-list">
+              <% committee.members.forEach(member=>{ %>
+                <div class="com-member <% if(member.position && member.position.toLowerCase() == 'president') { %>com-fullwidth<% } %>">
+                  <img class="com-memberavatar" src="<%= member.imageurl %>">
+                  <div class="com-title"><%= member.position %></div>
+                  <div class="com-name"><%= member.name %></div>
+                </div>
+              <% }); %>
+          </div>
+          
+        <% } %> 
+        
+      </section>
+    <section>
+        <div class="pagetitle" style="margin-bottom:6px">Useful links</div>
+        <style>
+        li{
+          margin-top:12px;
+        }
+        </style>
+            <ul>
+                <li><a href="/about/constitution">AUFS Constitution</a></li>
+                <li><a href="https://github.com/aberdeen-university-filmmaking-society/website">About the website</a></li>
+                <li><a href="/admin">Administrative Panel</a></li>
+              </ul>
+
+    </section>
+    <script></script>
+  </main>
+    <%- include partials/footer.ejs %>
+  </body>
+  <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+  integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+</html>

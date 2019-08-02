@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+        <title><%= film.title %> | AUFS</title>
+        <meta property="og:title" content="<%= film.title %>">
+        <meta property="description" content="<%= film.shortdesc %>">
+        <meta property="og:description" content="video.movie"/>
+        <meta property="og:type" content="video.movie"/>
+        <% if(film.timestampdate) { %>
+        <meta property="og:video:release_date" content="<%= new Date(film.timestampdate).toISOString(); %>">
+        <% } %>
+        <meta property="og:image" content="<% if(film.poster) { %><%= film.poster %><% } else if(film.youtubeid) { %>https://i.ytimg.com/vi/<%= film.youtubeid %>/mqdefault.jpg<% } %>">
+    <%- include partials/head.ejs %>
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+    integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+    <script type="application/ld+json">
+        {
+          "@context" : "http://schema.org",
+          "@type" : "Movie",
+          "name" : "<%= film.title %>",
+          "image" : "https://storage.googleapis.com/ff-storage-p01/press_kits/posters/001/169/676/original/c2bf7def90-poster.jpg?1537198152"
+        }
+        </script>
+  </head>
+  <body>
+    <style>
+        .video{
+            background-color:black;
+            width:100%;
+            margin-top:12px;
+            margin-bottom:24px;
+        }
+        .video iframe{
+            width: calc(100vw - (100vw - 100%)); 
+            height: 56.25vw;
+            max-width: 812px;
+            max-height: 450px;
+            margin:auto;
+            display: block;
+        }
+
+        .film-credit{
+            opacity:1;
+        }
+        .filmcredit-section{
+            line-height: 20px;
+        }
+        .film-credited{
+            opacity:0.5;
+        }
+        .carousell{
+            margin-top:12px;
+        }
+        .bts-pic-container{
+            background-color:rgba(255,255,255,0.1);
+            margin-right:4px;
+            height:100px;
+            width:100px;
+        }
+        .bts-pic-container img{
+            width: 100%;
+            height: 100%;
+            object-fit:cover;
+        }
+        .fancybox-bg{
+            background-color:rgba(0,0,0,0.8)
+        }
+
+    </style>
+    <%- include partials/header.ejs %>
+    <main>
+        <% if(locals.authenticated) { %>
+        <section class="admincontrols">
+            ADMIN:&nbsp;<a href="/admin/films?edit=<%= film.id %>">Edit</a>
+        </section>
+        <% } %>
+    <section class="videodetails">
+            <% if(film.poster) { %>
+            <a class="film-poster" data-fancybox="poster" href="<%= film.poster.full %>" class="bts-pic-container" <% if(film.poster.caption) { %>data-caption="<%= film.poster.caption %>" alt="<%= film.poster.caption %>" title="<%= film.poster.caption %>"<% } %>><img src="<%= film.poster.thumb %>"></a>
+            <% } %>
+            <div class="film-title film-title-responsive <% if(!film.poster) {%>noposter<% } %>"><%= film.title %><div class="film-date"><%= film.date %></div></div>
+            <div class="film-desc">
+                <div class="film-title"><%= film.title %><div class="film-date"><%= film.date %></div></div>
+                <div class="film-description"><%- film.description %></div>
+                <div class="tags">
+                <% tags.forEach(tag=>{ %><a href="/tags/<%= tag.tagid %>">#<%= tag.tagid %></a>&nbsp;<% }) %>
+                </div>
+            </div>
+        </section>
+    <% if(film.youtubeid) { %>
+    <div class="video">
+        <iframe src="https://www.youtube.com/embed/<%= film.youtubeid%>?rel=0&modestbranding=1&color=white" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <% } %>
+    <% if(film.credits && Object.entries(film.credits).length > 0) { %>
+    <section class="filmcredit-section" style="margin-bottom:12px;">
+        <h1 class="sectionheader" style="margin-top:0">CREDITS</h1>
+        <% for(var credit in film.credits) { %>
+            <div><span class="film-credit"><%= credit %>:</span>&nbsp;<span class="film-credited"><%= film.credits[credit] %></span></div>
+        <% } %>
+    </section>
+    <% } 
+    console.log("behindthescenes: ");
+    console.log(film.behindthescenes);
+    %>
+    <% if(film.behindthescenes && (film.behindthescenes.story!=undefined || (film.behindthescenes.pics && film.behindthescenes.pics.length>0))) { %>
+        <section class="mobilemargin-none" style="margin-bottom:12px;">
+            <h1 class="sectionheader mobilemargin-left">BEHIND THE SCENES</h1>
+            <div class="film-bts-story mobilemargin-left"><%- film.behindthescenes.story %></div>
+            <% if(film.behindthescenes.pics && film.behindthescenes.pics.length>0) { %>
+                <div class="carousell mobilepadding-left gallery">
+                    <% film.behindthescenes.pics.forEach(pic=>{ %>
+                        <a data-fancybox="gallery" href="<%= pic.full %>" <% if(pic.caption) { %>data-caption="<%= pic.caption %>" alt="<%= pic.caption %>" title="<%= pic.caption %>"<% } %> class="bts-pic-container"><img src="<%= pic.thumb %>"></a>
+                        <% }); %>
+                    <% } %>
+                </div>
+        </section>
+        <% } %>
+    <% if(film.techspecs && Object.entries(film.techspecs).length > 0) { %>
+        <section class="filmcredit-section" style="margin-bottom:12px;">
+            <h1 class="sectionheader">TECHNICAL DETAILS</h1>
+            <% for(var spec in film.techspecs) { %>
+                <div><span class="film-credit"><%= spec %>:</span>&nbsp;<span class="film-credited"><%= film.techspecs[spec] %></span></div>
+            <% } %>
+        </section>
+        <% } %>
+    <% if(recommended && recommended.length && recommended.length>0) { %>
+        <section class="mobilemargin-none">
+            <h1 class="sectionheader mobilemargin-left">RECOMMENDED</h1>
+        <div class="carousell mobilepadding-left" style="margin-top:0px;">
+                <% function formatDate(e){var r=e.getMonth(),t=e.getFullYear();return["January","February","March","April","May","June","July","August","September","October","November","December"][r]+" "+t} %>
+                <% recommended.forEach(film=>{ %>
+                  <a class="film-anchor" href="/films/<%= film.slug %>">
+                      <div class="film-container">
+                          <div class="film-imagecontainer">
+                            <img class="film-image" src="<% if(film.youtubeid) { %>https://i.ytimg.com/vi/<%= film.youtubeid %>/mqdefault.jpg<% } else { %>/images/blankthumbnail.png<% } %>">
+                          </div>
+                          <div class="film-text">
+                              <div class="film-title"><%= film.title %></div>
+                              <div class="film-details"><%= formatDate(new Date(Number.parseInt(film.date))) %></div>
+                          </div>
+                        </div>
+                   </a>
+                <% }); %>
+                 </a>
+               </div>
+            </section>
+    <% } %>
+    </main>
+        <%- include partials/footer.ejs %>
+  </body>
+</html>

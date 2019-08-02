@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+        <title>FAQ | AUFS</title>
+        <meta property="og:title" content="FAQ">
+    
+        <meta name="description" content="Frequently Asked Questions about the Aberdeen University Filmmaking Society">
+        <meta property="og:description" content="Frequently Asked Questions about the Aberdeen University Filmmaking Society">
+    
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="/images/cover.jpg">
+
+
+    <%- include partials/head.ejs %>
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+    integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+      </head>
+      <script>!function(E,H,x){var e="accordion",i={transitionSpeed:300,transitionEasing:"ease",controlElement:"[data-control]",contentElement:"[data-content]",groupElement:"[data-accordion-group]",singleOpen:!0};function n(t,n){this.element=t,this.options=E.extend({},i,n),this._defaults=i,this._name=e,this.init()}n.prototype.init=function(){var e,i,a,o,r=this.options,n=E(this.element),t=n.find("> "+r.controlElement),s=n.find("> "+r.contentElement),c=0<n.parents("[data-accordion]").length,d={"max-height":0,overflow:"hidden"},h=function(){var t=(x.body||x.documentElement).style,n="transition";if("string"==typeof t[n])return!0;var e=["Moz","webkit","Webkit","Khtml","O","ms"];n="Transition";for(var i=0;i<e.length;i++)if("string"==typeof t[e[i]+n])return!0;return!1}();function l(t,n){n?s.css({"-webkit-transition":"",transition:""}):s.css({"-webkit-transition":"max-height "+r.transitionSpeed+"ms "+r.transitionEasing,transition:"max-height "+r.transitionSpeed+"ms "+r.transitionEasing})}function f(t){var n=0;t.children().each(function(){n+=E(this).outerHeight(!0)}),t.data("oHeight",n)}function m(t,n,e,i){var a,o=t.filter(".open").find("> [data-content]"),s=o.find("[data-accordion].open > [data-content]");r.singleOpen||(s=s.not(n.siblings("[data-accordion].open").find("> [data-content]"))),a=o.add(s),t.hasClass("open")&&a.each(function(){var t=E(this).data("oHeight");switch(i){case"+":E(this).data("oHeight",t+e);break;case"-":E(this).data("oHeight",t-e);break;default:throw"updateParentHeight method needs an operation"}E(this).css("max-height",E(this).data("oHeight"))})}function u(t){if(t.hasClass("open")){var n=t.find("> [data-content]"),e=n.find("[data-accordion].open > [data-content]"),i=n.add(e);f(i),i.css("max-height",i.data("oHeight"))}}function g(t,n){if(t.trigger("accordion.close"),h){if(c)m(t.parents("[data-accordion]"),t,n.data("oHeight"),"-");n.css(d),t.removeClass("open")}else n.css("max-height",n.data("oHeight")),n.animate(d,r.transitionSpeed),t.removeClass("open")}function p(t,n){if(t.trigger("accordion.open"),h){if(l(),c)m(t.parents("[data-accordion]"),t,n.data("oHeight"),"+");!function(t){H.requestAnimationFrame?requestAnimationFrame(t):H.webkitRequestAnimationFrame?webkitRequestAnimationFrame(t):H.mozRequestAnimationFrame?mozRequestAnimationFrame(t):setTimeout(t,1e3/60)}(function(){n.css("max-height",n.data("oHeight"))}),t.addClass("open")}else n.animate({"max-height":n.data("oHeight")},r.transitionSpeed,function(){n.css({"max-height":"none"})}),t.addClass("open")}function v(){var t=!!r.singleOpen&&0<n.parents(r.groupElement).length;f(s),t&&function(t){t.closest(r.groupElement);var n=t.siblings("[data-accordion]").filter(".open"),e=n.find("[data-accordion]").filter(".open"),i=n.add(e);i.each(function(){var t=E(this),n=t.find(r.contentElement);g(t,n)}),i.removeClass("open")}(n),n.hasClass("open")?g(n,s):p(n,s)}s.each(function(){var t=E(this);0!=t.css("max-height")&&(t.closest("[data-accordion]").hasClass("open")?(l(),f(t),t.css("max-height",t.data("oHeight"))):t.css({"max-height":0,overflow:"hidden"}))}),n.attr("data-accordion")||(n.attr("data-accordion",""),n.find(r.controlElement).attr("data-control",""),n.find(r.contentElement).attr("data-content","")),t.on("click",v),t.on("accordion.toggle",function(){if(r.singleOpen&&1<t.length)return!1;v()}),t.on("accordion.refresh",function(){u(n)}),E(H).on("resize",(e=function(){u(n)},function(){var t=this,n=arguments;o?clearTimeout(o):a&&e.apply(t,n),o=setTimeout(function(){a||e.apply(t,n),o=null},i||100)}))},E.fn[e]=function(t){return this.each(function(){E.data(this,"plugin_"+e)||E.data(this,"plugin_"+e,new n(this,t))})}}(jQuery,window,document);</script>
+ <style>
+   /*!
+ * jQuery Accordion 0.0.1
+ * (c) 2014 Victor Fernandez <victor@vctrfrnndz.com>
+ * MIT Licensed.
+ */
+
+/* Requirements */
+
+[data-accordion] [data-content] {
+    overflow: hidden;
+    max-height: 0;
+}
+
+/* Basic Theme */
+
+[data-accordion] {
+    line-height: 1;
+}
+
+[data-control]{
+  border-bottom: solid 1px rgba(255,255,255,0.5);
+    padding: 10px;
+    opacity:0.6;
+    transition:opacity 0.2s;
+}
+
+[data-control]:hover{
+    opacity: 0.8;
+}
+.open [data-control]{
+    opacity:1;
+}
+
+[data-content] [data-accordion] {
+    border: 0;
+    padding: 0;
+}
+[data-content]>*{
+  padding:12px 12px 0px 12px;
+  color:rgba(255,255,255,0.5);
+}
+
+[data-accordion] [data-control] {
+    position: relative;
+    padding-right: 40px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 12px;
+}
+
+[data-accordion] > [data-control]:after {
+    content: "";
+    position: absolute;
+    right: 10px;
+    top: 12px;
+    font-size: 25px;
+    font-weight: 200;
+    height: 15px;
+    width: 24px;
+    background: url('../images/down.png') center center no-repeat;
+    background-size: 50%;
+}
+
+[data-accordion].open > [data-control]:after {
+    -webkit-transform: rotate(-180deg); 
+    -ms-transform: rotate(-180deg); 
+    transform: rotate(-180deg); 
+}
+ </style>
+      <body>
+        <%- include partials/header.ejs %>
+        <main>
+      <section>
+          <div class="pagetitle">Frequently Asked Questions</div>
+          <div data-accordion-group>
+          <%- body %>
+        </div>
+      </section>
+      </main>
+      <%- include partials/footer.ejs %>
+  </body>
+  <script>
+  $('.accordion').accordion({
+    "transitionSpeed": 200,
+});</script>
+</html>
