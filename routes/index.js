@@ -80,20 +80,20 @@ router.get('/', function(req, res, next) {
       }
       if(heropost == undefined){
         heropost = postmanager.get(setsobj.heropost,function(hp){
-          finishIndexResponse(res, results, setsobj, hp);
+          finishIndexResponse(req,res, results, setsobj, hp);
         });
       }
       else{
-        finishIndexResponse(res, results, setsobj, heropost)
+        finishIndexResponse(req,res, results, setsobj, heropost)
       }
     }
     else{
-      finishIndexResponse(res,results,setsobj,undefined);
+      finishIndexResponse(req,res,results,setsobj,undefined);
     }
   })
 });
 
-function finishIndexResponse(res, results, setsobj, heropost){
+function finishIndexResponse(req,res, results, setsobj, heropost){
   if(results){
     if(results.length>setsobj.homepage_postcount) results.length=setsobj.homepage_postcount;
     for (let index = 0; index < results.length; index++) {
@@ -112,9 +112,9 @@ function finishIndexResponse(res, results, setsobj, heropost){
         productionsfilmsProcessed.push(filmFilesToImages(film));
       });
       if(heropost)
-        res.render('index', { page:'home', films:films, posts:results, heropost: setdetails(heropost, heropost.id, true), productionsfilms:productionsfilmsProcessed});
+        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:films, posts:results, heropost: setdetails(heropost, heropost.id, true), productionsfilms:productionsfilmsProcessed});
       else
-        res.render('index', { page:'home', films:films, posts:results, productionsfilms:productionsfilmsProcessed });
+        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:films, posts:results, productionsfilms:productionsfilmsProcessed });
     });
 });
 

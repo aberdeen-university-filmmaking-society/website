@@ -36,8 +36,35 @@
     .socialmedia{
         padding-bottom:12px;
     }
+    #flare1{
+        position: absolute;
+    left: -1030px;
+    top: 50%;
+    margin-top:-40px;
+    transform: translateY(-50%);
+    object-fit: contain;
+    }
+    #flare2{
+        position: absolute;
+    right: -700px;
+    top: 50%;
+    margin-top:90px;
+    transform: translateY(-50%);
+    object-fit: contain;
+    }
+    #flare3{
+        position: absolute;
+        width:100%;
+        height:100%;
+        background: linear-gradient(228deg, rgb(135, 237, 255) 0%, rgba(0,0,0,0) 100%);
+    }
+    header{
+        opacity:1;
+        transition: all 1s;
+        transition-timing-function:cubic-bezier(0.895, 0.03, 0.685, 0.22);
+    }
 </style>
-<header class="header" style="height:100%;position:absolute;width:100%;">
+<header class="header" id="mainheader" style="height:100%;position:absolute;width:100%;overflow:hidden;">
 
     <div style="height:100%;">
         <div style="position: absolute;width:100%;top:50%;transform:translateY(-50%)">
@@ -70,6 +97,9 @@
             <div class="monospace" id="clockdiv"></div>
             <a class="monospace" id="enterbtn" style="display:none;" href="/">ENTER</a>
         </div>
+        <img id="flare1" style="opacity:0;" src="/images/flarebright.png">
+        <img id="flare2" style="opacity:0;" src="/images/flarebright.png">
+        <div id="flare3"></div>
     </div>
     <script>
         var offset = new Date().getTime() - new Date("<%= serverTime %>").getTime();
@@ -95,8 +125,18 @@
         }
 
         function initializeClock(id, endtime) {
+            var header = document.getElementById("mainheader");
+
             var clock = document.getElementById(id);
-            var enterbtn = document.getElementById("enterbtn");
+            var flare1 = document.getElementById("flare1");
+            var flare2 = document.getElementById("flare2");
+            var flare3 = document.getElementById("flare3");
+            var flare3_newopacity = 0.1;
+            var flare3_tweenvalue = 0.05;
+            var flare3_change = 0;
+            var flare3_opacity = 0;
+            const flare3_changespeed = 6;
+            var switchedopacity = 0;
             function updateClock() {
                 var t = getTimeRemaining(endtime);
                 var days = "";
@@ -112,17 +152,33 @@
                 t.seconds = ('0' + t.seconds).slice(-2);
                 t.timecode = ('0' + t.timecode).slice(-2);
 
+                flare1.style.opacity=(Math.random() * (0.4 - 0.5) + 0.5).toString();
+                flare2.style.opacity=(Math.random() * (0.12 - 0.4) + 0.4).toString();
+
+                if(flare3_change==flare3_changespeed){
+                    flare3_newopacity = (Math.random() * (0 - 0.3) + 0.3);
+                    flare3_tweenvalue=(flare3_newopacity-flare3_opacity)/flare3_changespeed;
+                    flare3_change=0;
+                }
+                flare3_change++;
+                flare3_opacity+=flare3_tweenvalue;
+                flare3.style.opacity=flare3_opacity;
+
                 if(t.totalseconds<60)
                     clock.innerHTML=t.seconds+":"+t.timecode;
                 else if(t.totalseconds<3600)
                     clock.innerHTML=minutes+":"+t.seconds+":"+t.timecode;
                 else
                     clock.innerHTML=days+hours+":"+minutes+":"+t.seconds+":"+t.timecode;
-                
-                if (t.total <= 0) {
+                if(t.totalseconds <=1 && !switchedopacity){
+                    header.style.opacity="0";
+                    switchedopacity=true;
+                }
+                if (t.totalseconds <= 0) {
                     clearInterval(timeinterval);
-                    clock.setAttribute("style","display:none;");
-                    enterbtn.setAttribute("style","display:block;");
+                    clock.innerHTML="";
+                    document.cookie = "fadein=true; expires=0; path=/"
+                    document.location.reload();
                 }
             }
             updateClock();

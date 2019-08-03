@@ -13,9 +13,33 @@
     <%- include partials/head.ejs %>
   </head>
   <body>
+    <% if(locals.fadein) { %>
+    <style>
+    #maincontent{
+      opacity:0;
+      transition: opacity 1s;
+      transition-timing-function:cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    #mainheader{
+      opacity:0;
+      transition: opacity 1s;
+      transition-timing-function:cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    </style>
+    <noscript>
+        <style>
+          #maincontent{
+            opacity:1;
+          }
+          #mainheader{
+            opacity:1;
+          }
+        </style>
+    </noscript>
+    <% } %>
 
     <%- include partials/header.ejs %>
-    <main>
+    <main id="maincontent">
         <%- homepageinsert %>
     <% if(locals.heropost) { %>
     <section class="mobilemargin-none">
@@ -113,5 +137,12 @@
       </section>
     </main>
       <%- include partials/footer.ejs %>
+      <% if(locals.fadein) { %>
+      <script>
+          document.cookie = "fadein= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+          document.getElementById("maincontent").style.opacity=1;
+          document.getElementById("mainheader").style.opacity=1;
+      </script>
+      <% } %>
   </body>
 </html>

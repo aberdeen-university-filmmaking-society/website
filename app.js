@@ -113,9 +113,26 @@ app.use(function (req, res, next) {
     if(req.isAuthenticated()){
       res.locals.authenticated = true;
       console.log("AUTHENTICATED REQUEST");
-    } 
+    }
   }
-  next();
+  if(process.env.LAUNCH_DATE){
+    if(req.isAuthenticated() || req.url.startsWith('/images') || req.url.startsWith('/stylesheets') || req.url.startsWith('/javascripts')){
+      next();
+    }
+    else{
+      var launch = new Date(process.env.LAUNCH_DATE);
+      var now = new Date();
+      if(launch>now){
+        res.render('countdown', {serverTime:now, launchTime:launch });
+      }
+      else{
+        next();
+      }
+    }
+  }
+  else{
+    next();
+  }
 });
 
 var fileupload = require('express-fileupload');
