@@ -9,7 +9,7 @@
 
       <meta property="og:type" content="article"/>
       <meta property="og:article:published_time" content="<%= new Date(Number.parseInt(post.id)).toISOString(); %>">
-      <meta property="og:image" content="<% if(post.image) { %><%= post.image %><% } else { %>/images/cover.jpg<% } %>">
+      <meta property="og:image" content="<% if(post.image) { %><%= post.image %><% } else { %><%= process.env.URL_START %>/images/cover.jpg<% } %>">
 
     <%- include partials/head.ejs %>
   </head>
@@ -29,8 +29,8 @@
             <% tags.forEach(tag=>{ %><a href="/tags/<%= tag.tagid %>">#<%= tag.tagid %></a>&nbsp;<% }) %>
             </div>
         <div class="articleshare">
-          <a class="smicon" target="_blank" title="Share on Facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//aufilmmaking.com/posts/<%= post.id %>"><img src="/images/social/fb.svg"></a>
-          <a class="smicon" target="_blank" title="Share on Twitter" href="https://twitter.com/home?status=https%3A//aufilmmaking.com/posts/<%= post.id %>"><img src="/images/social/tw.svg"></a>
+          <a class="smicon" target="_blank" title="Share on Facebook" href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURI(process.env.URL_START) %>/posts/<%= post.id %>"><img src="/images/social/fb.svg"></a>
+          <a class="smicon" target="_blank" title="Share on Twitter" href="https://twitter.com/home?status=<%= encodeURI(process.env.URL_START) %>/posts/<%= post.id %>"><img src="/images/social/tw.svg"></a>
        </div>
         <% if(post.image && post.image.full) { %>
           <div class="heroimagecontainer mobilemargin-negative">

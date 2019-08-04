@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var HOMEURL = "https://aufilmmaking.com";
+var HOMEURL = process.env.URL_START;
 var sitemap = require('sitemap'),
 sm = sitemap.createSitemap({
     hostname : "aufilmmaking.com",

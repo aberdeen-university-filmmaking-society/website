@@ -31,7 +31,7 @@ var GoogleStrategy = require('passport-google-oauth2').Strategy;
 passport.use(new GoogleStrategy({
     clientID:     process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://aufilmmaking.com/auth/callback",
+    callbackURL: process.env.URL_START + "/auth/callback",
     passReqToCallback   : true
   },
   function(request, accessToken, refreshToken, profile, cb) {
