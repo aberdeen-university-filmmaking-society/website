@@ -3,7 +3,7 @@ var router = express.Router();
 var HOMEURL = process.env.URL_START;
 var sitemap = require('sitemap'),
 sm = sitemap.createSitemap({
-    hostname : "aufilmmaking.com",
+    hostname : "aufilmmaking.co.uk",
     cacheTime : 1000 * 60 * 24  //keep the sitemap cached for 24 hours
 });
 
