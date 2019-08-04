@@ -25,8 +25,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 packagejson = require('./package.json');
-
-
 var GoogleStrategy = require('passport-google-oauth2').Strategy;
 passport.use(new GoogleStrategy({
     clientID:     process.env.GOOGLE_CLIENT_ID,
@@ -186,3 +184,5 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {page:"error"});
 });
+
+module.exports = app;
