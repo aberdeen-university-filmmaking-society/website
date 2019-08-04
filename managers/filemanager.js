@@ -6,7 +6,11 @@ const mkdirp = require('mkdirp');
 const fs = require('fs');
 const rimraf = require('rimraf');
 const path = require('path');
-const sharp = require('sharp');
+var gm = require('gm');
+
+if(process.env.GM_PATH){
+  gm = require('gm').subClass({appPath: process.env.GM_PATH});
+}
 
 var consolidatingSessions = [];
 var temporaryFiles = {};
@@ -65,7 +69,7 @@ filemanager.router.post('/filemanager/upload/:session', function(req,res,next){
               var parsedHeight = Number.parseInt(req.query.thumbheight);
               if(parsedHeight>0) thumbnailHeight = parsedHeight;
             }
-            sharp(req.files.file.data).resize(thumbnailWidth, thumbnailHeight).toFile(pathThumb, function(err, result){
+            gm(req.files.file.data).resize(thumbnailWidth, thumbnailHeight).write(pathThumb, function(err){
               if(err) res.status(500).send({error:"Failed to save thumbnail: " + err.message});
               else res.status(200).send({name: newfilename, extension:fileextension});
             });
