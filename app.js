@@ -102,7 +102,7 @@ var server;
 const fs = require('fs');
 if(process.env.URL_START.startsWith("https")){
   var key = fs.readFileSync(getLatestFile(path.resolve(__dirname,'../ssl/keys/'), '.key'));
-  var cert = fs.readFileSync(getLatestFile(path.resolve(__dirname,'../ssl/certs/'), '.cert'));
+  var cert = fs.readFileSync(getLatestFile(path.resolve(__dirname,'../ssl/certs/'), '.crt'));
   server = require('https').createServer({key: key,cert: cert}, app);
   server.listen(443);
 }
