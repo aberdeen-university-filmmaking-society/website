@@ -24,6 +24,7 @@ app.use(expressSession({secret: 'mySecretKey'}));
 app.use(passport.initialize());
 app.use(passport.session());
 
+packagejson = require('./package.json');
 
 
 var GoogleStrategy = require('passport-google-oauth2').Strategy;
@@ -110,13 +111,14 @@ app.use(function (req, res, next) {
     res.locals.cssmods = pagemanger.pages.cssmods,
     res.locals.headerinsert = pagemanger.pages.headerinsert;
     res.locals.homepageinsert = pagemanger.pages.homepageinsert;
+    res.locals.websiteversion = packagejson.version;
     if(req.isAuthenticated()){
       res.locals.authenticated = true;
       console.log("AUTHENTICATED REQUEST");
     }
   }
   if(process.env.LAUNCH_DATE){
-    if(req.isAuthenticated() || req.url.startsWith('/images') || req.url.startsWith('/stylesheets') || req.url.startsWith('/javascripts')){
+    if(req.isAuthenticated() || req.url.startsWith('/images') || req.url.startsWith('/stylesheets') || req.url.startsWith('/javascripts') || req.url.startsWith('/auth') || req.url.startsWith('/admin')){
       next();
     }
     else{

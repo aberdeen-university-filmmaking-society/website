@@ -1,6 +1,6 @@
 {
   "name": "aufsvoting",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
@@ -17,6 +17,7 @@
     "express-fileupload": "^1.1.5",
     "express-minify": "^1.0.0",
     "express-session": "^1.16.2",
+    "gm": "^1.23.1",
     "html2plaintext": "^2.1.2",
     "mkdirp": "^0.5.1",
     "moment": "^2.24.0",
@@ -31,7 +32,6 @@
     "request": "^2.88.0",
     "rimraf": "^2.6.3",
     "serve-favicon": "~2.4.5",
-    "sharp": "^0.22.1",
     "sitemap": "^2.2.0",
     "socket.io": "^2.2.0",
     "underscore": "^1.9.1",
