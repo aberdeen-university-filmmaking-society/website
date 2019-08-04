@@ -108,9 +108,12 @@ function finishIndexResponse(req,res, results, setsobj, heropost){
   filmmanager.homepage(setsobj.homepage_filmcount, function(films){
     filmmanager.get(pastids, function(productionsfilms){
       var productionsfilmsProcessed = [];
-      productionsfilms.forEach(film=>{
-        productionsfilmsProcessed.push(filmFilesToImages(film));
-      });
+      if(productionsfilms){
+        productionsfilms.forEach(film=>{
+          productionsfilmsProcessed.push(filmFilesToImages(film));
+        });
+      }
+
       if(heropost)
         res.render('index', { page:'home', fadein:req.cookies["fadein"], films:films, posts:results, heropost: setdetails(heropost, heropost.id, true), productionsfilms:productionsfilmsProcessed});
       else

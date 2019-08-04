@@ -59,9 +59,11 @@ function finishediting(id,film,resolve){
         function (err, result) {
             console.log("Updated in finishedediting")
         if (err) resolve(false);
+        else{
             tagmanager.newTagging(id,undefined, tagmanager.tagifyFrom(film.tags), function(){
                 resolve(true);
-        });
+            });
+        }
     });
 }
 filmmanager.getall = function(gethidden, resolve){
@@ -72,30 +74,22 @@ filmmanager.getall = function(gethidden, resolve){
     var sql = "SELECT * FROM Films " + additional + " ORDER by date DESC";
         sqlcon.query(sql,function (err, result) {
         if (err) resolve(undefined);
-        console.log(result);
-        resolve(result);
+        else resolve(result);
     });
 }
 filmmanager.get = function(filmid, resolve){
+    console.log("filmmanager.get()")
     var sql = "SELECT * FROM Films where `id` IN (?) ORDER by date DESC";
     sqlcon.query(sql,[filmid] ,function (err, result) {
         if (err) resolve(undefined);
-        if(result){
-            console.log(result);
-            resolve(result);
-        }
-        else resolve(undefined);
+        else resolve(result);
     });
 }
 filmmanager.getbyslug = function(slug, resolve){
     var sql = "SELECT * FROM Films where `slug` IN (?) ORDER by date DESC";
     sqlcon.query(sql,[slug] ,function (err, result) {
         if (err) resolve(undefined);
-        if(result){
-            console.log(result);
-            resolve(result);
-        }
-        else resolve(undefined);
+        else resolve(result);
     });
 }
 filmmanager.getrecommended = function(id, resolve){
@@ -135,12 +129,12 @@ HAVING
   })
 }
 filmmanager.homepage = function(count, resolve){
+    console.log("filmmanager.homepage()");
     if(count<0) count==0;
     var sql = "SELECT * FROM Films where hidden=false ORDER by date DESC LIMIT "+(Number.parseInt(count));
         sqlcon.query(sql, function (err, result) {
         if (err) resolve(undefined);
-        console.log(result);
-        resolve(result);
+        else resolve(result);
     });
 }
 filmmanager.remove = function(filmid, resolve){
@@ -153,7 +147,7 @@ filmmanager.remove = function(filmid, resolve){
         filemanager.removeObsoleteFiles(oldfilenames);
         sqlcon.query("DELETE FROM Films where id=?",[filmid] ,function (err) {
             if (err) resolve(false);
-            resolve(true);
+            else resolve(true);
         });
     });
 }

@@ -37,33 +37,32 @@ tagmanager.getTagsForFilm = function(id, resolve){
     //select `Taggings` where filmid = id;
     sqlcon.query("SELECT * FROM Taggings WHERE filmid=?", [id], function (err, result) {
         if (err) resolve(undefined);
-        console.log("Tags for this film:")
-        resolve(result);
+        else resolve(result);
     });
 }
 tagmanager.getFilmsForTag = function(tagid, resolve){
     sqlcon.query("SELECT * FROM Films WHERE id in (SELECT filmid FROM Taggings WHERE tagid = ?)", [tagid], function(err,results){
         if(err) resolve(undefined);
-        resolve(results);
+        else resolve(results);
     });
 }
 tagmanager.getPostsForTag = function(tagid, resolve){
     sqlcon.query("SELECT * FROM Posts WHERE id in (SELECT postid FROM Taggings WHERE tagid = ?)", [tagid], function(err,results){
         if(err) resolve(undefined);
-        resolve(results);
+        else resolve(results);
     });
 }
 tagmanager.getPostsForTagAfter = function(tagid, minimumdate, resolve){
     sqlcon.query("SELECT * FROM Posts WHERE id in (SELECT postid FROM Taggings WHERE tagid = ?) AND id > ?", [tagid, minimumdate], function(err,results){
         if(err) resolve(undefined);
-        resolve(results);
+        else resolve(results);
     });
 }
 tagmanager.getTagsForPost = function(id, resolve){
     //select `Taggings` where postid = id;
     sqlcon.query("SELECT * FROM Taggings WHERE postid=?", [id], function (err, result) {
         if (err) resolve(undefined);
-        resolve(result);
+        else resolve(result);
     });
 }
 tagmanager.getContentForTag = function(tagid,filter, resolve){
@@ -134,8 +133,10 @@ tagmanager.newTagging = function(filmid, postid, tagids, resolve){
                     console.log(err);
                     resolve(undefined);
                 }
-                if(result) resolve(result[0]);
-                else resolve(undefined);
+                else{
+                    if(result) resolve(result[0]);
+                    else resolve(undefined);
+                }
             });
         }
     });
@@ -170,7 +171,7 @@ tagmanager.getOccurence = function(resolve){
     ORDER BY count DESC;`
     sqlcon.query(sql,function (err, result) {
         if (err) resolve(undefined);
-        resolve(result);
+        else resolve(result);
 });
 }
 
@@ -183,7 +184,7 @@ tagmanager.getAllTags = function(resolve){
     var sql = "SELECT * FROM Tags";
         sqlcon.query(sql,function (err, result) {
             if (err) resolve(undefined);
-            resolve(result);
+            else resolve(result);
     });
 }
 
@@ -192,7 +193,7 @@ tagmanager.getTag = function(id, resolve){
     var sql = "SELECT * FROM Tags where id=?";
         sqlcon.query(sql,[id],function (err, result) {
             if (err) resolve(undefined);
-            resolve(result);
+            else resolve(result);
     });
 }
 tagmanager.setTag = function(tagobject, resolve){
@@ -203,7 +204,7 @@ tagmanager.setTag = function(tagobject, resolve){
             sqlcon.query("UPDATE Tags SET `fullname`= ?, `description`= ? WHERE id=?",[tagobject.fullname, tagobject.description, tagobject.id],function (err, result) {
                 console.log(err);
                 if (err) resolve(undefined);
-                resolve(result);
+                else resolve(result);
             });
         }
         else{
@@ -211,7 +212,7 @@ tagmanager.setTag = function(tagobject, resolve){
             sqlcon.query(sql,[tagobject.id, tagobject.fullname, tagobject.description],function (err, result) {
                 console.log(err);
                 if (err) resolve(undefined);
-                resolve(result);
+                else resolve(result);
         });
         }
     })

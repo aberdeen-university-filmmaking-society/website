@@ -10,9 +10,12 @@ postmanager.create = function(post, resolve){
         var sql = "INSERT INTO Posts (id, title, subtitle, content, hidden, author, redirect, files) VALUES (?,?,?,?,?,?,?,?)";
         sqlcon.query(sql, [id, post.title, post.subtitle, post.content, post.hidden, post.author, post.redirect, post.files],function (err, result) {
             if (err) resolve(false);
-            tagmanager.newTagging(undefined,id, tagmanager.tagifyFrom(post.tags), function(){
-                resolve(true);
-            });
+            else{
+                tagmanager.newTagging(undefined,id, tagmanager.tagifyFrom(post.tags), function(){
+                    resolve(true);
+                });
+            }
+            
         });
     }
 }
@@ -59,19 +62,20 @@ postmanager.getall = function(gethidden, resolve){
     var sql = "SELECT * FROM Posts " + additional + " ORDER by id DESC";
         sqlcon.query(sql,function (err, result) {
         if (err) resolve(undefined);
-        console.log(result);
-        resolve(result);
+        else resolve(result);
     });
 }
 postmanager.get = function(postid, resolve){
     var sql = "SELECT * FROM Posts where id=?";
         sqlcon.query(sql,[postid] ,function (err, result) {
         if (err) resolve(undefined);
-        if(result){
-            console.log(result[0]);
-            resolve(result[0]);
+        else{
+            if(result){
+                console.log(result[0]);
+                resolve(result[0]);
+            }
+            else resolve(undefined);
         }
-        else resolve(undefined);
     });
 }
 postmanager.homepage = function(count, resolve){
@@ -79,8 +83,7 @@ postmanager.homepage = function(count, resolve){
     var sql = "SELECT * FROM Posts where hidden=false ORDER by id DESC LIMIT "+(Number.parseInt(count)+1); //+1 is necessary to take into account hero thing
         sqlcon.query(sql, function (err, result) {
         if (err) resolve(undefined);
-        console.log(result);
-        resolve(result);
+        else resolve(result);
     });
 }
 postmanager.remove = function(postid, resolve){
@@ -93,7 +96,7 @@ postmanager.remove = function(postid, resolve){
         filemanager.removeObsoleteFiles(oldfilenames);
         sqlcon.query("DELETE FROM Posts where id=?",[postid] ,function (err) {
             if (err) resolve(false);
-            resolve(true);
+            else resolve(true);
         });
     });
 
