@@ -78,7 +78,7 @@ app.locals.rmWhitespace = true;
 
 var server;
 if(process.env.URL_START.startsWith("https")){
-  var greenlock = require('greenlock-express').create({
+  var server = require('greenlock-express').create({
     // Let's Encrypt v2 is ACME draft 11
     // Note: If at first you don't succeed, stop and switch to staging
     // https://acme-staging-v02.api.letsencrypt.org/directory
@@ -88,9 +88,10 @@ if(process.env.URL_START.startsWith("https")){
     approvedDomains: ["aufilmmaking.co.uk", "www.aufilmmaking.co.uk"],
     email: process.env.SSL_EMAIL,
     app:app,
-    communityMember: false
-  });
-  server = greenlock.create(options).listen(80, 443);
+    agreeTos:true,
+    communityMember: false,
+    store: require('greenlock-store-fs')
+  }).listen(80,443);
 }
 else{
   server = require("http").createServer(app);
