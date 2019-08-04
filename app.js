@@ -85,7 +85,7 @@ if(process.env.URL_START.startsWith("https")){
     server: "https://acme-v02.api.letsencrypt.org/directory",
     version: "draft-11",
     configDir: "./acme",
-    approvedDomains: ["aufilmmaking.co.uk", "www.aufilmmaking.co.uk"],
+    approvedDomains: ["aufilmmaking.co.uk"],
     email: process.env.SSL_EMAIL,
     app:app,
     agreeTos:true,
