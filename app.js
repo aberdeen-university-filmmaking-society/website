@@ -102,7 +102,7 @@ io.on('connection', client => {
 })
 
 var setsobj = require("./managers/settings");
-
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(function (req, res, next) {
   if(req.method == "GET"){
     res.locals.settings = setsobj.get();
@@ -118,7 +118,7 @@ app.use(function (req, res, next) {
     }
   }
   if(process.env.LAUNCH_DATE){
-    if(req.isAuthenticated() || req.url.startsWith('/images') || req.url.startsWith('/stylesheets') || req.url.startsWith('/javascripts') || req.url.startsWith('/auth') || req.url.startsWith('/admin')){
+    if(req.isAuthenticated() || req.url.startsWith('/auth') || req.url.startsWith('/admin')){
       next();
     }
     else{
@@ -161,7 +161,7 @@ app.use(compression());
 
 app.use(minify());
 
-app.use(express.static(path.join(__dirname, 'public')));
+
 
 app.use('/', index);
 app.use('/admin', admin);
