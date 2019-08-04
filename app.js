@@ -20,7 +20,7 @@ var minify = require('express-minify');
 
 var passport = require('passport');
 var expressSession = require('express-session');
-app.use(expressSession({secret: 'mySecretKey'}));
+app.use(expressSession({secret: process.env.SESSION_SECRET, cookie: { maxAge:31556926000 }} ));
 app.use(passport.initialize());
 app.use(passport.session());
 
