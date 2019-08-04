@@ -5,7 +5,6 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var http = require("http");
 persist = require('node-persist');
 app = express();
 var votemanager = require('./managers/votemanager');
@@ -77,9 +76,29 @@ sqlcon.connect(function(err) {
 
 app.locals.rmWhitespace = true;
 
-var server = http.createServer(app);
+var server;
+if(process.env.URL_START.startsWith("https")){
+  var greenlock = require('greenlock-express').create({
+    // Let's Encrypt v2 is ACME draft 11
+    // Note: If at first you don't succeed, stop and switch to staging
+    // https://acme-staging-v02.api.letsencrypt.org/directory
+    server: "https://acme-v02.api.letsencrypt.org/directory",
+    version: "draft-11",
+    configDir: "./acme",
+    approvedDomains: ["aufilmmaking.co.uk", "www.aufilmmaking.co.uk"],
+    email: process.env.SSL_EMAIL,
+    app:app,
+    communityMember: false
+  });
+  server = greenlock.create(options).listen(80, 443);
+}
+else{
+  server = require("http").createServer(app);
+}
 io = require('socket.io').listen(server);
-server.listen(80);
+if(!process.env.URL_START.startsWith("https")){
+  server.listen(80);
+}
 io.of('/resultpage').on('connection', client =>{
   console.log("RESULTPAGE");
   votemanager.tryForceResultUpdate();
