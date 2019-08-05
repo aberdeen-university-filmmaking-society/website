@@ -108,7 +108,7 @@ if(process.env.URL_START.startsWith("https")){
 }
 else{*/
   server = require("http").createServer(app);
-  server.listen(80);
+  server.listen(3000);
 /*}*/
 
 
