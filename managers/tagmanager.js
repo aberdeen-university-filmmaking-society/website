@@ -114,6 +114,7 @@ tagmanager.newTagging = function(filmid, postid, tagids, resolve){
         tagids.forEach(tagid=>{
             taggingsInsertArray.push([filmid, postid, tagid]);
             tagInsertArray.push([tagid]);
+        });
 
     console.log("Inserting tags:"+tagInsertArray.join(','));
     var sql1 = "INSERT IGNORE INTO Tags (`id`) VALUES ?";
@@ -148,7 +149,6 @@ tagmanager.newTagging = function(filmid, postid, tagids, resolve){
     //}
     //remove all tagids from `Taggings`
     //add all tagids to `Taggings`
-});
 }
 }
 
