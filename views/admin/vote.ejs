@@ -237,7 +237,10 @@
                 },
             });
         }
-        const socket = io();
+        const socket = io('',{
+            path: '/socket.io',
+            transports: ['websocket']
+        });
         socket.on('vote.create', function (vote) {
             var voteicon = "fa-vote-yea"
             if(vote.type=='rank') voteicon = "fa-list-ol";
