@@ -17,15 +17,13 @@ storage.load = function(name, structure, resolve){
                 resolve(structure);
             }
         }
-        if(err || results==undefined || (results.length && results.length == 0)){
+        else {
             sqlcon.query("INSERT INTO Storage (name,value) VALUES (?,?)", [name, JSON.stringify(structure)], function(err,results){
                 if(err){
                     console.error("Failed to load storage: " + err);
                 }
+                resolve(structure);
             });
-        }
-        else{
-            resolve(structure);
         }
     });
 }
