@@ -1,5 +1,5 @@
 var breakingnews={};
-
+var storage = require('./storage');
 var breakingnewsObject={
     title:"",
     subtitle:"",
@@ -8,12 +8,10 @@ var breakingnewsObject={
     end:0
 };
 breakingnews.load = async function(){
-    var savedbn = await persist.getItem('breakingnews');
-    if(savedbn!=undefined){
-        breakingnewsObject=savedbn;
-    }
+    storage.load("breakingnews", breakingnewsObject, function(newobj){
+        breakingnewsObject=newobj;
+    });
 }
-
 
 breakingnews.set = async function(title, subtitle, url, start, end){
     breakingnewsObject.title = title;
@@ -21,7 +19,8 @@ breakingnews.set = async function(title, subtitle, url, start, end){
     breakingnewsObject.url = url;
     breakingnewsObject.start = start;
     breakingnewsObject.end = end;
-    await persist.setItem('breakingnews', breakingnewsObject);
+
+    storage.save("breakingnews", settingsobj);
 }
 breakingnews.get = function(){
     return breakingnewsObject;

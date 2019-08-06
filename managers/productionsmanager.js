@@ -1,5 +1,5 @@
 var aufsproductions={};
-
+var storage = require('./storage');
 var productionsPage={
     current:{
         yearname:"",
@@ -13,10 +13,9 @@ var productionsPage={
     past:[]
 };
 aufsproductions.load = async function(){
-    var savedpage = await persist.getItem('productionspage');
-    if(savedpage!=undefined){
-        productionsPage=savedpage;
-    }
+    storage.load("committee", productionsPage, function(newobj){
+        productionsPage=newobj;
+    });
 }
 aufsproductions.setCurrentProject = async function(yearname, filmid, description, roadmap, timeline, monthheight, startdate){
     if(!productionsPage.current) productionsPage.current = {};
@@ -29,16 +28,14 @@ aufsproductions.setCurrentProject = async function(yearname, filmid, description
     if(monthheight<75) monthheight=75;
     if(monthheight>500) monthheight=500;
     productionsPage.current.monthheight = monthheight;
-    console.log("SAVED PRODUCTIONS PAGE:");
-    console.log(productionsPage);
-    await persist.setItem('productionspage', productionsPage);
+    console.log("SAVED PRODUCTIONS PAGE");
+    storage.save("productionspage", productionsPage);
 }
 aufsproductions.setPastProjects = async function(projects){
     if(projects && projects.length && projects.length>0){
         productionsPage.past = projects;
         console.log("SAVED PRODUCTIONS PAGE:");
-        console.log(productionsPage);
-        await persist.setItem('productionspage', productionsPage);
+        storage.save("productionspage", productionsPage);
     }
 }
 aufsproductions.get = function(){

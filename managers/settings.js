@@ -9,12 +9,12 @@ var settingsobj={
     dramaticreveal:false,
     showbreakingnews:true
 };
+var storage = require('./storage');
 
 settings.load = async function(){
-    var newssettings = await persist.getItem('settings');
-    if(newssettings!=undefined){
-        settingsobj=newssettings;
-    }
+    storage.load("settings", settingsobj, function(newobj){
+        settingsobj=newobj;
+    });
 }
 settings.set = async function(item){
     if(item.key == "heropost" && settingsobj.heropost==item.value){
@@ -23,7 +23,7 @@ settings.set = async function(item){
     else{
         settingsobj[item.key] = item.value;
     }
-    await persist.setItem('settings', settingsobj);
+    storage.save("settings", settingsobj);
 }
 settings.get = function(){
     return settingsobj;

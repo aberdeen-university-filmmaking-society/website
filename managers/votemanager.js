@@ -1,7 +1,6 @@
 var votemanager ={};
-
+var storage = require('./storage');
 var voteList = new Map([]);
-var voteArchive = new Map([]);
 var voteResult = new Map([])
 var hasVoted = [];
 var armedVoteId;
@@ -23,18 +22,15 @@ function arraytomap(array){
 }
 
 votemanager.initdb = async function(){
-    var persistentList = await persist.getItem('voteList');
-    if(persistentList!=undefined)
-        voteList = new Map(arraytomap(persistentList));
-
-    var persistentArchive = await persist.getItem('voteArchive');
-    if(persistentArchive!=undefined)
-        voteArchive = new Map(arraytomap(persistentArchive));
+    storage.load('votelist', [], function(newobj){
+        persistentList=newobj;
+        if(persistentList!=undefined)
+            voteList = new Map(arraytomap(persistentList));
+    });
 }
 votemanager.savedb = async function(){
     var ting = maptoarray(voteList);
-    await persist.setItem('voteList', ting);
-    await persist.setItem('voteArchive', maptoarray(voteArchive));
+    storage.save('votelist', ting);
 }
 //var app = require("./app");
 
@@ -163,7 +159,7 @@ votemanager.startVote = function(timestampId){
     }
 }
 
-/** Stop the specified vote and add it to the archive */
+/** Stop the specified vote */
 votemanager.stopVote = function(timestampId){
     var vote = voteList.get(timestampId);
     if(vote){
@@ -184,16 +180,6 @@ votemanager.finishVote = function(timestampId){
         }
     }
     //Push the update to the websocket
-}
-votemanager.archiveVote = function(timestampId){
-    var vote = voteList.get(timestampId);
-    if(vote){
-        voteArchive.set(timestampId,vote);
-        voteList.delete(timestampId);
-    }
-    votemanager.savedb();
-    //Add archiving logic
-    io.emit("vote.archive",vote);
 }
 votemanager.removeVote = function(timestampId){
     if(activeVoteId == timestampId) return false;

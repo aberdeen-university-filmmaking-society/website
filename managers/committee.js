@@ -10,12 +10,12 @@ var srcurl = "https://www.ausa.org.uk";
 const request = require('request');
 const cheerio = require('cheerio');
 const _ = require("underscore");
+const storage = require('./storage');
 
 committee.load = async function(){
-    var savedcommitteeobj = await persist.getItem('committee');
-    if(savedcommitteeobj!=undefined){
-        committeeobj = savedcommitteeobj;
-    }
+    storage.load("committee", committeeobj, function(newobj){
+        committeeobj=newobj;
+    });
 }
 committee.get = function(){
     return committeeobj;
@@ -58,7 +58,7 @@ committee.update = async function(scrapeurl, name, resolve){
             return _.indexOf(committeeobj.displayorder, x.position.toLowerCase());
         })
         committeeobj.members = sorted;
-        await persist.setItem('committee', committeeobj);
+        storage.save("committee", committeeobj);
         console.log(committeeobj);
         resolve(committeeobj);
     });
