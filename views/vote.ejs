@@ -379,7 +379,9 @@
       $(".resetbtn").removeClass("visible");
       $(".votecontainer").attr("style","height:calc(100% - 64px);");
     }
-    const socket = io();
+    const socket = io('',{
+            transports: ['polling']
+        });
     socket.on('vote.stop', function (vote) {
       $(".votecontainer").addClass("hidden");
       $(".confirmbtn").addClass("hidden");

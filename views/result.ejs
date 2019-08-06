@@ -316,9 +316,10 @@
       <% } else { %>
       var activevoteid; 
       <% } %>
-    const socket = io.connect('/', {
-      page: "result"
-    });
+      const socket = io('',{
+        page:'result',
+            transports: ['polling']
+        });
 
     var votestate = 'none';
     function newvotestate(newstate){
