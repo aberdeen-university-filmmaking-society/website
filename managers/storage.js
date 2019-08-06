@@ -7,8 +7,8 @@ storage.load = function(name, structure, resolve){
             var result;
             try {
                 console.log("Loading " + name + " from storage")
-                console.log("json="+results[0]);
-                result = JSON.parse(results[0]);
+                console.log("json="+results[0].value);
+                result = JSON.parse(results[0].value);
             }catch{}
             if(result != undefined){
                 resolve(result);
