@@ -122,7 +122,7 @@ io.of('/resultpage').on('connection', client =>{
   votemanager.tryForceResultUpdate();
 });
 io.on('connection', client => {
-  console.log("client connected with IP "+ client.handshake.address.address);
+  console.log("client connecting");
   if(client.handshake.headers.referer.endsWith('/results')){
     votemanager.tryForceResultUpdate(client);
   }
