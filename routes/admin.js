@@ -278,6 +278,7 @@ function sse(obj, eventname, res){
 
 var exec = require('child_process').exec;
 var fs = require('fs');
+var touch = require('touch');
 router.get('/update', function(req,res,next){
   res.set({
 		'Connection': 'keep-alive',
@@ -308,11 +309,7 @@ router.get('/update', function(req,res,next){
           else{
             sse({alert:"The website was succesfully updated!", text:"Restarting server"}, "message", res);
             sse({},"end",res);
-            exec("touch ../tmp/restart.txt", function callback(error,stdout,stderr){
-              console.log("error: "+error);
-              console.log("stdout: "+stdout);
-              console.log("stderr: "+stderr);
-            });
+            touch("../tmp/restart.txt");
           }
         });
       }
@@ -320,11 +317,7 @@ router.get('/update', function(req,res,next){
         sse({alert:"The website was succesfully updated!", text:"Restarting server"}, "message", res);
         sse({},"end",res);
         res.end();
-        exec("touch ../tmp/restart.txt", function callback(error,stdout,stderr){
-          console.log("error: "+error);
-          console.log("stdout: "+stdout);
-          console.log("stderr: "+stderr);
-        });
+        touch("../tmp/restart.txt");
       }
     }
   });
