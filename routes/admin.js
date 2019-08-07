@@ -10,7 +10,8 @@ var productionsmanager = require('../managers/productionsmanager');
 var committee = require('../managers/committee');
 var settings = require('../managers/settings');
 var passport = require('passport');
-
+var simpleGit = require('simple-git')();
+var path = require('path');
 votemanager.initdb()
 
 
@@ -36,12 +37,12 @@ app.get('/auth/signout', function(req,res,next){
 });
 app.all('/admin/*', function(req,res,next){
 
-  if(req.isUnauthenticated()){
-    res.redirect('/auth/google?redirect='+encodeURIComponent(req.originalUrl));
-  }
-  else{
+  //if(req.isUnauthenticated()){
+  //  res.redirect('/auth/google?redirect='+encodeURIComponent(req.originalUrl));
+  //}
+  //else{
     next();
-  }
+  //}
 });
 
 router.post('/vote/create/:op',function(req, res) {
@@ -270,6 +271,57 @@ router.post('/committee/update', function(req,res,next){
   });
 });
 
+function sse(obj, eventname, res){
+  res.write("event: "+eventname+"\ndata: "+JSON.stringify(obj)+"\n\n");
+  res.flush();
+}
+
+var exec = require('child_process').exec;
+var fs = require('fs');
+router.get('/update', function(req,res,next){
+  res.set({
+		'Connection': 'keep-alive',
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache'
+  });
+  res.write('\n');
+
+  sse({text:"Starting update process..."}, "message", res);
+  var oldpackage = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  exec('git pull', function callback(error, stdout, stderr){
+    //check stdout
+    sse({text:stdout}, "message", res);
+    if(stdout && stdout.toLowerCase().startsWith("already up to date")){
+      sse({alert:"The website is already up to date! Are you sure you've pushed your commit to GitHub?"}, "message", res);
+      sse({},"end",res);
+    }
+    else{
+      var newpackage = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+      if(JSON.stringify(oldpackage.dependencies) != JSON.stringify(newpackage.dependencies)){
+        sse({text:"New dependencies detected, attempting to install them..."}, "message", res);
+        exec('npm install', function callback(error, stdout, stderr){
+          sse({text:stdout}, "message", res);
+          if(error){
+            res.write("data: "+JSON.stringify()+"\n\n");
+            sse({alert:"There was an error while installing the new dependencies!"}, "message", res);
+            sse({},"end",res);
+          }
+          else{
+            sse({alert:"The website was succesfully updated!", text:"Restarting server"}, "message", res);
+            sse({},"end",res);
+            exec("touch ../tmp/restart.txt");
+          }
+        });
+      }
+      else{
+        sse({alert:"The website was succesfully updated!", text:"Restarting server"}, "message", res);
+        sse({},"end",res);
+        res.end();
+        exec("touch ../tmp/restart.txt");
+      }
+    }
+  });
+});
 var filemanager = require('../managers/filemanager');
 router.use(filemanager.router);
 
