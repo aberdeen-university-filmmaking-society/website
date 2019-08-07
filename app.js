@@ -13,6 +13,9 @@ var productionsmanager = require('./managers/productionsmanager');
 var committee = require('./managers/committee');
 var bn = require("./managers/breakingnews");
 
+var underscore = require('underscore');
+console.log(underscore.now());
+
 var compression = require('compression');
 var minify = require('express-minify');
 
