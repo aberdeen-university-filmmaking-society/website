@@ -13,7 +13,7 @@ var productionsPage={
     past:[]
 };
 aufsproductions.load = async function(){
-    storage.load("committee", productionsPage, function(newobj){
+    storage.load("productions", productionsPage, function(newobj){
         productionsPage=newobj;
     });
 }
