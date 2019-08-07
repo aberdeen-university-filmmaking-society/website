@@ -37,12 +37,12 @@ app.get('/auth/signout', function(req,res,next){
 });
 app.all('/admin/*', function(req,res,next){
 
-  //if(req.isUnauthenticated()){
-  //  res.redirect('/auth/google?redirect='+encodeURIComponent(req.originalUrl));
-  //}
-  //else{
+  if(req.isUnauthenticated()){
+    res.redirect('/auth/google?redirect='+encodeURIComponent(req.originalUrl));
+  }
+  else{
     next();
-  //}
+  }
 });
 
 router.post('/vote/create/:op',function(req, res) {
