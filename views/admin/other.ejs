@@ -100,7 +100,19 @@ table, th, td {
             <b>Current version:</b>&nbsp;<span><%=websiteversion %></span><br>
             <b>Latest version:</b>&nbsp;<span id="update-latestversion">...</span>
             <button class="bigbtn" onclick="updatewebsite()">UPDATE WEBSITE</button>
-            <p id="updateOutput"></p>
+            <%
+            function format(seconds){
+                function pad(s){
+                  return (s < 10 ? '0' : '') + s;
+                }
+                var hours = Math.floor(seconds / (60*60));
+                var minutes = Math.floor(seconds % (60*60) / 60);
+                var seconds = Math.floor(seconds % 60);
+              
+                return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+              }
+            %>
+            <p style="font-size:10px;opacity:0.5px;margin-top:4px;margin-bottom:0;text-align:right;">Time since previous restart: <%= format(process.uptime()) %></p>
         </div>
         <div id="terminal" style="display:none;">
 
