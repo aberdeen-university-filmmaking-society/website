@@ -58,18 +58,41 @@ passport.deserializeUser(function(id, next) {
 
 
 //Connect to database
-var mysql      = require('mysql');
-sqlcon = mysql.createConnection({
+var mysql = require('mysql');
+sqlcon = {};
+var dbconnected = false;
+var db_config = {
   host     : process.env.DATABASE_HOST,
   user     : process.env.DATABASE_USER,
   password : process.env.DATABASE_PASSWORD,
   database : process.env.DATABASE_NAME,
   multipleStatements: true
-});
-sqlcon.connect(function(err) {
-    if (err) throw err;
-    console.log("Connected!");
+}
+function handleDisconnect() {
+  sqlcon = mysql.createConnection(db_config);
+  sqlcon.connect(function(err) {
+    if(err) {
+      console.log('error when connecting to db:', err);
+      setTimeout(handleDisconnect, 2000);
+      dbconnected=false;
+    }
+    else{
+      dbconnected=true;
+    }
   });
+
+  sqlcon.on('error', function(err) {
+    dbconnected=false;
+    console.log('db error', err);
+    if(err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === "ECONNRESET") {
+      handleDisconnect();
+    } else {
+      throw err;
+    }
+  });
+}
+handleDisconnect();
+
 //load local lists
 settings.load();
 pagemanger.load();
@@ -101,18 +124,8 @@ function getLatestFile(dirpath, extension) {
 }
 
 var server;
-/*const fs = require('fs');
-if(process.env.URL_START.startsWith("https")){
-  var key = fs.readFileSync(getLatestFile(path.resolve(__dirname,'../ssl/keys/'), '.key'));
-  var cert = fs.readFileSync(getLatestFile(path.resolve(__dirname,'../ssl/certs/'), '.crt'));
-  server = require('https').createServer({key: key,cert: cert}, app);
-  server.listen(80);
-}
-else{*/
-  server = require("http").createServer(app);
-  server.listen(3000);
-/*}*/
-
+server = require("http").createServer(app);
+server.listen(3000);
 
 io = require('socket.io').listen(server);
 io.use(function(socket, next) {
@@ -173,6 +186,15 @@ app.use(function (req, res, next) {
   else{
     next();
   }
+});
+
+app.use(function (req,res,next){
+    if(dbconnected){
+      next();
+    }
+    else{
+      res.status(503).render('error', {page:'error',error:{status:503, stack:"It may simply be rebooting, please try again in a few moments"}, message:"Error establishing a database connection" });
+    }
 });
 
 var fileupload = require('express-fileupload');
