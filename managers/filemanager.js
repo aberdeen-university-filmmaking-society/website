@@ -29,7 +29,9 @@ filemanager.consolidateFileSession = function(sessionID, filmid, postid){
         mv(sessionfolder+"/"+files[index], outputfolder+"/"+files[index], function(err){
           if(index==files.length-1){
             consolidatingSessions = consolidatingSessions.filter(e => e !== sessionID); //remove the sessionID
-            fs.rmdir(sessionfolder);
+            fs.rmdir(sessionfolder, function(err){
+              console.log(err);
+            });
           }
         });
       }
@@ -92,7 +94,11 @@ filemanager.router.post('/filemanager/remove/:session/:file', function(req,res,n
       fs.unlink(sessionFolder+"/"+file);
     });
     res.sendStatus(200);
-    if(fs.readdirSync(sessionFolder).length==0) fs.rmdir(sessionFolder);
+    if(fs.readdirSync(sessionFolder).length==0) {
+      fs.rmdir(sessionFolder, function(err){
+        console.log(err);
+      });
+    }
   }
 });
 
