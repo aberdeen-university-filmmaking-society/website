@@ -278,10 +278,10 @@ function sse(obj, eventname, res){
 function restartapp(){
   console.log("attempting to restart app");
   var restartpath = path.resolve(__dirname, "../tmp/restart.txt");
-  const stats = fs.statSync(restartpath)
+  var stats = fs.statSync(restartpath)
   console.log("old time="+stats.mtime);
   fs.utimesSync(restartpath,Date.now(),Date.now());
-  const stats = fs.statSync(restartpath)
+  stats = fs.statSync(restartpath)
   console.log("new time="+stats.mtime);
 }
 
