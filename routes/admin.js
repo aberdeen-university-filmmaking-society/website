@@ -287,7 +287,7 @@ function restartapp(){
 
 var exec = require('child_process').exec;
 var fs = require('fs');
-var touch = require('touch');
+
 router.get('/update', function(req,res,next){
   res.set({
 		'Connection': 'keep-alive',
