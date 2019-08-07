@@ -308,7 +308,11 @@ router.get('/update', function(req,res,next){
           else{
             sse({alert:"The website was succesfully updated!", text:"Restarting server"}, "message", res);
             sse({},"end",res);
-            exec("touch ../tmp/restart.txt");
+            exec("touch ../tmp/restart.txt", function callback(error,stdout,stderr){
+              console.log("error: "+error);
+              console.log("stdout: "+stdout);
+              console.log("stderr: "+stderr);
+            });
           }
         });
       }
@@ -316,7 +320,11 @@ router.get('/update', function(req,res,next){
         sse({alert:"The website was succesfully updated!", text:"Restarting server"}, "message", res);
         sse({},"end",res);
         res.end();
-        exec("touch ../tmp/restart.txt");
+        exec("touch ../tmp/restart.txt", function callback(error,stdout,stderr){
+          console.log("error: "+error);
+          console.log("stdout: "+stdout);
+          console.log("stderr: "+stderr);
+        });
       }
     }
   });
