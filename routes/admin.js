@@ -302,7 +302,6 @@ router.get('/update', function(req,res,next){
         exec('npm install', function callback(error, stdout, stderr){
           sse({text:stdout}, "message", res);
           if(error){
-            res.write("data: "+JSON.stringify()+"\n\n");
             sse({alert:"There was an error while installing the new dependencies!"}, "message", res);
             sse({},"end",res);
           }
