@@ -275,6 +275,15 @@ function sse(obj, eventname, res){
   res.write("event: "+eventname+"\ndata: "+JSON.stringify(obj)+"\n\n");
   res.flush();
 }
+function restartapp(){
+  console.log("attempting to restart app");
+  var restartpath = path.resolve(__dirname, "../tmp/restart.txt");
+  const stats = fs.statSync(restartpath)
+  console.log("old time="+stats.mtime);
+  fs.utimesSync(restartpath,Date.now(),Date.now());
+  const stats = fs.statSync(restartpath)
+  console.log("new time="+stats.mtime);
+}
 
 var exec = require('child_process').exec;
 var fs = require('fs');
@@ -309,9 +318,7 @@ router.get('/update', function(req,res,next){
           else{
             sse({alert:"The website was succesfully updated!", text:"Restarting server"}, "message", res);
             sse({},"end",res);
-            touch("../tmp/restart.txt", function(err){
-              console.log(err);
-            });
+            restartapp();
           }
         });
       }
@@ -319,9 +326,7 @@ router.get('/update', function(req,res,next){
         sse({alert:"The website was succesfully updated!", text:"Restarting server"}, "message", res);
         sse({},"end",res);
         res.end();
-        touch("../tmp/restart.txt", function(err){
-          console.log(err);
-        });
+        restartapp();
       }
     }
   });
