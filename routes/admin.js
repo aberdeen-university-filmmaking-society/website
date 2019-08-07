@@ -287,7 +287,10 @@ function restartapp(){
 
 var exec = require('child_process').exec;
 var fs = require('fs');
-
+router.post('/restart', function(req,res,next){
+  restartapp();
+  res.sendStatus(200);
+});
 router.get('/update', function(req,res,next){
   res.set({
 		'Connection': 'keep-alive',

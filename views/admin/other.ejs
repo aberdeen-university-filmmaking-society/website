@@ -95,6 +95,7 @@ table, th, td {
             <p>If for some reason this crashes the website, you will need to login to the CPanel in order to restore it.</p>
             <b>Current version:</b>&nbsp;<span><%=websiteversion %></span><br>
             <b>Latest version:</b>&nbsp;<span id="update-latestversion">...</span>
+            <button class="smallbtn" style="float:right;margin-bottom:12px;" onclick="restartwebsite()">RESTART WEBSITE</button>
             <button class="bigbtn" onclick="updatewebsite()">UPDATE WEBSITE</button>
             <%
             function format(seconds){
@@ -219,6 +220,13 @@ function escapeHtml (string) {
   return String(string).replace(/[&<>"'`=\/]/g, function (s) {
     return entityMap[s];
   });
+}
+function restartwebsite(){
+    if(confirm("Any active votes will be broken, and all admin sessions will be logged out. Continue?")){
+        $.post("/admin/restart", function(){
+            document.location.reload();
+        });
+    }
 }
         function updatewebsite(){
             if(confirm("Please be aware that if you push a broken update, you may no longer have access to this panel, and will need to fix things from within the web hosting provider's system. Continue?"))
