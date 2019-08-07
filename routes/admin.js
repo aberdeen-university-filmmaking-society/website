@@ -280,7 +280,7 @@ function restartapp(){
   var restartpath = path.resolve(__dirname, "../tmp/restart.txt");
   var stats = fs.statSync(restartpath)
   console.log("old time="+stats.mtime);
-  fs.utimesSync(restartpath,Date.now(),Date.now());
+  fs.utimesSync(restartpath,Date.now()/1000,Date.now()/1000);
   stats = fs.statSync(restartpath)
   console.log("new time="+stats.mtime);
 }
