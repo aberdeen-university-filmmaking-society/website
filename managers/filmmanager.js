@@ -119,9 +119,9 @@ HAVING
         filmid
     ORDER BY
       COUNT(*) DESC
-    LIMIT 1
   )
 )`
+
   sqlcon.query(sql, [id], function(err, results){
       if(err || !results[1]) resolve(undefined);
       else resolve(results[1]);
