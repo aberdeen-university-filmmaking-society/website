@@ -66,7 +66,8 @@ var db_config = {
   user     : process.env.DATABASE_USER,
   password : process.env.DATABASE_PASSWORD,
   database : process.env.DATABASE_NAME,
-  multipleStatements: true
+  multipleStatements: true,
+  charset : 'utf8mb4'
 }
 function handleDisconnect() {
   sqlcon = mysql.createConnection(db_config);
