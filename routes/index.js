@@ -247,7 +247,7 @@ router.get('/films/:slug', function(req, res, next) {
   filmmanager.getbyslug(req.params.slug, function(result){
     if(result[0]){
       result = result[0]
-      tagmanager.getTagsForFilm(req.params.id,function(tags){
+      tagmanager.getTagsForFilm(result.id,function(tags){
         result.behindthescenes = JSON.parse(result.behindthescenes);
         result.credits = JSON.parse(result.credits);
         result.techspecs = JSON.parse(result.techspecs);
@@ -259,7 +259,7 @@ router.get('/films/:slug', function(req, res, next) {
         result.dateTimestamp = Number.parseInt(result.date);
         result.behindthescenes.pics = [];
         result = filmFilesToImages(result);
-        filmmanager.getrecommended(req.params.id, function(similar){
+        filmmanager.getrecommended(result.id, function(similar){
           res.render('film', { page:'film', film:result, tags:tags, recommended:similar });
         });
       });

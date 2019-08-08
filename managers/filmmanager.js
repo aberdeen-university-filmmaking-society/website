@@ -37,7 +37,6 @@ filmmanager.edit = async function(id, film, resolve){
         console.log("obsolete files=");
         console.log(obsoleteFilenames);
         filemanager.removeObsoleteFiles(obsoleteFilenames);
-
         console.log("selected pre-modification film");
         if(!err && oldfilm && oldfilm[0])
         if(oldfilm[0].slug != film.slug){
