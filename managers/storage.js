@@ -29,7 +29,7 @@ storage.load = function(name, structure, resolve){
 }
 
 storage.save = function(name, structure, resolve){
-    sqlcon.query("INSERT IGNORE INTO Storage (name,value) VALUES (?,?)", [name, JSON.stringify(structure)], function(err,results){
+    sqlcon.query("REPLACE INTO Storage (name,value) VALUES (?,?)", [name, JSON.stringify(structure)], function(err,results){
         if(err){
             console.error("Failed to load storage: " + err);
         }
