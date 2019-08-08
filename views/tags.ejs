@@ -92,7 +92,7 @@
     <div class="posts-list films-list">
     <% results.forEach(result=>{ %>
         <% if(previousdate!=result.dateformatted) { previousdate = result.dateformatted %>
-            <div class="groupheader"><%= previousdate %></div>
+            <div class="groupheader" style="color:white;"><%= previousdate %></div>
         <% }  %>
         <% if(result.type=="film") { %>
         <a class="film-anchor" href="/films/<%= result.slug %>">

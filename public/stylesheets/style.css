@@ -519,6 +519,7 @@ display: none;
   flex-shrink: 0;
   align-self: flex-start;
   margin-right:12px;
+  box-shadow: 0px 0px 24px 0px rgba(0,0,0,0.2);
   background: rgba(255,255,255,0.05);
 }
 .videodetails .film-poster img{
@@ -553,6 +554,9 @@ display: none;
   padding-right:12px;
   text-decoration: none;
   background: rgba(255,255,255,0.05);
+}
+.nice-select li{
+  color:rgba(5, 24, 117, 1)
 }
 
 
