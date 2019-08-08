@@ -119,7 +119,7 @@ HAVING
         filmid
     ORDER BY
       COUNT(*) DESC
-    LIMIT 0
+    LIMIT 1
   )
 )`
   sqlcon.query(sql, [id], function(err, results){
