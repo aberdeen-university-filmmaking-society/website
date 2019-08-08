@@ -119,19 +119,9 @@ HAVING
         filmid
     ORDER BY
       COUNT(*) DESC
-    LIMIT 1
+    LIMIT 12
   )
 )`
-sql = `
-SET @item = ?;
-SELECT * FROM Films WHERE id in (SELECT id COUNT(*) as how_many_shared_tags
-FROM Films p
-JOIN Taggings pt ON pt.filmid = p.id
-                 AND pt.tagid IN(SELECT tagid FROM Taggings WHERE filmid = @item)
-WHERE p.id != @item
-GROUP BY p.id
-order by COUNT(*) DESC
-LIMIT 12)`
 
   sqlcon.query(sql, [id], function(err, results){
       if(err || !results[1]){
