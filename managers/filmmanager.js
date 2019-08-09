@@ -94,34 +94,16 @@ filmmanager.getbyslug = function(slug, resolve){
 filmmanager.getrecommended = function(id, resolve){
 var sql = `
 SET @item = ?;
-
-SELECT * FROM Films WHERE id in (
-
-SELECT
-  filmid
-FROM
-  Taggings
-WHERE
-  tagid IN (SELECT tagid FROM Taggings WHERE filmid=@item)
-  AND filmid!=@item
-GROUP BY
-filmid
-HAVING
-  COUNT(*) = (
-    SELECT
-      COUNT(*)
-    FROM
-    Taggings
-    WHERE
-    tagid IN (SELECT tagid FROM Taggings WHERE filmid=@item)
-      AND filmid!=@item
-    GROUP BY
-        filmid
-    ORDER BY
-      COUNT(*) DESC
-    LIMIT 1
-  )
-)`
+SELECT *
+FROM Films
+WHERE id IN
+    (SELECT v2.filmid
+     FROM Taggings AS v1
+     JOIN Taggings AS v2 USING (tagid)
+     WHERE v1.filmid = @item
+       AND v1.filmid <> v2.filmid
+     GROUP BY v2.filmid
+     ORDER BY COUNT(*) DESC)`
 
   sqlcon.query(sql, [id], function(err, results){
       if(err || !results[1]){
