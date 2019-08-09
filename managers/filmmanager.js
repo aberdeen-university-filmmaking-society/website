@@ -113,7 +113,7 @@ RIGHT JOIN
       }
       else{
           var sorted = results[1].sort(function(a,b){
-            return a.common_tag_count-b.common_tag_count || Math.abs(timestamp.date - Number.parseInt(a))-Math.abs(timestamp.date - Number.parseInt(b))
+            return b.common_tag_count-a.common_tag_count || Math.abs(timestamp.date - Number.parseInt(b))-Math.abs(timestamp.date - Number.parseInt(a))
           });
           resolve(sorted);
       } 
