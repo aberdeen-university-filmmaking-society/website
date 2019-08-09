@@ -123,15 +123,6 @@ HAVING
   )
 )`
 
-sql = `SELECT v2.filmid
-FROM Taggings AS v1
-  JOIN Taggings AS v2
-  USING (tagid)
-WHERE v1.filmid = ?
-  AND v1.filmid <> v2.filmid
-GROUP BY v2.filmid 
-ORDER BY COUNT(*) DESC;`
-
   sqlcon.query(sql, [id], function(err, results){
       if(err || !results[1]){
           console.log(err);
