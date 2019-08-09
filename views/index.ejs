@@ -40,7 +40,7 @@
 
     <%- include partials/header.ejs %>
     <main id="maincontent">
-        <%- homepageinsert %>
+    <% if(locals.homepageinsert) { %><%- homepageinsert %><% } %>
     <% if(locals.heropost) { %>
     <section class="mobilemargin-none">
       <a class="hero-anchor" href="<% if (heropost.redirect) { %><%= heropost.redirect %><% } else { %>/posts/<%= heropost.id %><% } %>">

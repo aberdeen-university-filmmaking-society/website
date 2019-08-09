@@ -68,3 +68,5 @@ public/temp/
 
 #files
 public/files/
+
+sessions.db

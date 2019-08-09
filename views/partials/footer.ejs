@@ -55,7 +55,7 @@ footer a:active{
         
         <div class="copyright">&copy; <%= new Date().getFullYear() %> Aberdeen University Filmmaking Society</div>
         <div class="opensource"><a href="https://github.com/aberdeen-university-filmmaking-society/website">This website is open-source</a></div>
-        <div class="version">v<%= websiteversion %></div>
+        <% if(locals.websiteversion) { %><div class="version">v<%= websiteversion %></div><% } %>
     </div>
     
 </footer>

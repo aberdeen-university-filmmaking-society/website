@@ -119,7 +119,7 @@ HAVING
         filmid
     ORDER BY
       COUNT(*) DESC
-    LIMIT 12
+    LIMIT 1
   )
 )`
 

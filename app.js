@@ -16,16 +16,58 @@ var bn = require("./managers/breakingnews");
 //var underscore = require('underscore');
 //console.log(underscore.now());
 
+
+
+//compress and minify
 var compression = require('compression');
 var minify = require('express-minify');
 
-var passport = require('passport');
+//static assets
+app.use(express.static(path.join(__dirname, 'public')));
+
+//Connect to database
+var mysql = require('mysql');
+sqlcon = {};
+var dbconnected = true;
+var db_config = {
+  host     : process.env.DATABASE_HOST,
+  user     : process.env.DATABASE_USER,
+  password : process.env.DATABASE_PASSWORD,
+  database : process.env.DATABASE_NAME,
+  multipleStatements: true,
+  charset : 'utf8mb4',
+  connectionLimit: 10
+}
+sqlcon  = mysql.createPool(db_config);
+
+//set up session
 var expressSession = require('express-session');
-var sessionMiddleware = expressSession({secret: process.env.SESSION_SECRET, cookie: { maxAge:31556926000 }} );
+
+//set up session store
+const nedbStorage = require ('tch-nedb-session')(expressSession);
+let expiration = 24 * 60 * 60 * 1000;
+let sessionStore = new nedbStorage ({
+    filename: 'sessions.db',
+    expiration: expiration,
+    expirationType: 'interval',
+    autoCompactInterval: 15 * 60 * 1000,
+    expirationInterval: 24 * 60 * 60 * 1000
+});
+
+var sessionMiddleware = expressSession(
+  {
+    secret: process.env.SESSION_SECRET, 
+    cookie: { maxAge:31556926000 }, 
+    store: sessionStore
+  });
 app.use(sessionMiddleware);
+
+
+
+//set up passport
+var passport = require('passport');
 app.use(passport.initialize());
 app.use(passport.session());
-
 packagejson = require('./package.json');
 var GoogleStrategy = require('passport-google-oauth2').Strategy;
 passport.use(new GoogleStrategy({
@@ -43,32 +85,24 @@ passport.use(new GoogleStrategy({
     }
   }
 ));
-var user_cache = {};
-passport.serializeUser(function(user, next) {
-  let id = user.id;
-  user_cache[id] = user;
-  next(null, id);
+//var user_cache = {};
+//passport.serializeUser(function(user, next) {
+//  let id = user.id;
+//  user_cache[id] = user;
+//  next(null, id);
+//});
+//passport.deserializeUser(function(id, next) {
+//  next(null, user_cache[id]);
+//});
+passport.serializeUser(function(user, done) {
+  done(null, user);
 });
 
-passport.deserializeUser(function(id, next) {
-  next(null, user_cache[id]);
+passport.deserializeUser(function(user, done) {
+  done(null, user);
 });
 
-
-
-
-//Connect to database
-var mysql = require('mysql');
-sqlcon = {};
-var dbconnected = false;
-var db_config = {
-  host     : process.env.DATABASE_HOST,
-  user     : process.env.DATABASE_USER,
-  password : process.env.DATABASE_PASSWORD,
-  database : process.env.DATABASE_NAME,
-  multipleStatements: true,
-  charset : 'utf8mb4'
-}
+/*
 function handleDisconnect() {
   sqlcon = mysql.createConnection(db_config);
   sqlcon.connect(function(err) {
@@ -92,7 +126,10 @@ function handleDisconnect() {
     }
   });
 }
-handleDisconnect();
+handleDisconnect();*/
+
+
+
 
 //load local lists
 settings.load();
@@ -126,13 +163,9 @@ function getLatestFile(dirpath, extension) {
 
 var server;
 server = require("http").createServer(app);
-server.listen(3000);
+server.listen(80);
 
 io = require('socket.io').listen(server);
-io.use(function(socket, next) {
-  sessionMiddleware(socket.request, socket.request.res, next);
-});
-
 
 io.of('/resultpage').on('connection', client =>{
   console.log("RESULTPAGE");
@@ -154,7 +187,7 @@ io.on('connection', client => {
 })
 
 var setsobj = require("./managers/settings");
-app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(function (req, res, next) {
   if(req.method == "GET"){
     res.locals.settings = setsobj.get();
