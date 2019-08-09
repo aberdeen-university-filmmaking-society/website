@@ -250,6 +250,7 @@ function restartwebsite(){
             evtSource.addEventListener('end', function(err){
                 $("#terminal").hide(0);
                 evtSource.close();
+                document.location.reload();
             });
             }
         }
