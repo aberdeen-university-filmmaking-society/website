@@ -1,6 +1,7 @@
 var filmmanager = {}
 var tagmanager = require("./tagmanager");
 var filemanager = require("./filemanager");
+var _ = require("underscore");
 
 filmmanager.create = function(film){
     
@@ -91,26 +92,31 @@ filmmanager.getbyslug = function(slug, resolve){
         else resolve(result);
     });
 }
-filmmanager.getrecommended = function(id, resolve){
+filmmanager.getrecommended = function(id, timestamp, resolve){
 var sql = `
-SET @item = ?;
-SELECT *
-FROM Films
-WHERE id IN
-    (SELECT v2.filmid
-     FROM Taggings AS v1
-     JOIN Taggings AS v2 USING (tagid)
-     WHERE v1.filmid = @item
-       AND v1.filmid <> v2.filmid
-     GROUP BY v2.filmid
-     ORDER BY COUNT(*) DESC)`
+SET @id = ?;
+SELECT * FROM Films
+RIGHT JOIN
+    (SELECT at1.filmid,
+            Count(at1.tagid) AS common_tag_count
+     FROM Taggings AS at1
+     INNER JOIN Taggings AS at2 ON at1.tagid = at2.tagid
+     WHERE at2.filmid = @id
+     GROUP BY at1.filmid
+     HAVING at1.filmid != @id
+     ORDER BY common_tag_count DESC) AS tagresults ON Films.id = tagresults.filmid`
 
   sqlcon.query(sql, [id], function(err, results){
       if(err || !results[1]){
           console.log(err);
           resolve(undefined);
+      }
+      else{
+          var sorted = results[1].sort(function(a,b){
+            return a.common_tag_count-b.common_tag_count || Math.abs(timestamp.date - Number.parseInt(a))-Math.abs(timestamp.date - Number.parseInt(b))
+          });
+          resolve(sorted);
       } 
-      else resolve(results[1]);
   })
 }
 filmmanager.homepage = function(count, resolve){

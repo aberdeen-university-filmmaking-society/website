@@ -259,7 +259,7 @@ router.get('/films/:slug', function(req, res, next) {
         result.dateTimestamp = Number.parseInt(result.date);
         result.behindthescenes.pics = [];
         result = filmFilesToImages(result);
-        filmmanager.getrecommended(result.id, function(similar){
+        filmmanager.getrecommended(result.id, result.dateTimestamp, function(similar){
           res.render('film', { page:'film', film:result, tags:tags, recommended:similar });
         });
       });
