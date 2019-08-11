@@ -46,6 +46,14 @@
             <%- post.content %>
         </div>
     </section>
+    <script>
+      //set up fancybox
+      $("figure img").each(function( index ) {
+        var t = $(this)
+        t.wrap(`<a href='${t.attr('src')}'></a>`)
+      });
+      $("figure a").fancybox();
+    </script>
   </main>
     <%- include partials/footer.ejs %>
   </body>
