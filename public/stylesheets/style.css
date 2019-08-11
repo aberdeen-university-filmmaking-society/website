@@ -145,6 +145,12 @@ li a:active{
   margin-bottom:4px;
   color:rgba(255,255,255,1);
 }
+.postcontent li{
+  margin-top:12px;
+}
+.postcontent strong{
+  color:rgba(255,255,255,0.85);
+}
 .sectionheader{
   margin-top:32px;
 }

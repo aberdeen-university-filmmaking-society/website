@@ -196,7 +196,7 @@ router.get('/posts/:id', function(req, res, next) {
   postmanager.get(req.params.id, function(result){
     if(result){
       tagmanager.getTagsForPost(req.params.id,function(tags){
-        result.content = deltaToHtml(JSON.parse(result.content).ops);
+        //result.content = deltaToHtml(JSON.parse(result.content).ops);
         result = setdetails(result, req.params.id, true);
         res.render('post', { page:'post', post:result, tags:tags });
       });
