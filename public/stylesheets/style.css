@@ -625,6 +625,7 @@ display: none;
   }
   .carousell a:last-child {
     border-right: solid transparent 12px;
+    background-clip: padding-box;
   }
 }
 @media only screen and (max-width: 600px) {
