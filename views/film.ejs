@@ -65,7 +65,8 @@
             object-fit:cover;
         }
         .fancybox-bg{
-            background-color:rgba(0,0,0,0.8)
+            background-color:rgba(0,0,0,0.8);
+            flex: 0 0 auto;
         }
 
     </style>
@@ -108,7 +109,7 @@
     <% if(film.behindthescenes && (film.behindthescenes.story!=undefined || (film.behindthescenes.pics && film.behindthescenes.pics.length>0))) { %>
         <section class="mobilemargin-none" style="margin-bottom:12px;">
             <h1 class="sectionheader mobilemargin-left">BEHIND THE SCENES</h1>
-            <div class="film-bts-story mobilemargin-left"><%- film.behindthescenes.story %></div>
+            <div class="film-bts-story mobilemargin-left mobilemargin-right"><%- film.behindthescenes.story %></div>
             <% if(film.behindthescenes.pics && film.behindthescenes.pics.length>0) { %>
                 <div class="carousell mobilepadding-left gallery">
                     <% film.behindthescenes.pics.forEach(pic=>{ %>

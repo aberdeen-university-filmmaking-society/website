@@ -369,6 +369,9 @@ overflow-y:hidden;
 .carousell::-webkit-scrollbar { 
 display: none;
 }
+.carousell a:last-child {
+  border-right: solid 12px transparent;
+}
 .film-anchor{
   flex: 0 0 auto;
   width:192px;
