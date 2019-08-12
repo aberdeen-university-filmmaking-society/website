@@ -4,13 +4,20 @@ This is the source code for AUFS' website (Aberdeen University's Filmmaking Soci
 
 This project is maintained by the AUFS commitee.
 
-## Voting platform
+## Environment variables
 
-Our voting platform exposes two public pages:
+These can be set in a `.env` file placed alongside `app.js`
 
-* **Results page** (`/results`) Displays the currently active (or armed) vote.
-
-* **Voting page** (`/vote`) Allows anyone to vote one single time per vote.
+* **`GOOGLE_CLIENT_ID`**: Client ID for Google Analytics
+* **`GOOGLE_CLIENT_SECRET`**: Client secret for Google Analytics
+* **`DATABASE_HOST`**: The host name of the MySQL server
+* **`DATABASE_USER`**: The user used to connect to MySQL
+* **`DATABASE_PASSWORD`**: The password used to connect to MySQL
+* **`DATABASE_NAME`**: The name of the SQL Database to use
+* **`LAUNCH_DATE`**: If it is in the future, any unauthenticated request will render `countdown.ejs`
+* **`GM_PATH`**: The location of gm (GraphicsMagick). Can be undefined if unecessary.
+* **`URL_START`**: The beginning of the URL (ex: `https://aufilmmaking.co.uk`), used for redirections and various link generation features
+* **`SESSION_SECRET`**: Any random passcode (used by express-session)
 
 ### Socket message types
 
