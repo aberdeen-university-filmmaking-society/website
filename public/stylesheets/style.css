@@ -369,9 +369,7 @@ overflow-y:hidden;
 .carousell::-webkit-scrollbar { 
 display: none;
 }
-.carousell a:last-child {
-  border-right: solid 12px transparent;
-}
+
 .film-anchor{
   flex: 0 0 auto;
   width:192px;
@@ -585,6 +583,11 @@ display: none;
   color:rgba(5, 24, 117, 1)
 }
 
+.fancybox-bg{
+  background-color:rgba(0,0,0,0.8);
+  flex: 0 0 auto;
+}
+
 
 /* MUST REMAIN AT END */
 @media only screen and (max-width: 812px) {
@@ -619,6 +622,10 @@ display: none;
   .allposts{
     margin-left:0px;
     margin-right:0px;
+  }
+  .carousell a:last-child {
+    content: "";
+    flex: 0 0 12px;
   }
 }
 @media only screen and (max-width: 600px) {
