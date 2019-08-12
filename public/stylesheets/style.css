@@ -624,8 +624,7 @@ display: none;
     margin-right:0px;
   }
   .carousell a:last-child {
-    content: "";
-    flex: 0 0 12px;
+    border-right: solid transparent 12px;
   }
 }
 @media only screen and (max-width: 600px) {
