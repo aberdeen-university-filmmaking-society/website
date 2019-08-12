@@ -1,13 +1,16 @@
 var sessionID = "";
 var uploadedFiles = [];
 var initialFileSession = true;
+function randomId(){
+    var timestamp = Date.now().toString();
+    var random = Math.floor(Math.random() * 10000).toString();
+    return timestamp+random;
+}
 function newFileSession(){
     if(!initialFileSession){
         $.post('/admin/filemanager/remove/'+sessionID);
     }
-    var timestamp = Date.now().toString();
-    var random = Math.floor(Math.random() * 10000).toString();
-    sessionID = timestamp + random;
+    sessionID = randomId();
     uploadedFiles = [];
     initialFileSession=false;
 }
@@ -56,32 +59,52 @@ function choseFileContinue(input, listSelector, type){
     var formData = new FormData();
     formData.append('file', file);
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/admin/filemanager/upload/'+sessionID+urlappend, true);
-    xhr.send(formData);
+    var loadid = randomId();
+    appendLoadUi(listSelector, loadid, file.name)
     xhr.responseType="json";
     xhr.addEventListener('load', function(e) {
-        appendFileUi(listSelector, xhr.response.name, `/temp/${sessionID}/${xhr.response.name}_thumb.${xhr.response.extension}`, type, xhr.response.extension);
+        appendFileUi(listSelector, xhr.response.name, `/temp/${sessionID}/${xhr.response.name}_thumb.${xhr.response.extension}`, type, xhr.response.extension, "",loadid);
         uploadedFiles.push({name:xhr.response.name, extension:xhr.response.extension, type:type});
     });
     xhr.upload.addEventListener('progress', function(e) {
         var percent_complete = (e.loaded / e.total)*100;
-        // Percentage of upload completed
-        console.log(percent_complete);
+        $(`#${loadid} .fileupload-percent`).text(Math.floor(percent_complete)+"%");
+        $(`#${loadid} .fileupload-progressbar`).stop().animate({width:percent_complete+"%"});
     });
+    xhr.open('POST', '/admin/filemanager/upload/'+sessionID+urlappend, true);
+    xhr.send(formData);
 }
-function appendFileUi(listSelector, fileid, thumburl, type, extension, caption){
-    var captionvalue = "";
-    if(caption) captionvalue=`value="${caption}"`;
+function appendLoadUi(listSelector, id, filename){
     $(listSelector).append(`
-        <div class="uploadedFile" style="height: 64px;position: relative;margin-bottom:4px;" data-uploadname="${fileid}" data-extension="${extension}" data-type="${type}">
-            <img class="uploaded-thumb" src="${thumburl}" style="width:64px;height:64px;position:absolute;object-fit:cover;">
-            <div style="width: calc(100% - 72px);position: absolute;left: 72px;">
-                <input class="uploaded-caption" type="text" style="padding:6px;font-size:12px;margin-top:4px;" placeholder="Caption" ${captionvalue}>
-                <button class="smallbtn" style="font-size:11px;margin-top:0px;display:inline-block;" onclick="cancelFile('${fileid}')">REMOVE FILE</button>
-                <i class="move fas fa-arrows-alt"></i>
+        <div id="${id}" class="uploadingFile" style="height: 64px;position: relative;margin-bottom:4px;width:100%;padding:12px;box-sizing:border-box;">
+            <strong>Uploading ${filename}...</strong>
+            <div class="fileupload-percent">0%</div>
+            <div style="width:100%;height:2px;background-color:rgba(0,0,0,0.1);position:relative;">
+                <div class="fileupload-progressbar" style="position:absolute;height:2px;background-color:rgba(5,24,117,1);">
             </div>
         </div>`)
         $(listSelector).sortable({animation:150, axis:'y'});
+}
+function appendFileUi(listSelector, fileid, thumburl, type, extension, caption, loadid){
+    var captionvalue = "";
+    if(caption) captionvalue=`value="${caption}"`;
+    var nodeHtml = `
+    <div class="uploadedFile" style="height: 64px;position: relative;margin-bottom:4px;" data-uploadname="${fileid}" data-extension="${extension}" data-type="${type}">
+        <img class="uploaded-thumb" src="${thumburl}" style="width:64px;height:64px;position:absolute;object-fit:cover;">
+        <div style="width: calc(100% - 72px);position: absolute;left: 72px;">
+            <input class="uploaded-caption" type="text" style="padding:6px;font-size:12px;margin-top:4px;" placeholder="Caption" ${captionvalue}>
+            <button class="smallbtn" style="font-size:11px;margin-top:0px;display:inline-block;" onclick="cancelFile('${fileid}')">REMOVE FILE</button>
+            <i class="move fas fa-arrows-alt"></i>
+        </div>
+    </div>`
+    var loadui=document.getElementById(loadid);
+    if(loadui){
+        $(loadui).replaceWith(nodeHtml)
+    }
+    else{
+        $(listSelector).append(nodeHtml)
+    }
+    $(listSelector).sortable({animation:150, axis:'y'});
 }
 function uploadFile(file){
     var formData = new FormData();
