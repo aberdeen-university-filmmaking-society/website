@@ -141,14 +141,19 @@ li a:active{
   margin-top:12px;
   color:rgba(255,255,255,0.75);
 }
-.postcontent h1,.postcontent h2,.postcontent h3,.postcontent h4,.postcontent h5, .postcontenth6{
+.postcontent h1,.postcontent h2,.postcontent h4,.postcontent h5, .postcontenth6{
   margin-bottom:4px;
   color:rgba(255,255,255,1);
+}
+.postcontent h3{
+  font-weight: normal;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 2px;
 }
 .postcontent li{
   margin-top:12px;
 }
-.postcontent strong{
+.postcontent p strong{
   color:rgba(255,255,255,0.85);
 }
 figure{
