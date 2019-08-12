@@ -63,9 +63,9 @@
             <div class="togglecontainer">
                     <label for="settingsDramaticmusic">Stressful music:</label>
                     <select id="settingsMusic" onchange="changedsettings('votingmusic',$(this).val());">
-                        <option value="0">Disabled</option>
-                        <option value="1">Ambient</option>
-                        <option value="2">Intense</option>
+                        <option value="0" <% if(settings.votingmusic==0){ %>selected<% } %>>Disabled</option>
+                        <option value="1" <% if(settings.votingmusic==1){ %>selected<% } %>>Ambient</option>
+                        <option value="2" <% if(settings.votingmusic==2){ %>selected<% } %>>Intense</option>
                     </select>
                 </div>
                 <div class="togglecontainer">
