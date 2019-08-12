@@ -77,9 +77,11 @@ function appendFileUi(listSelector, fileid, thumburl, type, extension, caption){
             <img class="uploaded-thumb" src="${thumburl}" style="width:64px;height:64px;position:absolute;object-fit:cover;">
             <div style="width: calc(100% - 72px);position: absolute;left: 72px;">
                 <input class="uploaded-caption" type="text" style="padding:6px;font-size:12px;margin-top:4px;" placeholder="Caption" ${captionvalue}>
-                <button class="smallbtn" style="font-size:11px;margin-top:0px;" onclick="cancelFile('${fileid}')">REMOVE FILE</button>
+                <button class="smallbtn" style="font-size:11px;margin-top:0px;display:inline-block;" onclick="cancelFile('${fileid}')">REMOVE FILE</button>
+                <i class="move fas fa-arrows-alt"></i>
             </div>
         </div>`)
+        $(listSelector).sortable({animation:150, axis:'y'});
 }
 function uploadFile(file){
     var formData = new FormData();

@@ -28,17 +28,6 @@
             font-size:14px;
             width:32px;
         }
-        .faq-template .move{
-            position: absolute;
-    display: block;
-    right: -2px;
-    top: 36px;
-    padding: 6px;
-    font-size: 24px;
-    opacity: 0.4;
-    cursor: move;
-    color: rgba(5,24,117,1);
-        }
     </style>
     <div id="hint" style="margin-top:12px;"></div>
     <div id="faqeditor" style="display: none;margin-top:12px;">
@@ -77,7 +66,9 @@
                 $('#faqeditor-list').sortable({
                     stop:function(){
                         buildFaqHtml();
-                    }
+                    },
+                    animation:150,
+                    axis:'y'
                 });
                 $('.autogrow').autogrow({vertical: true, horizontal: false});
             }

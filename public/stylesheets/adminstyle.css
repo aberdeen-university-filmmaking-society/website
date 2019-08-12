@@ -655,3 +655,26 @@ input.toggle:checked + label:after {
 .quillcontainer{
   height:256px !important;
 }
+.move{
+position: absolute;
+display: block;
+right: -2px;
+top: 36px;
+padding: 6px;
+font-size: 24px;
+opacity: 0.4;
+cursor: move;
+color: rgba(5,24,117,1);
+}
+.uploadedFile .move{
+  position: relative;
+  display: inline;
+  right: 0px;
+  left: 6px;
+  top: 4px;
+  padding: 0;
+  font-size: 20px;
+}
+.uploadedFile:only-child .move{
+  display: none;
+}
