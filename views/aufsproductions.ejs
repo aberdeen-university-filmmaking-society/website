@@ -251,14 +251,18 @@
                     <div class="film-desc" style="display: flex;flex-direction: column;">
                         <div class="film-title"><%= project.film.title %></div>
                         <div class="film-description" style="margin-top:0px;"><%- project.film.description %></div>
-                        <% console.log(project.film) %>
-                        <div style="margin-top:auto;">
-                            <% if(project.film.behindthescenes && project.film.behindthescenes.story) { %>
-                              <div class="film-description" style="margin-top:12px;opacity:1;"><%- project.film.behindthescenes.story %></div>
-                            <% } %>
-                        </div>
                     </div>
                   </a>
+                  <% if(project.film.behindthescenes && (project.film.behindthescenes.story!=undefined || (project.film.behindthescenes.pics && project.film.behindthescenes.pics.length>0))) { %>
+                        <div class="film-bts-story mobilemargin-left mobilemargin-right"><%- project.film.behindthescenes.story %></div>
+                        <% if(project.film.behindthescenes.pics && project.film.behindthescenes.pics.length>0) { %>
+                            <div class="carousell mobilepadding-left gallery">
+                                <% project.film.behindthescenes.pics.forEach(pic=>{ %>
+                                    <a data-fancybox="gallery" href="<%= pic.full %>" <% if(pic.caption) { %>data-caption="<%= pic.caption %>" alt="<%= pic.caption %>" title="<%= pic.caption %>"<% } %> class="bts-pic-container"><img src="<%= pic.thumb %>"></a>
+                                    <% }); %>
+                                <% } %>
+                            </div>
+                    <% } %>
               <% }) %>
               <% } %>
             </div>
