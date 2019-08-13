@@ -157,6 +157,7 @@ router.get('/productions', function(req, res, next) {
                 film.description = deltaToHtml(JSON.parse(film.description).ops);
                 film.behindthescenes = JSON.parse(film.behindthescenes);
                 film.behindthescenes.story = deltaToHtml(JSON.parse(film.behindthescenes.story).ops);
+                film.behindthescenes.pics = [];
                 film = filmFilesToImages(film);
                 pastprojects.push({year: prodpage.past[i].year, film: setdetails(film)})
                 break;
