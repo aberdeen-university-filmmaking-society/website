@@ -151,8 +151,15 @@
                 var hours = "";
                 var minutes = "";
                 var seconds = "";
-                if(t.totalseconds>=86400)
-                    days = t.days +" days<br>";
+                if(t.totalseconds>=86400){
+                    if(t.days==1){
+                        days = "1 day<br>";
+                    }
+                    else{
+                        days = t.days +" days<br>";
+                    }
+                }
+                    
                 if(t.totalseconds>=3600)
                     hours = ('0' + t.hours).slice(-2);
                 if(t.totalseconds>=60)
