@@ -247,14 +247,14 @@ figcaption{
 
 .allposts{
   margin-top:2px;
-  margin-right:-2px;
-  margin-left:-2px;
 }
 
 .posts-container{
   display: flex;
   flex-wrap: wrap;
   flex-grow:2;
+  margin-left: -2px;
+  margin-right: -2px;
 }
 .post-anchor{
   min-width:200px;
@@ -644,6 +644,11 @@ display: none;
   .allposts{
     margin-left:0px;
     margin-right:0px;
+    overflow-x:hidden;
+  }
+  .posts-container{
+    margin-left: -2px;
+    margin-right: -2px;
   }
   .carousell a:last-child {
     border-right: solid transparent 12px;
