@@ -128,7 +128,7 @@
           </div>
 
 
-        <% if(locals.committee) { %>
+        <% if(locals.committee && locals.committee.members) { %>
           <div class="pagetitle" style="margin-bottom:6px;text-align: center;margin:auto;"><%= committee.name %></div>
           <style>
             .com-list{
@@ -225,16 +225,73 @@
     <section>
         <div class="pagetitle" style="margin-bottom:6px">Useful links</div>
         <style>
-        li{
+        .linkboxes{
+          display: flex;
+          flex-wrap:wrap;
+        }
+        .linkboxes > a{
+          text-decoration: none;
+          display: block;
+          flex-basis: 96px;
+          text-align: center;
+          padding: 12px;
+        }
+        .linkboxes > a .icon{
+          font-size:36px;
+          opacity:0.8;
+          transition:all 0.2s;
+        }
+        .linkboxes > a:hover .icon{
+          transform: scale(1.05);
+          opacity:1;
+        }
+        .linkboxes > a:active .icon{
+          transform: scale(1.1);
+          opacity:1;
+        }
+        .linkboxes > a span{
+          display: block;
           margin-top:12px;
+          opacity:0.6;
+          transition:all 0.2s;
+        }
+        .linkboxes > a:hover span{
+          transform: translateY(4px);
+          opacity:0.8;
+        }
+        .linkboxes > a:active span{
+          transform: translateY(6px);
+          opacity:0.8;
         }
         </style>
-            <ul>
-                <li><a href="/about/constitution">AUFS Constitution</a></li>
-                <li><a href="https://github.com/aberdeen-university-filmmaking-society/website">About the website</a></li>
-                <li><a href="/admin">Administrative Panel</a></li>
-              </ul>
-
+        <div class="linkboxes">
+            <a href="https://www.ausa.org.uk/societies/society/cinergi/">
+              <img class="icon" src="/images/ausa.svg" style="height: 48px;margin-top: -6px;margin-bottom: -6px;">
+              <span>Page on AUSA</span>
+            </a>
+          <a href="/about/constitution">
+            <i class="icon fas fa-scroll"></i>
+            <span>Constitution</span>
+          </a>
+          <a href="/vote">
+            <i class="icon fas fa-vote-yea"></i>
+            <span>Voting page</span>
+          </a>
+          <a href="/results">
+            <i class="icon fas fa-poll-h"></i>
+            <span>Vote results</span>
+          </a>
+        </div><br>
+        <div class="linkboxes">
+            <a href="/admin">
+              <i class="icon fas fa-users-cog"></i>
+              <span>Admin panel</span>
+            </a>
+          <a href="https://github.com/aberdeen-university-filmmaking-society/website">
+            <i class="icon fas fa-file-code"></i>
+            <span>Source code</span>
+          </a>
+        </div>
     </section>
     <script></script>
   </main>
