@@ -375,7 +375,7 @@ display: none;
   flex: 0 0 auto;
   width:192px;
   margin-right:4px;
-  margin-top:8px;
+  margin-bottom:8px;
 }
 .film-anchor:link{
   text-decoration: none !important;
@@ -528,7 +528,7 @@ display: none;
   font-size: 20px;
   font-weight: bold;
   margin-top: 32px;
-  margin-bottom: 0px;
+  margin-bottom: 8px;
   top: 0;
   align-self: flex-start;
 }
