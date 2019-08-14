@@ -112,42 +112,14 @@
             max-width: 100%;
           }
         }
-        a.videodetails{
-          text-decoration: none;
-        }
-        .film-desc{
-          transition:all 0.2s;
-        }
-        .film-title{
-          transition:all 0.2s;
-        }
-        a:hover .film-desc{
-          transform:translate(4px);
-        }
-        a:hover .film-title{
-          opacity:1;
-        }
         .film-poster{
           overflow: hidden;
         }
         .film-poster img{
           transition:all 0.2s;
         }
-        a:hover .film-poster img{
-          transform:scale(1.05);
-        }
-        a:active .film-poster img{
-          transform:scale(1.075);
-        }
         .film-description{
           transition:all 0.2s;
-        }
-        a:hover .film-description{
-          opacity:0.9;
-          
-        }
-        a:active .film-desc{
-          transform:translateX(6px);
         }
         h1{
           font-size:21px;
@@ -238,32 +210,37 @@
           </div>
        </section> 
        <% } %>
-      <section>
+      <section class="mobilemargin-none">
             <div style="margin-top:42px;">
               <% if(pastprojects) { %>
               <% pastprojects.forEach(project=>{ %>
-                <h1 style="margin-top:24px;"><%= project.year %></h1>
-                <a class="videodetails" style="margin-top:6px;" href="/films/<%= project.film.slug %>">
-                    <div class="film-poster" class="bts-pic-container" style="--aspectratio:2/1">
-                          <img src="<% if(project.film.poster && project.film.poster.thumb) { %><%= project.film.poster.thumb %><% } else { %>/images/blankposter.png<% } %>">
-                    </div>
-                    <div class="film-title film-title-responsive <% if(!project.film.poster) {%>noposter<% } %>"><%= project.film.title %></div>
-                    <div class="film-desc" style="display: flex;flex-direction: column;">
-                        <div class="film-title"><%= project.film.title %></div>
-                        <div class="film-description" style="margin-top:0px;"><%- project.film.description %></div>
-                    </div>
-                  </a>
-                  <% if(project.film.behindthescenes && (project.film.behindthescenes.story!=undefined || (project.film.behindthescenes.pics && project.film.behindthescenes.pics.length>0))) { %>
-                        <div class="film-bts-story mobilemargin-left mobilemargin-right"><%- project.film.behindthescenes.story %></div>
-                        <% if(project.film.behindthescenes.pics && project.film.behindthescenes.pics.length>0) { %>
-                            <div class="carousell mobilepadding-left gallery" style="filter: drop-shadow(0px 0px 12px rgba(0,0,0,0.3));">
+                <h1 style="margin-top:24px;" class="mobilemargin-left"><%= project.year %></h1>
+                <div class="videodetails mobilemargin-left mobilemargin-right" style="margin-top:6px;margin-bottom:12px;">
+                  <div class="film-poster" class="bts-pic-container" style="--aspectratio:2/1">
+                    <img src="<% if(project.film.poster && project.film.poster.thumb) { %><%= project.film.poster.thumb %><% } else { %>/images/blankposter.png<% } %>">
+                  </div>
+                  <div class="film-title film-title-responsive <% if(!project.film.poster) {%>noposter<% } %>"><%= project.film.title %></div>
+                  <div class="film-desc" style="display: flex;flex-direction: column;">
+                      <div class="film-title"><%= project.film.title %></div>
+                      <div class="film-description" style="margin-top:0px;"><%- project.film.description %></div>
+                      
+                  </div>
+                </div>
+                <a class="mobilemargin-left link-viewall mobilemargin-left" style="margin-bottom:12px;display:block;float:none;" href="/films/<%= project.film.slug %>">VIEW FILM PAGE&nbsp;&nbsp;<i class="fas fa-arrow-right"></i></a>
+                
+                <% if(project.film.behindthescenes && (project.film.behindthescenes.story!=undefined || (project.film.behindthescenes.pics && project.film.behindthescenes.pics.length>0))) { %>
+                  <div class="film-bts-story mobilemargin-left mobilemargin-right"><%- project.film.behindthescenes.story %></div>
+                  <% if(project.film.behindthescenes.pics && project.film.behindthescenes.pics.length>0) { %>
+                    <div class="carousell mobilepadding-left gallery" style="filter: drop-shadow(0px 0px 12px rgba(0,0,0,0.3));">
                                 <% project.film.behindthescenes.pics.forEach(pic=>{ %>
                                     <a data-fancybox="gallery" href="<%= pic.full %>" <% if(pic.caption) { %>data-caption="<%= pic.caption %>" alt="<%= pic.caption %>" title="<%= pic.caption %>"<% } %> class="bts-pic-container"><img src="<%= pic.thumb %>"></a>
                                     <% }); %>
                                 <% } %>
-                            </div>
-                    <% } %>
-              <% }) %>
+                    </div>
+                  <% } %>
+
+                <% }) %>
+
               <% } %>
             </div>
         </section>
