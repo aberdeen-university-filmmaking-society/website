@@ -17,7 +17,7 @@ CKEDITOR.plugins.add('ckawesome', {
     
     init: function(editor) {
     	var config = editor.config;
-    	editor.fontawesomePath = config.fontawesomePath ? config.fontawesomePath : '//use.fontawesome.com/releases/v5.8.1/css/all.css';
+    	editor.fontawesomePath = config.fontawesomePath ? config.fontawesomePath : '//use.fontawesome.com/releases/v5.9.0/css/all.css';
 
     	CKEDITOR.document.appendStyleSheet(editor.fontawesomePath);
     	if( editor.addContentsCss ) {

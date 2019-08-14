@@ -8,4 +8,5 @@ CKEDITOR.editorConfig = function( config ) {
 	// config.language = 'fr';
 	// config.uiColor = '#AADC6E';
 	config.extraPlugins = 'ckawesome';
+	config.fontawesomePath = "/stylesheets/fontawesome.min.css"
 };
