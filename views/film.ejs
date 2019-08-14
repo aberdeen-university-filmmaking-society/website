@@ -96,7 +96,7 @@
             <h1 class="sectionheader mobilemargin-left">BEHIND THE SCENES</h1>
             <div class="film-bts-story mobilemargin-left mobilemargin-right"><%- film.behindthescenes.story %></div>
             <% if(film.behindthescenes.pics && film.behindthescenes.pics.length>0) { %>
-                <div class="carousell mobilepadding-left gallery">
+                <div class="carousell mobilepadding-left gallery" style="filter: drop-shadow(0px 0px 12px rgba(0,0,0,0.3));">
                     <% film.behindthescenes.pics.forEach(pic=>{ %>
                         <a data-fancybox="gallery" href="<%= pic.full %>" <% if(pic.caption) { %>data-caption="<%= pic.caption %>" alt="<%= pic.caption %>" title="<%= pic.caption %>"<% } %> class="bts-pic-container"><img src="<%= pic.thumb %>"></a>
                         <% }); %>
