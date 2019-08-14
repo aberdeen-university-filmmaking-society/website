@@ -214,7 +214,7 @@
             <div style="margin-top:42px;">
               <% if(pastprojects) { %>
               <% pastprojects.forEach(project=>{ %>
-                <h1 style="margin-top:24px;" class="mobilemargin-left"><%= project.year %></h1>
+                <h1 style="margin-top:24px;margin-bottom:12px;" class="mobilemargin-left"><%= project.year %></h1>
                 <div class="videodetails mobilemargin-left mobilemargin-right" style="margin-top:6px;margin-bottom:12px;">
                   <div class="film-poster" class="bts-pic-container" style="--aspectratio:2/1">
                     <img src="<% if(project.film.poster && project.film.poster.thumb) { %><%= project.film.poster.thumb %><% } else { %>/images/blankposter.png<% } %>">
@@ -223,11 +223,11 @@
                   <div class="film-desc" style="display: flex;flex-direction: column;">
                       <div class="film-title"><%= project.film.title %></div>
                       <div class="film-description" style="margin-top:0px;"><%- project.film.description %></div>
-                      
+                      <a class="mobilemargin-left link-viewall mobilemargin-left" style="margin-bottom:12px;display:block;float:none;" href="/films/<%= project.film.slug %>">VIEW FILM PAGE&nbsp;&nbsp;<i class="fas fa-arrow-right"></i></a>
+                
                   </div>
                 </div>
-                <a class="mobilemargin-left link-viewall mobilemargin-left" style="margin-bottom:12px;display:block;float:none;" href="/films/<%= project.film.slug %>">VIEW FILM PAGE&nbsp;&nbsp;<i class="fas fa-arrow-right"></i></a>
-                
+
                 <% if(project.film.behindthescenes && (project.film.behindthescenes.story!=undefined || (project.film.behindthescenes.pics && project.film.behindthescenes.pics.length>0))) { %>
                   <div class="film-bts-story mobilemargin-left mobilemargin-right"><%- project.film.behindthescenes.story %></div>
                   <% if(project.film.behindthescenes.pics && project.film.behindthescenes.pics.length>0) { %>
