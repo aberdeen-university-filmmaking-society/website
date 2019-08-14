@@ -9,4 +9,5 @@ CKEDITOR.editorConfig = function( config ) {
 	// config.uiColor = '#AADC6E';
 	config.extraPlugins = 'ckawesome';
 	config.fontawesomePath = "/stylesheets/fontawesome.min.css"
+	config.allowedContent = true;
 };
