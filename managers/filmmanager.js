@@ -104,7 +104,7 @@ RIGHT JOIN
      WHERE at2.filmid = @id
      GROUP BY at1.filmid
      HAVING at1.filmid != @id
-     ORDER BY common_tag_count DESC) AS tagresults ON Films.id = tagresults.filmid`
+     ORDER BY common_tag_count DESC) AS tagresults ON Films.id = tagresults.filmid WHERE hidden=false`
 
   sqlcon.query(sql, [id], function(err, results){
       if(err || !results[1]){
