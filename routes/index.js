@@ -182,6 +182,9 @@ router.get('/productions', function(req, res, next) {
 router.get('/faq', function(req, res, next) {
   res.render('faq', { page:'faq', body: pagemanager.pages.faq});
 });
+router.get('/donate', function(req, res, next) {
+  res.render('donate', { page:'donate', op:req.query.op });
+});
 
 router.get('/posts', function(req, res, next) {
   postmanager.getall(false, function(results){

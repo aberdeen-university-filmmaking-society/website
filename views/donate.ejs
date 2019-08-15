@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <title>Donate to AUFS</title>
+      <meta property="og:title" content="Donate to AUFS">
+  
+      <meta property="og:type" content="website" />
+      <meta property="og:image" content="<%= process.env.URL_START %>/images/cover.jpg">
+
+    <%- include partials/head.ejs %>
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+    integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+
+    </head>
+  <body>
+      <style>
+          code{
+              color:white;
+          }
+      </style>
+      <%- include partials/header.ejs %>
+      <main>
+      <section>
+          <% if(locals.op=="cancel") { %>
+            <div class="pagetitle" style="margin-bottom:0;">Help the society</div>
+            <p style="color:white;margin-bottom:24px;">Do you still wish to donate to AUFS? You can always do so with a direct bank transfer, or <a href="mailto:aufilmmakingsociety@gmail.com">get into contact with us</a> to see how else you can help!</p>
+          <% } else if(locals.op=="complete") { %>
+            <div class="pagetitle">Thank you so much for your donation!</div>
+          <% } else { %>
+          <div class="pagetitle">Help the society</div>
+          <% } %>
+          <p>
+              AUFS is a non-profit, we therefore rely on fundraisers, donations, and our small membership fee in order to:
+              </p>
+              <ul>
+                  <li>Buy equipement for our members to use</li>
+                  <li>Fund trips organized by AUFS, such as the one to the Glasgow Film Festival</li>
+                  <li>Promote the society and it's activities</li>
+              </ul>
+              <p>
+                    As you probably know, filmmaking is unfortunately still an expensive activity, therefore any donations, big or small, are more than welcome.
+
+              </p>
+          <h1>You can donate in the following ways:</h1>
+          <h3>Bank transfer</h3>
+          <p>
+            Account number:&nbsp;<code>16145667</code><br>
+            Sort code:&nbsp;<code>80-22-60</code><br>
+          </p>
+          <h3>PayPal</h3>
+          <p>(You don't need a PayPal account to donate via PayPal)</p>
+          <style>
+          .donate{
+            background-color: transparent;
+            color: rgb(255,157,0);
+            font-style: italic;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 8px;
+            margin-bottom:6px;
+            border: solid rgba(255, 157, 0, 0.8) 2px;
+            border-radius: 24px;
+            transition: all 0.2s;
+            outline-style: none;
+            width:140px;
+          }
+          .donate:hover{
+              transform:scale(0.98);
+              border: solid rgba(255, 157, 0, 1) 2px;
+          }
+          .donate:active{
+              background-color:rgb(255,157,0);
+              color:#074C83;
+          }
+          </style>
+          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+            <input type="hidden" name="cmd" value="_s-xclick" />
+            <input type="hidden" name="hosted_button_id" value="9UMQHM8769E36" />
+            <button class="donate" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button">
+                Donate
+            </button><br>
+            <img src="/images/donateproviders.svg" style="max-width:140px;">
+            <img alt="" border="0" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1" />
+            </form>
+      </section>
+    </main>
+      <%- include partials/footer.ejs %>
+    </body>
+</html>
