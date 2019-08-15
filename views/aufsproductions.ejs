@@ -103,6 +103,7 @@
           font-style: italic;
           max-width:45%;
           min-width:200px;
+          align-self:stretch;
         }
         @media only screen and (max-width: 500px){
           .timeline{
@@ -180,8 +181,11 @@
                     </div>
                 </div>
                 <% if(currentAnticipation) { %>
-                  <div class="anticipationtext">
-                     <%- currentAnticipation %>
+                  <div class="anticipationtext" style="margin-top:<%= timelineheight-timelineindicatorHeight %>px">
+                    <div>
+                        <%- currentAnticipation %>
+                    </div>
+
                   </div>
                   <% } %>
             </div>
