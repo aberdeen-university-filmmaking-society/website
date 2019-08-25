@@ -259,8 +259,8 @@ router.get('/films/:slug', function(req, res, next) {
         result.shortdesc = "Aberdeen University Filmmaking Society";
         if(result.description) result.shortdesc = html2text(result.description);
         result.behindthescenes.story = deltaToHtml(JSON.parse(result.behindthescenes.story).ops);
-        result.date = formatDatePrecise(new Date(Number.parseInt(result.date)));
         result.dateTimestamp = Number.parseInt(result.date);
+        result.date = formatDatePrecise(new Date(Number.parseInt(result.date)));
         result.behindthescenes.pics = [];
         result = filmFilesToImages(result);
         filmmanager.getrecommended(result.id, result.dateTimestamp, function(similar){
