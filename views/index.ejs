@@ -4,7 +4,7 @@
     <title>Aberdeen University Filmmaking Society | AUFS</title>
     <meta property="og:title" content="Aberdeen University Filmmaking Society">
 
-    <meta name="description" content="AUFS is a place for its members to learn filmmaking (by making films) while having fun and acquiring valuable skills.">
+    <meta name="description" content="AUFS is the best place for students at the University of Aberdeen to learn filmmaking (by making films) while having fun and acquiring valuable skills">
     <meta property="og:description" content="">
 
     <meta property="og:type" content="website" />
@@ -66,7 +66,7 @@
       <div class="posts-container" >
         <% posts.forEach(post=>{ %>
           <a class="post-anchor" href="<% if (post.redirect) { %><%= post.redirect %><% } else { %>/posts/<%= post.id %><% } %>">
-            <div class="post-container" style="">
+            <div class="post-container">
                 <% if(post.image && post.image.thumb) { %>
                 <div class="post-imagecontainer">
                   <img class="post-image" src="<%= post.image.thumb %>" <% if(post.image.caption) { %>alt="<%= post.image.caption %>"<% } %>>
@@ -86,10 +86,14 @@
       <a href="/posts" class="link-viewall mobilemargin-right">VIEW ALL&nbsp;<i class="fas fa-arrow-right"></i></a><br>
     </section>
     <% } %>
+    <section style="margin-top:48px;">
+      <p style="margin-bottom:0;">AUFS <em>(Aberdeen University Filmmaking Society)</em> is a place for it's members to learn about filmmaking in a hands-on way, have fun, and help students who wish to break into the film industry. You don't need to be a student at the University of Aberdeen to join, everyone is welcome!</p>
+      <a href="/about" class="link-viewall mobilemargin-right">ABOUT US&nbsp;<i class="fas fa-arrow-right"></i></a><br>
+    </section>
     <% if(locals.films) { %>
-    <section class="mobilemargin-none">
+    <section class="mobilemargin-none" style="margin-top:24px;">
       <div class="mobilemargin-right mobilemargin-left">
-          <h1 class="sectionheader">OUR FILMS</h1>
+          <h2 class="sectionheader">OUR FILMS</h2>
           <p>These are the shorts created by our members during the term. AUFS provides opportunities and ressources, however the content of the movies is entirely up to our members!</p>
       </div>
 
@@ -116,7 +120,7 @@
     <% } %>
     <section class="mobilemargin-none">
       <div class="mobilemargin-right mobilemargin-left">
-        <h1 class="sectionheader">AUFS PRODUCTIONS</h1>
+        <h2 class="sectionheader">AUFS PRODUCTIONS</h2>
         <p>This is a more serious branch of the society; a subset of our members will spend the entire year in a more serious and intensive environment, creating a movie that is voted upon at the beginning of the year. <a style="color:white;" href="/productions">More Info</a></p>
     </div>
         <div class="carousell carousell-productions mobilepadding-left">
