@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <title><% if(tag.fullname) { %><%= tag.fullname %><% } else { %>#<%= tag.id %><% } %> | AUFS</title>
-    <title>Aberdeen University Filmmaking Society | AUFS</title>
 
     <% if(tag.shortdesc) { %>
     <meta name="description" content="<%= tag.shortdesc %>">
@@ -68,9 +67,9 @@
               </select>
           </div>
       </div>
-      <div class="tagtitle" style="margin-top:24px;"><%= tag.fullname %></div>
+      <h1 class="tagtitle" style="margin-top:24px;"><%= tag.fullname %></h1>
     <% } else { %>
-      <div class="tagtitle">#<%= tag.id %></div>
+      <h1 class="tagtitle">#<%= tag.id %></h1>
       <div style="margin-bottom:24px;height:24px;">
           <select onchange="updatefilter(this.value)">
               <option value="all">films+posts</option>

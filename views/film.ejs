@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-        <title><%= film.title %></title>
+        <title><%= film.title %> | AUFS</title>
         <meta property="og:title" content="<%= film.title %>">
         <meta property="description" content="<%= film.shortdesc %>">
         <meta property="og:description" content="<%= film.shortdesc %>"/>
@@ -61,7 +61,7 @@
             <% } %>
             <div class="film-title film-title-responsive <% if(!film.poster) {%>noposter<% } %>"><%= film.title %><div class="film-date"><%= film.date %></div></div>
             <div class="film-desc">
-                <div class="film-title"><%= film.title %><div class="film-date"><%= film.date %></div></div>
+                <h1 class="film-title"><%= film.title %><div class="film-date"><%= film.date %></div></h1>
                 <div class="film-description"><%- film.description %></div>
                 <div class="tags">
                 <% tags.forEach(tag=>{ %><a href="/tags/<%= tag.tagid %>">#<%= tag.tagid %></a>&nbsp;<% }) %>
