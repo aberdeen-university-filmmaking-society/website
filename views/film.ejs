@@ -10,7 +10,7 @@
         <meta property="og:video:release_date" content="<%= new Date(film.dateTimestamp).toISOString(); %>">
         <% } %>
         <meta property="og:url" content="<%= process.env.URL_START %>/films/<%= film.slug %>"/>
-        <meta property="og:image" content="<% if(film.poster) { %><%= process.env.URL_START + film.poster.full %><% } else if(film.youtubeid) { %>https://i.ytimg.com/vi/<%= film.youtubeid %>/mqdefault.jpg<% } %>">
+        <meta property="og:image" content="<% if(film.poster) { %><%= process.env.URL_START + film.poster.thumb %><% } else if(film.youtubeid) { %>https://i.ytimg.com/vi/<%= film.youtubeid %>/mqdefault.jpg<% } %>">
     <%- include partials/head.ejs %>
     <script src="https://code.jquery.com/jquery-3.4.0.min.js"
     integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
