@@ -75,6 +75,13 @@
                         </div>
                         <label for="settingsDramaticreveal">Dramatic reveal delay</label>
                     </div>
+                    <div class="togglecontainer">
+                        <div>
+                            <input id="settingsZeroforlast" class="toggle" type="checkbox" onchange="changedsettings('zeroforlast',$('#settingsZeroforlast').is(':checked'))" <% if(settings.zeroforlast){ %>checked<% } %>>
+                            <label for="settingsZeroforlast"></label>
+                        </div>
+                        <label for="settingsDramaticreveal">Zero points for being ranked last</label>
+                    </div>
             <div class="av-stats">
                 <p>
                         <strong>Connected:&nbsp;</strong><span id="av-connectedcount">0</span><br>

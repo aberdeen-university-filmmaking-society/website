@@ -1,5 +1,6 @@
 var votemanager ={};
 var storage = require('./storage');
+var settings = require('./settings');
 var voteList = new Map([]);
 var voteResult = new Map([])
 var hasVoted = [];
@@ -69,12 +70,18 @@ function castFppBallot(optionTitle, userId){
     }
 }
 function castRankBallot(rankedOptions, userId){
+    var zeroforlast = settings.get().zeroforlast;
     singleuserResult = new Map([]);
     var activevote = votemanager.getActiveVote();
     for(let index = 0; index < activevote.options.length; index++){
         var userindex = rankedOptions.indexOf(activevote.options[index].title);
-        if(userindex==-1) userindex=activevote.options.length-1;
-
+        if(userindex==-1){
+            //not voted for
+            userindex=activevote.options.length-1;
+            if(zeroforlast){
+                continue;
+            }
+        }
         var oldoptionscore = voteResult.get(activevote.options[index].title);
         if(oldoptionscore==undefined)oldoptionscore=0;
 

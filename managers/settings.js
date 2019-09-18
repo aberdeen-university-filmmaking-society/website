@@ -7,7 +7,8 @@ var settingsobj={
     multiplevotes:false,
     votingmusic:0,
     dramaticreveal:false,
-    showbreakingnews:true
+    showbreakingnews:true,
+    zeroforlast:false
 };
 var storage = require('./storage');
 
