@@ -561,7 +561,7 @@
       }
       setTimeout(function () {
         var secondtimeout = 0;
-        if(realsettings.votingmusic>0){
+        if(realsettings.votingmusic>0 && !realsettings.showresults){
           sound_interrogation.fade(1, 0, 300)
           sound_answer.play();
           secondtimeout=1200;
