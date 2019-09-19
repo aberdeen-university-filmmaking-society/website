@@ -250,8 +250,8 @@
   </div>
   <div class="votecontainer <% if(locals.vote==undefined || locals.alreadyvoted === true) { %>hidden<% } %>" style="height:calc(100% - 64px);">
     <div class="voteheader">
-      <h1 id="votetitle"><% if(locals.vote!=undefined && vote.title != undefined) { %><%= vote.title %><% }%></h1>
-      <h2 id="votesubtitle"><% if(locals.vote!=undefined && vote.subtitle != undefined) { %><%= vote.subtitle %><% }%></h2>
+      <h1 id="votetitle"><% if(locals.vote!=undefined && vote.title != undefined) { %><%- decodeURIComponent(vote.title) %><% }%></h1>
+      <h2 id="votesubtitle"><% if(locals.vote!=undefined && vote.subtitle != undefined) { %><%- decodeURIComponent(vote.subtitle) %><% }%></h2>
     </div>
     <h3 id="rankedexplanation" <% if(locals.vote != undefined && vote.type!='rank') { %>class="hidden"<% } %>>SELECT OPTIONS IN ORDER OF RANKING:</h3>
     <ul id="options" class="voteoptions <% if(locals.vote != undefined && vote.type=='rank') { %>ranked<% } %>">
@@ -262,8 +262,8 @@
         <img class="optionimage" src="<%= option.image %>">
         <% }%>
         <div class="optiondetail">
-          <h3><%= option.title %></h3>
-          <h5><% if(option.subtitle!=undefined) { %><%= option.subtitle %><% }%></h5>
+          <h3><%- decodeURIComponent(option.title) %></h3>
+          <h5><% if(option.subtitle!=undefined) { %><%- decodeURIComponent(option.subtitle) %><% }%></h5>
         </div>
         <div class="selectoverlay">
           <div></div>
@@ -402,8 +402,8 @@
       $("#placeholder").addClass("hidden");
       $("#placeholdertext").text("There is currently no active vote");
 
-      $("#votetitle").text(vote.title);
-      $("#votesubtitle").text(vote.subtitle);
+      $("#votetitle").html(decodeURIComponent(vote.title));
+      $("#votesubtitle").html(decodeURIComponent(vote.subtitle));
       $("#options").html("");
       shuffle(vote.options).forEach(option => {
         var imagetag = "";
@@ -415,8 +415,8 @@
             <div class="optionrank">1</div>
           ${imagetag}
         <div class="optiondetail">
-          <h3>${option.title}</h3>
-          <h5>${option.subtitle}</h5>
+          <h3>${decodeURIComponent(option.title)}</h3>
+          <h5>${decodeURIComponent(option.subtitle)}</h5>
         </div>
         <div class="selectoverlay">
           <div></div>

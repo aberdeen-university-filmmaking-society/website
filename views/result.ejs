@@ -296,8 +296,8 @@
       <div id="resultcontainer" style="width:100%;" class="<% if(locals.vote==undefined) { %>hidden<% } %>" data-votestate="none">
         <div>
         <div id="questionHeader">
-          <h1 id="title"><% if(locals.vote!=undefined && vote.title != undefined) { %><%= vote.title %><% }%></h1>
-          <h2 id="subtitle"><% if(locals.vote!=undefined && vote.subtitle != undefined) { %><%= vote.subtitle %><% } %></h2>
+          <h1 id="title"><% if(locals.vote!=undefined && vote.title != undefined) { %><%- decodeURIComponent(vote.title) %><% }%></h1>
+          <h2 id="subtitle"><% if(locals.vote!=undefined && vote.subtitle != undefined) { %><%- decodeURIComponent(vote.subtitle) %><% } %></h2>
         </div>
         <div class="results">
           <div id="av-options" class="options-container">
@@ -372,8 +372,8 @@
         $("#av-options").append(`<div class="graph-element ${hasimage}" data-id="${option.title}" data-position="${position}">
           ${imagetag}
                   <div class="graph-text">
-                      <h4>${option.title}</h4>
-                      <h5>${option.subtitle}</h5>
+                      <h4>${decodeURIComponent(option.title)}</h4>
+                      <h5>${decodeURIComponent(option.subtitle)}</h5>
                       <div class="graph-container">
                         <span class="graph-percent"></span>
                         <div class="graph-bar" style="width:0%"></div>
@@ -401,8 +401,8 @@
       activevote = vote;
       newvotestate("active");
       $(".thirdgradient").fadeTo(200,0);
-      $("#title").text(vote.title);
-      $("#subtitle").text(vote.subtitle);
+      $("#title").html(decodeURIComponent(vote.title));
+      $("#subtitle").html(decodeURIComponent(vote.subtitle));
       $("#placeholder").addClass("hidden");
       $("#resultcontainer").removeClass("hidden");
       $("#av-options").html('');
@@ -447,8 +447,8 @@
     socket.on('vote.arm.start', function (vote) {
       newvotestate("armed");
       $(".thirdgradient").fadeTo(200,0);
-      $("#title").text(vote.title);
-      $("#subtitle").text(vote.subtitle);
+      $("#title").html(decodeURIComponent(vote.title));
+      $("#subtitle").html(decodeURIComponent(vote.subtitle));
       $("#placeholder").addClass("hidden");
       $("#resultcontainer").removeClass("hidden");
       addoptions(vote.options);

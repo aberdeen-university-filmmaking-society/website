@@ -105,8 +105,8 @@
                 <% } %>
                 <div>
                     <% var voteicon = "fa-vote-yea"; if(vote.type=='rank') voteicon = "fa-list-ol"; %>
-                    <h4><i class="fas <%= voteicon %>">&nbsp;&nbsp;</i><%= vote.title %></h4>
-                    <h5><%= vote.subtitle %></h5>
+                    <h4><i class="fas <%= voteicon %>">&nbsp;&nbsp;</i><%- decodeURIComponent(vote.title) %></h4>
+                    <h5><%- decodeURIComponent(vote.subtitle) %></h5>
                     <div class="actions">
                         <button onclick="votelistRemove(<%= id %>)"><i class="far fa-trash-alt"></i></button>
                         <button class="armbtn" onclick="votelistArm(<%= id %>)"><i
@@ -181,14 +181,21 @@
                 elements.children(".removebutton").removeClass("hidden");
             }
         }
-
+        function escapeHtml(unsafe) {
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
         function createvote(postop) {
             var options = [];
             var elements = $("#optionlist .optioncontainer:not('#optioncontainer_template')");
             elements.each(i => {
                 options.push({
-                    title: $(elements[i]).children(".optiontitle").val(),
-                    subtitle: $(elements[i]).children(".optionsubtitle").val(),
+                    title: encodeURIComponent(escapeHtml($(elements[i]).children(".optiontitle").val())),
+                    subtitle: encodeURIComponent(escapeHtml($(elements[i]).children(".optionsubtitle").val())),
                     image: $(elements[i]).children(".optionimage").val()
                 })
             });
@@ -197,8 +204,8 @@
                 type = "rank";
             }
             var voteobject = {
-                title: $("#creatorTitle").val(),
-                subtitle: $("#creatorSubtitle").val(),
+                title: encodeURIComponent(escapeHtml($("#creatorTitle").val())),
+                subtitle: encodeURIComponent(escapeHtml($("#creatorSubtitle").val())),
                 type: type,
                 options: options,
                 operation: postop
@@ -252,8 +259,8 @@
             var voteicon = "fa-vote-yea"
             if(vote.type=='rank') voteicon = "fa-list-ol";
             var html = `<li class="savedvote" data-id="${vote.id}">
-                <h4><i class="fas ${voteicon}">&nbsp;&nbsp;</i>${vote.title}</h4>
-                <h5>${vote.subtitle}</h5>
+                <h4><i class="fas ${voteicon}">&nbsp;&nbsp;</i>${decodeURIComponent(vote.title)}</h4>
+                <h5>${decodeURIComponent(vote.subtitle)}</h5>
                 <div class="actions">
                     <button onclick="votelistRemove(${vote.id})"><i class="far fa-trash-alt"></i></button>
                     <button class="armbtn" onclick="votelistArm(${vote.id})"><i class="fas fa-hourglass-start"></i></button>
