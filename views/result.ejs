@@ -542,7 +542,7 @@
       $("#av-options .graph-element").removeClass("pending");
       var timeoutdelay = 0;
       $(".graph-percent").text("0%");
-      if (realsettings.dramaticreveal){
+      if (realsettings.dramaticreveal && !realsettings.showresults){
         if(realsettings.votingmusic ==2){
           timeoutdelay = randomNumber(4000, 16000);
         }
@@ -554,7 +554,7 @@
         $(".thirdgradient").attr("style", "transition-duration:1000ms;");
         $(".thirdgradient").addClass("dramatic");
       }
-      if (realsettings.votingmusic>0) {
+      if (realsettings.votingmusic>0 && !realsettings.showresults) {
         sound_stress.fade(1, 0, 200);
         sound_interrogation.volume(1);
         sound_interrogation.play();
