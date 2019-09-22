@@ -246,7 +246,7 @@
   
   <div id="placeholder" <% if(locals.alreadyvoted != true && locals.vote!=undefined) { %>class="hidden"<% } %>>
       <img class="logo" src="/images/logo.svg">
-      <span id="placeholdertext"><% if(locals.vote==undefined) { %>There is currently no active vote<% } else if(locals.alreadyvoted === true) { %>Thank you for voting!<% } %></span>
+      <span id="placeholdertext"><% if(locals.vote==undefined) { %><%= novotetext %><% } else if(locals.alreadyvoted === true) { %>Thank you for voting!<% } %></span>
   </div>
   <div class="votecontainer <% if(locals.vote==undefined || locals.alreadyvoted === true) { %>hidden<% } %>" style="height:calc(100% - 64px);">
     <div class="voteheader">
@@ -280,6 +280,7 @@
     <button onclick="confirmvote()">VOTE</button>
   </div>
   <script>
+    var realsettings = JSON.parse('<%- realsettings %>');
 
     var voteid<% if(locals.vote!=undefined) { %>=<%= vote.id %><% }%>;
     var votetype<% if(locals.vote!=undefined) { %>="<%= vote.type %>"<% }%>;
@@ -382,6 +383,10 @@
     const socket = io('',{
             transports: ['polling']
         });
+        socket.on('other.settings.update', function (newsettings) {
+      realsettings = newsettings;
+      $("#placeholdertext").text(newsettings.novotetext);
+    });
     socket.on('vote.stop', function (vote) {
       $(".votecontainer").addClass("hidden");
       $(".confirmbtn").addClass("hidden");

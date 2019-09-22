@@ -8,7 +8,8 @@ var settingsobj={
     votingmusic:0,
     dramaticreveal:false,
     showbreakingnews:true,
-    zeroforlast:false
+    zeroforlast:false,
+    novotetext:"There is currently no active vote"
 };
 var storage = require('./storage');
 

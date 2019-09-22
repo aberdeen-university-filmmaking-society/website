@@ -27,10 +27,10 @@ router.get('/', function(req, res, next) {
     res.cookie("userid", uuid());
   if(active != undefined){
     active.options = shuffle(active.options);
-    res.render('vote', { vote: active, alreadyvoted: (!settings.get().multiplevotes && votemanager.hasVoted(req.cookies.userid)) });
+    res.render('vote', { vote: active, alreadyvoted: (!settings.get().multiplevotes && votemanager.hasVoted(req.cookies.userid)), realsettings:JSON.stringify(settings.get()), novotetext:settings.get().novotetext });
   }
   else{
-    res.render('vote');
+    res.render('vote', {realsettings:JSON.stringify(settings.get()), novotetext:settings.get().novotetext });
   }
 });
 router.post('/', function(req,res){
