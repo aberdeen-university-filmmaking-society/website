@@ -392,7 +392,7 @@
       $(".confirmbtn").addClass("hidden");
       $(".resetbtn").addClass("hidden");
       $("#placeholder").removeClass("hidden");
-      $("#placeholdertext").text("There is currently no active vote");
+      $("#placeholdertext").text(realsettings.novotetext);
       voteid = undefined;
     });
     socket.on('vote.start', function (vote) {
