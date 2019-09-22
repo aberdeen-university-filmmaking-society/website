@@ -238,6 +238,12 @@ function filmFilesToImages(result){
           else if(file.type=="btspic"){
             result.behindthescenes.pics.push(fileobj);
           }
+          else if(file.type=="award"){
+            if(!result.awards){
+              result.awards = [];
+            }
+            result.awards.push(fileobj);
+          }
         });
       }
     }catch(error){}

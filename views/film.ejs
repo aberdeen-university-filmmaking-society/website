@@ -46,7 +46,16 @@
         .carousell{
             margin-top:12px;
         }
-
+        .awards{
+            display: flex;
+            align-content: center;
+            
+        }
+        .awards img{
+            max-height: 64px;
+            object-fit: cover;
+            margin:12px;
+        }
     </style>
     <%- include partials/header.ejs %>
     <main>
@@ -73,6 +82,14 @@
         <iframe src="https://www.youtube.com/embed/<%= film.youtubeid%>?rel=0&modestbranding=1&color=white" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
     <% } %>
+    <% if(film.awards){ %>
+        <section class="awards">
+           <% film.awards.forEach(award=>{ %>
+                <img title="<%= award.caption %>" src="<%= award.full %>" alt="<% award.caption %>">
+            <% }) %>
+        </section>
+    <% } %>
+
     <% if(film.credits && Object.entries(film.credits).length > 0) { %>
     <section class="filmcredit-section" style="margin-bottom:12px;">
         <h1 class="sectionheader" style="margin-top:0">CREDITS</h1>

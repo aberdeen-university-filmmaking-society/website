@@ -107,7 +107,9 @@
                     <% var voteicon = "fa-vote-yea"; if(vote.type=='rank') voteicon = "fa-list-ol"; %>
                     <h4><i class="fas <%= voteicon %>">&nbsp;&nbsp;</i><%- decodeURIComponent(vote.title) %></h4>
                     <h5><%- decodeURIComponent(vote.subtitle) %></h5>
+                    
                     <div class="actions">
+                        <button onclick="votelistDuplicate(<%= id %>)"><i class="far fa-copy"></i></button>
                         <button onclick="votelistRemove(<%= id %>)"><i class="far fa-trash-alt"></i></button>
                         <button class="armbtn" onclick="votelistArm(<%= id %>)"><i
                                 class="fas fa-hourglass-start"></i></button>
@@ -132,6 +134,26 @@
 
         function votelistRemove(id) {
             $.post("/admin/vote/remove/" + id);
+        }
+
+        function votelistDuplicate(id){
+            $.get("/admin/vote/get/"+id,function(data){
+                $("#creatorTitle").attr("value",unescapeHtml(decodeURIComponent(data.title)));
+                $("#creatorSubtitle").attr("value",unescapeHtml(decodeURIComponent(data.subtitle)));
+                if(data.type=="rank"){
+                    $("#votetype-rank").attr("checked",true);
+                }
+                $("#optionlist .optioncontainer:not('#optioncontainer_template')").remove();
+                data.options.forEach(option => {
+                    var item = $("#optioncontainer_template").clone();
+                    item.attr("id", "");
+                    item.children(".optiontitle").attr("value",unescapeHtml(decodeURIComponent(option.title)));
+                    item.children(".optionsubtitle").attr("value",unescapeHtml(decodeURIComponent(option.subtitle)));
+                    item.children(".optionimage").attr("value",option.image);
+                    $("#addOption").before(item);
+                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
         }
 
         function votelistStart(id) {
@@ -189,6 +211,14 @@
                  .replace(/"/g, "&quot;")
                  .replace(/'/g, "&#039;");
         }
+        function unescapeHtml(safe) {
+            return safe.replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&#039;/g, "'");
+        }
+
         function createvote(postop) {
             var options = [];
             var elements = $("#optionlist .optioncontainer:not('#optioncontainer_template')");
@@ -262,6 +292,7 @@
                 <h4><i class="fas ${voteicon}">&nbsp;&nbsp;</i>${decodeURIComponent(vote.title)}</h4>
                 <h5>${decodeURIComponent(vote.subtitle)}</h5>
                 <div class="actions">
+                    <button onclick="votelistDuplicate(${vote.id})"><i class="far fa-copy"></i></button>
                     <button onclick="votelistRemove(${vote.id})"><i class="far fa-trash-alt"></i></button>
                     <button class="armbtn" onclick="votelistArm(${vote.id})"><i class="fas fa-hourglass-start"></i></button>
                     <button class="startbtn" onclick="votelistStart(${vote.id})"><i class="fas fa-play"></i></button>

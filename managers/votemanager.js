@@ -211,6 +211,9 @@ votemanager.getActiveVote = function(){
     if(activeVoteId==undefined) return undefined;
     return voteList.get(activeVoteId);
 }
+votemanager.getVote = function(id){
+    return voteList.get(id);
+}
 votemanager.hasVoted = function(id){
     if(id == undefined) return false;
     return (hasVoted.indexOf(id) != -1)

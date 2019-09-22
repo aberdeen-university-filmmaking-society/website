@@ -111,6 +111,9 @@ router.post('/vote/archive/:id', function(req,res){
   else
     res.sendStatus(400);
 });
+router.get('/vote/get/:id', function(req,res){
+  res.status(200).send(votemanager.getVote(Number(req.params.id)));
+});
 
 router.post('/posts/create',function(req, res) {
   console.log("creating post");
@@ -227,9 +230,11 @@ router.get('/films', function(req, res, next) {
     tagmanager.getAllTags(function(tags){
       tags = JSON.stringify(tagmanager.tagifyAllTags(tags));
       var slugs = [];
-      films.forEach(film=>{
-        slugs.push(film.slug);
-      });
+      if(films){
+        films.forEach(film=>{
+          slugs.push(film.slug);
+        });
+      }
       slugs = JSON.stringify(slugs);
       res.render('admin/films', { page:"films", films:films, tags:tags, settings:settings.get(), slugs:slugs });
   });

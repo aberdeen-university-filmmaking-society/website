@@ -94,6 +94,8 @@ ul.savedvotes{
   margin:0;
   padding:16px 24px;
   position: relative;
+  min-height: 65.2px;
+  box-sizing: border-box;
   transition: background 200ms;
 }
 @keyframes flashing {

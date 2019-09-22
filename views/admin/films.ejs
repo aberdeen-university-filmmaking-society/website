@@ -47,6 +47,15 @@
         <button class="smallbtn" onclick="openFile(this)" style="margin-bottom:12px;">UPLOAD POSTER</button>
     </div>
     <div id="createfilm-description" class="quillcontainer" style="min-height: 128px;margin-bottom:12px;"></div>
+    <h3>AWARD LAURELS</h3>
+    <p>Please ensure the background is transparent, the foreground is white, and that there are no margins (SVG recommended)</p>
+    <div id="uploadedAwards">
+        </div>
+        <div>
+            <input type="file" accept="image/*" onchange="choseFile(this, '#uploadedAwards', false, 'award')" style="display:none"/>
+            <button class="smallbtn" onclick="openFile(this)" style="margin-bottom:12px;">UPLOAD LAUREL</button>
+        </div>
+    <br>
     <h3>CREDITS</h3>
     <div id="createfilm-creditlist">
         <div class="createfilm-credit autoaddlist">
@@ -280,6 +289,7 @@ function slugify(string) {
     function fillWithFilmObject(film) {
         $("#uploadedPosters").empty();
         $("#uploadedBtsPics").empty();
+        $("#uploadedAwards").empty();
         $("#createfilm-title").val(film.title);
         console.log(Number.parseInt(film.date));
         datepicker.setDate(new Date(Number.parseInt(film.date)));
@@ -319,6 +329,9 @@ function slugify(string) {
                     }
                     else if(file.type=="btspic"){
                         appendFileUi("#uploadedBtsPics", file.name, '/files/'+file.name+"_thumb."+file.extension, file.type, file.extension, file.caption)
+                    }
+                    else if(file.type=="award"){
+                        appendFileUi("#uploadedAwards", file.name, '/files/'+file.name+"_thumb."+file.extension, file.type, file.extension, file.caption)
                     }
                 })
             }
