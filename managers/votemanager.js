@@ -172,7 +172,9 @@ votemanager.stopVote = function(timestampId){
     if(vote){
         if(timestampId == activeVoteId){
             activeVoteId = undefined;
-            vote.results = voteResult;
+            vote.results = maptoarray(voteResult);
+            voteList.set(timestampId,vote);
+            votemanager.savedb();
             io.emit("vote.stop",timestampId);
         }
     }
@@ -183,6 +185,7 @@ votemanager.finishVote = function(timestampId){
     if(vote){
         if(timestampId == activeVoteId){
             vote.results = voteResult;
+            voteList.s
             io.emit("vote.stop",timestampId);
         }
     }
