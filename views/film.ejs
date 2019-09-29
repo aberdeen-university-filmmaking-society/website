@@ -46,16 +46,6 @@
         .carousell{
             margin-top:12px;
         }
-        .awards{
-            display: flex;
-            align-content: center;
-            
-        }
-        .awards img{
-            max-height: 64px;
-            object-fit: cover;
-            margin:12px;
-        }
     </style>
     <%- include partials/header.ejs %>
     <main>
@@ -83,10 +73,13 @@
     </div>
     <% } %>
     <% if(film.awards){ %>
-        <section class="awards">
-           <% film.awards.forEach(award=>{ %>
+        <section>
+            <h1 class="sectionheader" style="margin-top:0;text-align: center;">AWARDS</h1>
+            <div class="awards">
+                <% film.awards.forEach(award=>{ %>
                 <img title="<%= award.caption %>" src="<%= award.full %>" alt="<% award.caption %>">
             <% }) %>
+            </div>
         </section>
     <% } %>
 
