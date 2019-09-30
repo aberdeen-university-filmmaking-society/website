@@ -613,6 +613,7 @@ display: none;
   display: flex;
   align-content: center;
   justify-content: center;
+  flex-wrap: wrap;
   padding: 0;
   margin-bottom: 32px;
   margin-left:-12px;
