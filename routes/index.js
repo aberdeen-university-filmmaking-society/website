@@ -291,6 +291,10 @@ router.get('/films/:slug', function(req, res, next) {
   });
 });
 
+router.get('/productions/reveal', function(req, res, next) {
+  res.redirect("https://instagram.com/2035film");
+});
+
 router.get('/tags/:tag', function(req, res, next) {
   tagmanager.getContentForTag(req.params.tag, req.query.filter, function(results){
     var joined=[];
