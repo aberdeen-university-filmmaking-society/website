@@ -48,6 +48,11 @@
         }
     </style>
     <%- include partials/header.ejs %>
+    <% if(film.css) { %>
+    <style>
+    <%- film.css %>
+    </style>
+    <% } %>
     <main>
         <% if(locals.authenticated) { %>
         <section class="admincontrols">

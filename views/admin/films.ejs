@@ -47,15 +47,7 @@
         <button class="smallbtn" onclick="openFile(this)" style="margin-bottom:12px;">UPLOAD POSTER</button>
     </div>
     <div id="createfilm-description" class="quillcontainer" style="min-height: 128px;margin-bottom:12px;"></div>
-    <h3>AWARD LAURELS</h3>
-    <p>Please ensure the background is transparent, the foreground is white, and that there are no margins (SVG recommended)</p>
-    <div id="uploadedAwards">
-        </div>
-        <div>
-            <input type="file" accept="image/*" onchange="choseFile(this, '#uploadedAwards', false, 'award')" style="display:none"/>
-            <button class="smallbtn" onclick="openFile(this)" style="margin-bottom:12px;">UPLOAD LAUREL</button>
-        </div>
-    <br>
+
     <h3>CREDITS</h3>
     <div id="createfilm-creditlist">
         <div class="createfilm-credit autoaddlist">
@@ -70,16 +62,46 @@
             <input type="file" accept="image/*" onchange="choseFile(this, '#uploadedBtsPics', false, 'btspic')" style="display:none"/>
             <button class="smallbtn" onclick="openFile(this)" style="margin-bottom:12px;">UPLOAD BTS PIC</button>
         </div>
-    <br>
-    <h3>TECHNICAL SPECS</h3>
-    <div id="createfilm-bts-techspecs">
-        <div class="createfilm-techspec autoaddlist">
-            <input type="text" class="techspecs-type" placeholder="Type" onchange="autoAddList(this)"><input type="text" class="techspecs-option" placeholder="Content" onchange="autoAddList(this)">
-        </div>
+        <style>
+        .advanced{
+            display: none;
+        }
+        #openbtn:checked ~ .advanced{
+            display: block;
+        }
+        </style>
+    <input type="checkbox" id="openbtn" checked></button>
+    <label for="openbtn">Show advanced settings</label><br>
+    <div class="advanced">
+        <br>
+            <h3>TECHNICAL SPECS</h3>
+            <div id="createfilm-bts-techspecs">
+                <div class="createfilm-techspec autoaddlist">
+                    <input type="text" class="techspecs-type" placeholder="Type" onchange="autoAddList(this)"><input type="text" class="techspecs-option" placeholder="Content" onchange="autoAddList(this)">
+                </div>
+            </div>
+            <br>
+            <h3>AWARD LAURELS</h3>
+            <p>Please ensure the background is transparent, the foreground is white, and that there are no margins (SVG recommended)</p>
+            <div id="uploadedAwards">
+                </div>
+                <div>
+                    <input type="file" accept="image/*" onchange="choseFile(this, '#uploadedAwards', false, 'award')" style="display:none"/>
+                    <button class="smallbtn" onclick="openFile(this)" style="margin-bottom:12px;">UPLOAD LAUREL</button>
+                </div>
+            <br>
+            <h3>CUSTOM CSS</h3>
+            <div id="codeeditor"></div>
+            <br>
     </div>
-    <br>
+    <script>
+    
+    </script>
     <input id='tags' placeholder='Tags'>
     <script>
+        var csseditor = ace.edit("codeeditor");
+        csseditor.session.setMode("ace/mode/css");
+
         var availabletags = [];
         <% if(tags) { %>
             availabletags = JSON.parse(`<%- tags %>`)
@@ -273,6 +295,7 @@ function slugify(string) {
             credits:JSON.stringify(credits),
             behindthescenes:JSON.stringify(behindthescenes),
             tags: $("#tags").tagit("assignedTags").join(","),
+            css: csseditor.getValue()
         };
         return filmobject;
     }
@@ -291,6 +314,7 @@ function slugify(string) {
         $("#uploadedBtsPics").empty();
         $("#uploadedAwards").empty();
         $("#createfilm-title").val(film.title);
+        csseditor.setValue("");
         console.log(Number.parseInt(film.date));
         datepicker.setDate(new Date(Number.parseInt(film.date)));
         if(film.youtubeid)
@@ -300,6 +324,7 @@ function slugify(string) {
         $("#createfilm-poster").val(film.poster);
         $("#createfilm-slug").val(film.slug);
         $("#createfilm-hidden").prop("checked", film.hidden);
+        csseditor.setValue(film.css);
         $("#tags").tagit("removeAll");
         film.tags.split(",").forEach(tag=>{
             $("#tags").tagit("createTag", tag);
