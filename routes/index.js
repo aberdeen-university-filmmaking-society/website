@@ -337,4 +337,11 @@ router.get('/tags/:tag', function(req, res, next) {
   
 });
 
+
+/*2035 Welcome packs*/
+router.get('/films/2035/welcome/:first.:last', function(req,res,next){
+  /*sqlcon.*/
+});
+
+
 module.exports = router;
