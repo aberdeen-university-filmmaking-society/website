@@ -326,7 +326,8 @@ function slugify(string) {
         $("#createfilm-slug").val(film.slug);
         $("#createfilm-imdb").val(film.imdb);
         $("#createfilm-hidden").prop("checked", film.hidden);
-        csseditor.setValue(film.css);
+        if(film.css)
+            csseditor.setValue(film.css);
         $("#tags").tagit("removeAll");
         film.tags.split(",").forEach(tag=>{
             $("#tags").tagit("createTag", tag);
