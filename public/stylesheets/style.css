@@ -35,6 +35,7 @@ p{
     font-size: 13.33px;
     line-height: 18px;
     color:rgba(255,255,255,0.6);
+    text-align: justify;
 }
 li{
   color:rgba(255,255,255,0.6);
@@ -624,6 +625,88 @@ display: none;
   max-height: 72px;
   object-fit: cover;
   margin:12px;
+}
+
+
+.holy-text{
+position: relative;
+padding-left:120px;
+padding-right:120px;
+margin-top:48px;
+text-align: justify;
+}
+.holy-text::before{
+content: '\201C';
+position: absolute;
+color: rgba(255,255,255,0.1);
+font-size: 200px;
+top:-40px;
+left:24px;
+z-index: -1;
+}
+.holy-text::after{
+content: '\201D';
+position: absolute;
+color: rgba(255,255,255,0.1);
+font-size: 200px;
+bottom:-148px;
+right:24px;
+z-index: -1;
+}
+blockquote:before{
+content: '— '
+}
+blockquote{
+font-size:18px;float:right;
+font-style:italic;
+text-align:right;
+}
+blockquote a{
+display:block;
+font-size:12px;
+opacity:0.5;
+font-style:normal;
+}
+
+@media only screen and (max-width: 812px) {
+.holy-text{
+padding-left:100px;
+padding-right:100px;
+}
+.holy-text:before{
+left:12px;
+}
+.holy-text:after{
+right:12px;
+}
+}
+@media only screen and (max-width: 600px) {
+.holy-text{
+padding-left:60px;
+padding-right:60px;
+}
+.holy-text:before{
+left:0px;
+top:-60px;
+}
+.holy-text:after{
+right:0px;
+bottom:-200px;
+}
+}
+@media only screen and (max-width: 400px) {
+.holy-text{
+padding-left:22px;
+padding-right:22px;
+}
+.holy-text::before{
+left:0px;
+content:''
+}
+.holy-text::after{
+right:0px;
+content:''
+}
 }
 
 

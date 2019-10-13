@@ -339,8 +339,9 @@ router.get('/tags/:tag', function(req, res, next) {
 
 
 /*2035 Welcome packs*/
-router.get('/films/2035/welcome/:first.:last', function(req,res,next){
+router.get('/films/2035/welcome/:username', function(req,res,next){
   /*sqlcon.*/
+  res.render('welcomepack', {page:'film'});
 });
 
 
