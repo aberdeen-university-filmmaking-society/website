@@ -230,9 +230,15 @@
                   <div class="film-title film-title-responsive <% if(!project.film.poster) {%>noposter<% } %>"><%= project.film.title %></div>
                   <div class="film-desc" style="display: flex;flex-direction: column;">
                       <div class="film-title"><%= project.film.title %></div>
+                      <% if(project.film.imdb) { %>
+                        <a style="margin-top:4px;margin-bottom:12px;" class="film-outlink" href="https://www.imdb.com/title/<%= project.film.imdb %>/">
+                          <img src="/images/social/imdb.svg">
+                        </a>
+                      <% } %>
                       <div class="film-description" style="margin-top:0px;"><%- project.film.description %></div>
                       <a class="mobilemargin-left link-viewall mobilemargin-left" style="margin:0;display:block;float:none;" href="/films/<%= project.film.slug %>">VIEW FILM PAGE&nbsp;&nbsp;<i class="fas fa-arrow-right"></i></a>
-                  </div>
+
+                      </div>
                 </div>
                 <% if(project.film.awards){ %>
                         <div class="awards" style="justify-content: left;margin-bottom:12px;">

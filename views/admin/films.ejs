@@ -93,6 +93,7 @@
             <h3>CUSTOM CSS</h3>
             <div id="codeeditor"></div>
             <br>
+            <input id="createfilm-imdb" type="text" class="smaller" placeholder="IMDb Title (ex: tt11110952)" autocomplete="off"><br>
     </div>
     <script>
     
@@ -101,7 +102,6 @@
     <script>
         var csseditor = ace.edit("codeeditor");
         csseditor.session.setMode("ace/mode/css");
-
         var availabletags = [];
         <% if(tags) { %>
             availabletags = JSON.parse(`<%- tags %>`)
@@ -295,6 +295,7 @@ function slugify(string) {
             credits:JSON.stringify(credits),
             behindthescenes:JSON.stringify(behindthescenes),
             tags: $("#tags").tagit("assignedTags").join(","),
+            imdb: $("#createfilm-imdb").val(),
             css: csseditor.getValue()
         };
         return filmobject;
@@ -323,6 +324,7 @@ function slugify(string) {
             $("#createfilm-youtubeid").val("");
         $("#createfilm-poster").val(film.poster);
         $("#createfilm-slug").val(film.slug);
+        $("#createfilm-imdb").val(film.imdb);
         $("#createfilm-hidden").prop("checked", film.hidden);
         csseditor.setValue(film.css);
         $("#tags").tagit("removeAll");

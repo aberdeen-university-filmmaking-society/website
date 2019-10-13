@@ -70,6 +70,13 @@
                 <div class="tags">
                 <% tags.forEach(tag=>{ %><a href="/tags/<%= tag.tagid %>">#<%= tag.tagid %></a>&nbsp;<% }) %>
                 </div>
+                <div class="film-outlinks">
+                    <% if(film.imdb) { %>
+                    <a class="film-outlink" href="https://www.imdb.com/title/<%= film.imdb %>/">
+                        <img src="/images/social/imdb.svg">
+                    </a>
+                    <% } %>
+                </div>
             </div>
         </section>
     <% if(film.youtubeid) { %>

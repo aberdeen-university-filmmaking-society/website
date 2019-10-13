@@ -7,8 +7,8 @@ filmmanager.create = function(film){
     if(film.title){
         filemanager.consolidateFileSession(film.sessionid);
         var id = Date.now().toString();
-        var sql = "INSERT INTO Films (id, title, youtubeid, date, description, credits, behindthescenes, techspecs, hidden, slug, files, css) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
-        sqlcon.query(sql, [id, film.title, film.youtubeid, film.date, film.description, film.credits, film.behindthescenes, film.techspecs, film.hidden, film.slug, film.files, film.css],function (err, result) {
+        var sql = "INSERT INTO Films (id, title, youtubeid, date, description, credits, behindthescenes, techspecs, hidden, slug, files, css, imdb) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        sqlcon.query(sql, [id, film.title, film.youtubeid, film.date, film.description, film.credits, film.behindthescenes, film.techspecs, film.hidden, film.slug, film.files, film.css, film.imdb],function (err, result) {
             if (err) return err;
             tagmanager.newTagging(id,undefined, tagmanager.tagifyFrom(film.tags), function(){
             });
@@ -53,8 +53,8 @@ filmmanager.edit = async function(id, film, resolve){
 }
 function finishediting(id,film,resolve){
     console.log("called finishediting");
-    var sql = "UPDATE Films SET title=?, youtubeid=?, date=?, description=?, credits=?, behindthescenes=?, techspecs=?, hidden=?, slug=?, files=?, css=? WHERE id=?";
-    sqlcon.query(sql,[film.title, film.youtubeid, film.date, film.description, film.credits, film.behindthescenes, film.techspecs, film.hidden, film.slug, film.files, film.css, id], 
+    var sql = "UPDATE Films SET title=?, youtubeid=?, date=?, description=?, credits=?, behindthescenes=?, techspecs=?, hidden=?, slug=?, files=?, css=?, imdb=? WHERE id=?";
+    sqlcon.query(sql,[film.title, film.youtubeid, film.date, film.description, film.credits, film.behindthescenes, film.techspecs, film.hidden, film.slug, film.files, film.css, film.imdb, id], 
         function (err, result) {
             console.log("Updated in finishedediting")
         if (err) resolve(false);

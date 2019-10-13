@@ -555,6 +555,8 @@ display: none;
 }
 .videodetails .film-desc{
   margin-left:0px;
+  display: flex;
+  flex-direction: column;
 }
 .videodetails .film-title{
   font-size:32px;
@@ -625,6 +627,31 @@ display: none;
   max-height: 72px;
   object-fit: cover;
   margin:12px;
+}
+
+.film-outlinks{
+  margin-top: auto;
+  text-align: right;
+}
+.film-outlink{
+  opacity:0.6;
+}
+.film-outlink:hover{
+  opacity: 0.8;
+}
+.film-outlink:active{
+  opacity:1;
+}
+.film-outlink img{
+  max-width: 44px;
+  max-height: 23px;
+  vertical-align: middle;
+}
+.film-outlink span{
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 4px;
+  font-weight: 600;
 }
 
 
