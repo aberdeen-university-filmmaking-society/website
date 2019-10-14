@@ -32,10 +32,11 @@
 }
 
 [data-control]{
-  border-bottom: solid 1px rgba(255,255,255,0.5);
+  border-bottom: solid 1px rgba(255,255,255,0.8);
     padding: 10px;
     opacity:0.6;
     transition:opacity 0.2s;
+    text-align: center;
 }
 
 [data-control]:hover{
@@ -51,7 +52,6 @@
 }
 [data-content]>*{
   padding:12px 12px 0px 12px;
-  color:rgba(255,255,255,0.5);
 }
 
 [data-accordion] [data-control] {
@@ -156,11 +156,11 @@
         <section>
                 <style>
                         .crew{
-                            display: flex;
                             justify-content: center;
+                            flex-wrap: wrap;
                         }
                         .crewmember{
-                            display: flex;
+                            display: block;
                         }
                         .crew .details h3{
                             text-align: left;
@@ -169,62 +169,386 @@
                             font-family: Montserrat;
                         }
                         .crewmember{
-                            padding: 12px;
+                            padding: 16px;
+                            position: relative;
+                            min-height: 72px;
                         }
                         .crewmember img{
                             display: block;
-                            width: 96px;
-                            height: 96px;
+                            width: 72px;
+                            height: 72px;
                             border-radius: 50%;
                             object-fit: cover;
                             box-shadow: 0px 0px 12px rgba(144, 255, 218, 0.335);
+                            margin:auto;
+                            position: absolute;
+                            top:12px;
+                            left:12px;
                         }
                         .crewmember .role{
                             font-weight: bold;
                             font-size: 16px;
                             text-shadow: 0px 0px 12px rgb(144, 255, 218);
+                            margin-left: 82px;
+                            margin-bottom: 2px;
                         }
                         .crewmember .name{
                             font-weight: 300;
                             opacity: 0.8;
                             text-shadow: 0px 0px 12px rgb(144, 255, 218);
+                            margin-left: 82px;
+                            text-decoration: none;
+                        }
+                        .crewmember .name a{
+                            text-decoration: none;
+                        }
+                        .crewmember .name a:hover{
+                            text-decoration: underline;
                         }
                         .crewmember .description{
                             font-size: 11px;
-                            margin-top:6px;
+                            margin-top:4px;
                             margin-bottom: 0;
+                            margin-left: 82px;
+                        }
+                        .crewmember p.description {
+                            color: rgba(255,255,255,0.8);
+                        }
+                        .crewmember li{
+                            color: rgba(255,255,255,0.6);
+                            margin-top: 4px;
+                            line-height: 13px;
                         }
                         .crewmember .details{
                             align-self: center;
-                            margin-left:12px;
+                            max-width: 192px;
+                            margin:auto;
                         }
                     </style>
-            
+                        <div class="crew">
+                            <div class="crewmember" style="flex-basis: 40%">
+                                <div class="role">Producer</div>
+                                <img src="https://graph.facebook.com/1675945694/picture?type=normal">
+                                    <div class="name"><a href="https://www.facebook.com/sofia.s.ferrara.5" target="_blank">Sofia Ferrara</a></div>
+                                    <p class="description">Most important non-creative role on set. Head of the production departement.</p>
+                                    <ul class="description">
+                                        <li>Assembling and adminstering the necessary funds, and overseeing the project as a whole.</li>
+                                        <li>The producer has the ultimate say in an artistic dispute betweem, for example, a principal actor and the director.</li>
+                                        <li>Holding regular meetings with the director to discuss characters and scenes</li>
+                                        <li>Acting as a sounding board for the director</li>
+                                        <li>Troubleshooting problems which arise during production</li>
+                                        <li>Ensuring compliance with relevant regulations, codes of practice, and heath and safety laws.</li>
+                                        <li>Supervising the progress of the project from production through to post-production</li>
+                                    </ul>
+                            </div>
+                            
+                            <div class="crewmember" style="flex-basis: 40%">
+                                <div class="role">Director</div>
+                                <img src="https://graph.facebook.com/100001930236994/picture?type=normal">
+
+                                    <div class="name"><a href="https://www.facebook.com/karolina.smolova" target="_blank">Karolína Smolová</a></div>
+                                    <p class="description">As head of all creative aspects of the film, Karolina is responsible for directing the cast and crew in order to translate the idea of 2035 into the best short film we can possibly achieve.</p>
+                                    <ul class="description">
+                                        <li>Writing or working with the writers</li>
+                                        <li>Reading the script and working on it's continued developement</li>
+                                        <li>Envisioning the film's scope, purpose, identity, and meaning</li>
+                                        <li>Drawing a storyboard</li>
+                                        <li>Supervising the locations scouting process</li>
+                                        <li>Auditioning and casting actors</li>
+                                        <li>Ultimately responsible for creative decisions</li>
+                                        <li>Motivating actors to produce their best dramatic performance</li>
+                                        <li>Developing both cast and script through rehearsals</li>
+                                        <li>Coordinating with camera crew, art directors, costume designers, and composers in order to ensure a consistent creative execution</li>
+                                        <li>Managing conflict on set</li>
+                                        <li>Directing actors and crew during shooting</li>
+                                        <li>Supervising the editing and finalization of the project</li>
+                                        <li>Promoting the production in festivals and other circuits</li>
+                                    </ul>
+                            </div>
+                        </div>
                         <div data-accordion class="accordion">
-                            <div data-control="">Art departement</div>
-                            <div data-content>
-                                <div class="crew">
-                                    <div class="crewmember">
-                                        <img
-                                            src="https://m.media-amazon.com/images/M/MV5BNjE3NDQyOTYyMV5BMl5BanBnXkFtZTcwODcyODU2Mw@@._V1_.jpg">
-                                        <div class="details">
-                                            <div class="role">Director</div>
-                                            <div class="name">Christopher Nolan</div>
-                                            <p class="description">THis is the person who is directing shit</pW>
-                                        </div>
-                                    </div>
-                                    <div class="crewmember">
-                                        <img
-                                            src="https://m.media-amazon.com/images/M/MV5BNjE3NDQyOTYyMV5BMl5BanBnXkFtZTcwODcyODU2Mw@@._V1_.jpg">
-                                        <div class="details">
-                                            <div class="role">Producer</div>
-                                            <div class="name">Christopher Nolan</div>
-                                            <p class="description">THis is the person who is directing shit</pW>
+                                <div data-control="">PRODUCTION</div>
+                                    <div data-content>
+                                        <div class="crew">
+                                            <div class="crewmember" style="flex-basis: 40%">
+                                                <div class="role">Assistant Producer</div>
+                                                <img src="https://graph.facebook.com/100006415428824/picture?type=normal">
+                                                    <div class="name"><a href="https://www.facebook.com/profile.php?id=100006415428824" target="_blank">Zuzanna Piekarska</a></div>
+                                                    <p class="description">The Assistant Producer helps the producer carry out their wide variety of tasks.</p>
+                                            </div>
+                                            <div class="crewmember" style="flex-basis: 40%">
+                                                <div class="role">Assistant Director</div>
+                                                <img src="https://graph.facebook.com/100001242516507/picture?type=normal">
+                                                    <div class="name"><a href="https://www.facebook.com/profile.php?id=100001242516507" target="_blank">Elijah Venter</a></div>
+                                                    <p class="description">The assistant director tracks daily progress against the filming production schedule, arranges logistics, prepares daily call sheets, checks cast and crew, and maintains order on the set. They are also responsible for the health and safety of the crew.</p>
+                                                    <ul class="description">
+                                                        <li>All the legworkand logistical planning of the production. Their skills are organizational rather than artistic and lean toward produciton management</li>
+                                                        <li>Scheduling for shoots</li>
+                                                        <li>Preparing daily call sheets and delivering them to the crew and actors</li>
+                                                        <li>Tracking daily progress against the production schedule planning</li>
+                                                        <li>Communicating the daily schedules to the crew</li>
+                                                        <li>Making sure everyone on set knows what is happening and knows what to do</li>
+                                                        <li>Arranging locations and permits</li>
+                                                        <li>Getting the right people to the right place, and making sure everyone does their work</li>
+                                                        <li>Maintaining order on set</li>
+                                                        <li>Coordinating props, wardrobe, hairdressing, and make-up personnel</li>
+                                                        <li>Contacting, Reminding</li>
+                                                        <li>Acquiring information</li>
+                                                        <li>Calling artists</li>
+                                                        <li>Herding crowds</li>
+                                                        <li>Barking orders in a big voice for the director</li>
+                                                    </ul>
+                                            </div>
+                                            <div class="crewmember" style="flex-basis: 40%">
+                                                <div class="role">Location manager</div>
+                                                <img src="https://graph.facebook.com/100004792718620/picture?type=normal">
+    
+                                                    <div class="name"><a href="https://www.facebook.com/profile.php?id=100004792718620" target="_blank">Duncan Currie</a></div>
+                                                    <p class="description">The location manager is in charge of scouting and finding the filming locations which best suit the director's vision, securing all the permits required to film; they must also inform the local community and handle all other location-related logistics.</p>
+                                                    <ul class="description">
+                                                        <li>Assessing and interpreting scripts or storyboards to get an understanding of the location required</li>
+                                                        <li>Visiting and photographing locations appropriate to budget in order to assess their suitability</li>
+                                                        <li>Making preliminary enquiries regarding access, parking, and location use</li>
+                                                        <li>Collating practical information on potential locations</li>
+                                                        <li>Liaising with key members of the production team to assess visual and technical specifications</li>
+                                                        <li>Ensuring no disruptive noises or events are likely to occur during the shoot</li>
+                                                        <li>Negotiating access and drawing up a contract with location owners</li>
+                                                        <li>Organising permissions for access, for example with local authorities and law enforcement</li>
+                                                        <li>Ensuring the technical specifications for equipement, power sources, and crew accomodation on site are met</li>
+                                                        <li>Distributing maps and directions to locations, often known as movement orders, to ensure all services and crews reach the locations as directly, safely, and quickly as possible</li>
+                                                        <li>Providing all relevant support information to all services and crew</li>
+                                                        <li>Managing the location on the day and resolving practical or people-related problems as they arise</li>
+                                                        <li>Dealing with members of the public who may intrude upon a shooting location</li>
+                                                        <li>Employing Production Assistants who will supervise the location during shooting so no members of the public enters the set</li>
+                                                        <li>Ensuring the final clearing up ("the wrap") runs smoothly and thanking site owners</li>
+                                                    </ul>
+                                            </div>
+                                            <div class="crewmember" style="flex-basis: 40%">
+                                                <div class="role">Continuity supervisor</div>
+                                                <img src="https://graph.facebook.com/100007449061269/picture?type=normal">
+    
+                                                    <div class="name"><a href="https://www.facebook.com/profile.php?id=100007449061269" target="_blank">Caitlin Jones</a></div>
+                                                    <p class="description">The continuity supervisor is the editor's and writer's representative on set, as well as being the right hand aide to the director and the director of photography. It is the script supervisor's job to make sure that at the end of the day the film can be cut together. In that sense, they back up every department, monitor the script during shooting and make sure that errors in continuity do not occur that would prevent the film from being able to be compiled smoothly in the editing room.</p>
+                                            </div>
+                                            <div class="crewmember" style="flex-basis: 40%">
+                                                    <div class="role">Social Media manager</div>
+                                                    <img src="https://graph.facebook.com/100003037920316/picture?type=normal">
+        
+                                                        <div class="name"><a href="https://www.facebook.com/profile.php?id=100003037920316" target="_blank">Wiki Korbecka</a></div>
+                                                        <p class="description">The social media manager is in charge of the film's online presence; it is mainly an advertising job, focused around attempting to generate hype and interest around the film before it is even released.</p>
+                                                    <ul class="description">
+                                                        <li>Developing a social media strategy and setting goals to increase brand awareness and increase engagement</li>
+                                                        <li>Managing all social media channels such as Facebook, Instagram, etc...</li>
+                                                        <li>Planning content and delivery</li>
+                                                        <li>Developing and managing competitions and campaigns which promote the production</li>
+                                                        <li>Creating engaging content and/or outsourcing this efficiently</li>
+                                                        <li>Forming key relationships with influences and brands across social media platforms</li>
+                                                        <li>Managing and facilitating social media communities by responding to social media posts and developing discussions</li>
+                                                        <li>Being present to all importnat meetings and events, and making sure they are covered on social media</li>
+                                                        <li>Developing a strategy for the crowdfunding campaign</li>
+                                                        <li>Maintaining the crowdfunding campaign - collaborates with producer and production manager</li>
+                                                    </ul>
+                                                </div>
+                                            <div class="crewmember" style="flex-basis: 40%">
+                                                    <div class="role">Social Media Assistant</div>
+                                                    <img src="https://graph.facebook.com/100007672485608/picture?type=normal">
+        
+                                                        <div class="name"><a href="https://www.facebook.com/profile.php?id=100007672485608" target="_blank">Nahuel Calzado Chaui</a></div>
+                                                        <p class="description">The social media assistant helps the social media manager carry out their tasks.</p>
+                                                    
+                                            </div>
+                                            <div class="crewmember" style="flex-basis: 40%">
+                                                    <div class="role">Production Assistant</div>
+                                                    <img src="https://graph.facebook.com/100001414076769/picture?type=normal">
+                                                        <div class="name"><a href="https://www.facebook.com/profile.php?id=100001414076769" target="_blank">Connor McCausland</a></div>
+                                                        <p class="description">A Production Assistant carries out various miscellaneous tasks, and is there to help out whenever help is needed (and on a set, that's all the time!)</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        <div data-accordion class="accordion">
+                            <div data-control="">STORY</div>
+                                <div data-content>
+                                    <div class="crew">
+                                        <div class="crewmember" style="flex-basis: 40%">
+                                            <div class="role">Head of story</div>
+                                            <img src="https://graph.facebook.com/100001433860080/picture?type=normal">
 
+                                                <div class="name"><a href="https://www.facebook.com/profile.php?id=100001433860080" target="_blank">Abigail Liscoe</a></div>
+                                                <p class="description">The head of story is in charge of the overall direction, plot, universe, and screenplay of 2035.</p>
+                                                <ul class="description">
+                                                    <li>Developing and researching ideas for the film</li>
+                                                    <li>Creating an initial framework, or treatement</li>
+                                                    <li>Writing or adapting a story into a script, while collaborating with the screenwriter</li>
+                                                    <li>Writing in accordance to the vision and instruction of the producers and directors</li>
+                                                    <li>Giving only detailed information and facts about the story</li>
+                                                    <li>Delivering character descriptions</li>
+                                                    <li>Conducting research and study about the storyline to make it more realistic and important</li>
+                                                    <li>Working with producers and directors to edit and adjust the script as needed</li>
+                                                    <li>Giving a valuable story that will serve as a great inspiration to the viewers</li>
+                                                </ul>
+                                        </div>
+                                        <div class="crewmember" style="flex-basis: 40%">
+                                            <div class="role">Screenwriter</div>
+                                            <img src="https://graph.facebook.com/100000967330410/picture?type=normal">
+
+                                                <div class="name"><a href="https://www.facebook.com/profile.php?id=100000967330410" target="_blank">Wiktoria Julia Łukasiewicz</a></div>
+                                                <p class="description">The screenwriter is there to help develop and translate the story into a script which will work for the screen.</p>
+                                                <ul class="description">
+                                                    <li>Writing the screenplay based on the head of story's synopsis development</li>
+                                                    <li>Collaborating with the head of story</li>
+                                                    <li>Creating the dramatic structure of the screenplay, ensuring that it has a 1st, 2nd, and 3rd act.</li>
+                                                    <li>Supporting the head of the story in creating the background for the story - developing ideas together</li>
+                                                    <li>The scope of the actual screen writing should be divided between the head of the story and the screenwriter</li>
+                                                </ul>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div data-accordion class="accordion">
+                            <div data-control="">CAMERA</div>
+                                <div data-content>
+                                    <div class="crew">
+                                        <div class="crewmember" style="flex-basis: 40%">
+                                            <div class="role">Director of Photography</div>
+                                            <img src="https://graph.facebook.com/100013606031236/picture?type=normal">
+                                                
+                                                <div class="name"><a href="https://www.facebook.com/profile.php?id=100013606031236" target="_blank">Piers Deseilligny</a></div>
+                                                <p class="description">As head of the camera and lighting departement, the director of photography is responsible for the technical and artistic decisions relating to the image, in accordance with the director.</p>
+                                            <ul class="description">
+                                                <li>All aspects of cinematography or videography. The most important crew member after the director, and responsible for the look of the film. He or she collaborates closely with the director and makes all decisions about camera, lighting, and equipement which contribute to camerawork</li>
+                                                <li>Specifying the lighting and camera equipement, lenses, filmstock, or their video equivalents</li>
+                                                <li>Leader of the crew's work while the director concentrates on the actors</li>
+                                                <li>Responsible for selection (and on a low-budget film, testing and adjusting) of the camera and lighting equipement, and knowing it's working principles</li>
+                                                <li>Responsible when the crew is small for reconoitering each location in advance with the fagger to assess electrical supplies and lighting design.</li>
+                                                <li>The person who decides and supervises the placement of lighting instruments</li>
+                                                <li>Being supervisor of the camera and lighting crews</li>
+                                            </ul>
+                                        </div>
+                                        <div class="crewmember" style="flex-basis: 40%">
+                                            <div class="role">Camera operator</div>
+                                            <img src="https://graph.facebook.com/100010156180587/picture?type=normal">
+                                                <div class="name"><a href="https://www.facebook.com/profile.php?id=100010156180587" target="_blank">Miguel de la Cal Moreno</a></div>
+                                                <p class="description">The Camera Operator works with the Director of Photography, by physically operating the camera rig.</p>
+                                            <ul class="description">
+                                                <li>Every aspect of handling the camera, which means deciding on camera positioning (in collaboration with the director) and physically controlling framing and all camera movements.</li>
+                                                <li>Everything concerning the camera: keeping the camera optics and film gate clean and manhandling the camera from place to place</li>
+                                            </ul>
+                                        </div>
+                                        <div class="crewmember">
+                                            <div class="role">Lighting technicians</div>
+                                            <div class="crew">
+                                                <div class="crewmember" style="flex-basis: 20%">
+                                                    <img src="https://graph.facebook.com/100003798623169/picture?type=normal">
+                                                    <div class="name"><a href="https://www.facebook.com/profile.php?id=100003798623169" target="_blank">Harry Stewart</a></div>
+                                                </div>
+                                                <div class="crewmember" style="flex-basis: 20%">
+                                                    <img src="https://graph.facebook.com/100006254206320/picture?type=normal">
+                                                    <div class="name"><a href="https://www.facebook.com/profile.php?id=100006254206320" target="_blank">Lucía Iglesias Muñoz</a></div>
+                                                </div>
+                                            </div>
+                                            <p class="description" style="margin-top:-12px;">The lighting techs assists with the powering, placement, and overall maintenance of the lighting equipement.</p>
+                                        </div>
+                                        <div class="crewmember" style="flex-basis: 40%">
+                                                <div class="role">Digital Imaging Technician</div>
+                                                <img src="https://graph.facebook.com/100007957326818/picture?type=normal">
+                                                    <div class="name"><a href="https://www.facebook.com/profile.php?id=100007957326818" target="_blank">James Strachan</a></div>
+                                                    <p class="description">The DIT is responsible for managing, transferring, securing, and backing up all the digital data acquired on-set. They must keep track of where the footage and audio is stored, and ensure that the editors have the files they need in order to edit together the dailies, and later, the film.</p>
+                                                
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div data-accordion class="accordion">
+                            <div data-control="">SOUND</div>
+                                <div data-content>
+                                    <div class="crew">
+                                        <div class="crewmember">
+                                                <div class="role">On-set sound engineers</div>
+                                                <div class="crew">
+                                                    <div class="crewmember" style="flex-basis: 20%">
+                                                        <img src="https://graph.facebook.com/100004929522684/picture?type=normal">
+                                                        <div class="name"><a href="https://www.facebook.com/profile.php?id=100004929522684" target="_blank">Adam Fraser</a></div>
+                                                    </div>
+                                                    <div class="crewmember" style="flex-basis: 20%">
+                                                        <img src="https://graph.facebook.com/100001521232627/picture?type=normal">
+                                                        <div class="name"><a href="https://www.facebook.com/profile.php?id=100001521232627" target="_blank">Emily Scott</a></div>
+                                                    </div>
+                                                </div>
+                                                <p class="description" style="margin-top:-12px;">The on-set sound engineers are in charge of recording audio on-set. During shooting, one of them is a production sound mixer, in charge of actually handling the audio recording, and the other is the boom operator, in charge of holding a boom pole as close as possible to the actors without it being in frame.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div data-accordion class="accordion">
+                            <div data-control="">ART</div>
+                                <div data-content>
+                                    <div class="crew">
+                                        <div class="crewmember" style="flex-basis: 40%">
+                                            <div class="role">Art Director</div>
+                                            <img src="https://graph.facebook.com/100004280523389/picture?type=normal">
+                                            <div class="name"><a href="https://www.facebook.com/profile.php?id=100004280523389" target="_blank">Darta Franceska Rikarde</a></div>
+                                            <p class="description">The Camera Operator works with the Director of Photography, by physically operating the camera rig.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div data-accordion class="accordion">
+                                <div data-control="">EDITORIAL</div>
+                                    <div data-content>
+                                        <div class="crew">
+                                            <div class="crewmember" style="flex-basis: 40%">
+                                                <div class="role">Editor</div>
+                                                <img src="https://graph.facebook.com/100000444402720/picture?type=normal">
+                                                <div class="name"><a href="https://www.facebook.com/profile.php?id=100000444402720" target="_blank">Raddeen Moncrieffe</a></div>
+                                                <p class="description">The editor is responsible for selecting the shots and assembling them in a way which best conveys the emotion and story intended by the director.</p>
+                                            </div>
+                                        </div>
+                                        <div class="crewmember">
+                                                <div class="role">Assistant editors</div>
+                                                <div class="crew">
+                                                    <div class="crewmember" style="flex-basis: 20%">
+                                                        <img src="https://graph.facebook.com/1176263424/picture?type=normal">
+                                                        <div class="name"><a href="https://www.facebook.com/profile.php?id=1176263424" target="_blank">Mia Sommer</a></div>
+                                                    </div>
+                                                    <div class="crewmember" style="flex-basis: 20%">
+                                                        <img src="https://graph.facebook.com/100007957326818/picture?type=normal">
+                                                        <div class="name"><a href="https://www.facebook.com/profile.php?id=100007957326818" target="_blank">James Strachan</a></div>
+                                                    </div>
+                                                </div>
+                                                <p class="description" style="margin-top:-12px;">The assistant editors aid the editor and director in collecting and organizing all the elements needed to edit the film, and may also edit the dailies.</p>
+                                        </div>
+                                        <div class="crew">
+                                            <div class="crewmember" style="flex-basis: 40%">
+                                                <div class="role">Sound designer</div>
+                                                <img src="https://graph.facebook.com/100004929522684/picture?type=normal">
+                                                <div class="name"><a href="https://www.facebook.com/profile.php?id=100004929522684" target="_blank">Adam Fraser</a></div>
+                                                <p class="description">The sound designer is in charge of all post-production sound of the film, which means acquiring, performing (Foley), editing, and mixing all the sound elements which will be present in the film.</p>
+                                            </div>
+                                        </div>
+                                        <div class="crewmember">
+                                                <div class="role">Composers</div>
+                                                <div class="crew">
+                                                    <div class="crewmember" style="flex-basis: 20%">
+                                                        <img src="https://graph.facebook.com/100001180036255/picture?type=normal">
+                                                        <div class="name"><a href="https://www.facebook.com/profile.php?id=100001180036255" target="_blank">Lochlann Beveridge</a></div>
+                                                    </div>
+                                                    <div class="crewmember" style="flex-basis: 20%">
+                                                        <img src="https://graph.facebook.com/100010567357661/picture?type=normal">
+                                                        <div class="name"><a href="https://www.facebook.com/profile.php?id=100010567357661" target="_blank">Valerie Safira</a></div>
+                                                    </div>
+                                                </div>
+                                                <p class="description" style="margin-top:-12px;">The assistant editors aid the editor and director in collecting and organizing all the elements needed to edit the film, and may also edit the dailies.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                     </div>
         </section>
 
