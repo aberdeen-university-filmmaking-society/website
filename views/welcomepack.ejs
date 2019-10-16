@@ -151,15 +151,44 @@
         </section>
         <h3>[director's statement]</h3>
         <section class="holy-text">
-                <p>In June 2019, I directed a short film called 2035. The film was very similar to this one.  It was set in a post-apocalyptic world and the story saw a young woman trying to survive in the wasteland that earth had become. My crew consisted of two people and an actress. We shot almost the entire film at four in the morning at the beach. We were freezing because of the wind, walking in the sea to get perfect shots, and very tired because of the early hours. When we happily finished, excited to see the results on a bigger screen, we found out that the memory card had been corrupted. Unable to fix it, by all means, none of us has ever seen the footage. As a filmmaker, you can imagine our frustration.</p>
-                <p>In my life, I believe everything happens for a reason, and so I did then. I could not think of any  reason at the time, though. Although the project felt small and insignificant, I was very passionate about it and I could not understand why so many obstacles were put in front of us to stop us from finishing it. But today I finally understand. Here you are - a crew of thirty people; a team that works on a project of the same name and the same synopsis, standing by my side and going on this massive adventure with me. </p>
-                <p>When I was going through the interviews with each of you in the past few weeks, I felt the energy and enthusiasm you are bringing to this project even before we officially started. We all - the producer, scriptwriter, and I - were impressed by your insights, ideas and preparation. It was then when I realised that the reason for the corrupted memory card back in June might have not been to break my endurance but to give the project a chance to bring together a larger group of people. Today, the group is us - you and me as a team that connects at this moment to create something meaningful and something we all will be proud of. I feel that this is so far the biggest and the most ambitious project the Productions has ever made, and you are right here in the front line to make it happen. We will need every piece of passion, energy and enthusiasm to bring our story to life, and I trust you that we will invest all of it in this film. I am very excited to officially start this production, and make this film a reality.</p>
+                <p>In June 2019, I directed a short film called 2035. The film was very similar to this one. It was set in a post-apocalyptic world and the story saw a young woman trying to survive in the wasteland that earth had become. My crew consisted of two people and an actress. We shot almost the entire film at four in the morning at the beach. We were freezing because of the wind, walking in the sea to get perfect shots, and very tired because of the early hours. When we happily finished, excited to see the results on a bigger screen, we found out that the memory card had been corrupted. Unable to fix it, none of us has ever seen the footage. As a filmmaker, you can imagine our frustration. 
+                    </p>
+                <p>In my life, I believe everything happens for a reason, and so I did then. Today, I understand even better because here we are. A crew of thirty-one people; a team that works on a project of the same name and the same synopsis, going on this massive adventure together. This film is the largest and most ambitious project undertaken by AUFS Productions. But it is also a great opportunity for each one of us to give away our passion for storytelling and filmmaking. I hope you are all just as excited as I am to bring this story to life, and create something meaningful and something we all will be proud of when we finish. </p>
                 </p><blockquote target="_blank">Karolína Smolová<a>The Director</a></blockquote>
         </section>
         <h3>[the social and political background]</h3>
-        <h3>[synopsis]</h3>
-        <h3>[color scheme]</h3>
-        <h3>[the people involved]</h3>
+        <section>
+                <p>Why did the wall fall apart?</p>
+                <ul>
+                    <li>Global warming</li>
+                    <li>Migration</li>
+                    <li>Crop failures and famine</li>
+                    <li>No more oil</li>
+                    <li>Extreme weather pollution (air, water, and land)/li>
+                    <li>Deforestation</li>
+                    <li>Mass extinction</li>
+                    <li>Nuclear war broke out</li>
+                    <li>Lack of medicine</li>
+                </ul>
+                <p>
+                        There is still some form of government but it is not what it once was. It is run by on military-
+                        based system. Their aims are to defend the country from foreign attack and to ensure there
+                        is enough food to go around. However, the bombing continues and everyday new cities are
+                        destroyed. The nuclear bombs only lasted for six months but their damage is done. The
+                        environment is radioactive and uninhabitable for most animals. This led to crop failures
+                        which in turn led to food shortages across the world. The government introduced rationing in
+                        2027 but there was no solution to increase land productivity. International trade is at a
+                        minimum, shipping food has been replaced by shipping people as the migrant trade is far
+                        more profitable.</p>
+                        <p>
+                        The British Government in London was destroyed in the 2032 bombings - Scotland relies on
+                        the ‘Edinburgh Organisation’ as they control everything north of the border. They were not
+                        democratically elected but took control. There is no rebellion against the Edinburgh
+                        Organisation. Not yet. They have kept the peace within Scotland but the chaos to the south
+                        will likely cross into Scotland before long.
+                </p>
+        </section>
+        <h3>[the crew]</h3>
         <section>
                 <style>
                         .crew{
@@ -231,6 +260,118 @@
                             max-width: 192px;
                             margin:auto;
                         }
+                        .timeline{
+            margin-top:24px;
+            margin-bottom: 24px;
+            position:relative;
+            display:inline-block;
+            width:50%;
+          }
+        .leftsection{
+          position: absolute;
+          height:100%;
+          width:11ch;
+          border-right: solid 2px rgb(87, 125, 164);
+        }
+        .timelinecontainer{
+          display:flex;
+          align-items: center;
+          flex-wrap: wrap-reverse;
+        }
+
+        .timelineindicator{
+          position:absolute;
+          bottom:0;
+          width:2px;
+          right:-2px;
+          background-color:white;
+        }
+        .leftsection .date{
+          font-size:12px;
+          position: absolute;
+          text-align: right;
+          right:12px;
+          color:rgb(142, 167, 193);
+          height: 0px;
+        }
+        .leftsection .datetext{
+          top: 50%;
+          -webkit-transform: translateY(-50%);
+          -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+        }
+        .leftsection .date.past{
+          color:rgb(87, 125, 164);
+        }
+        .leftsection .date::after{
+          content:"";
+          position:absolute;
+          width:12px;
+          right:-19px;
+          height:1px;
+          top:0px;
+          background-color:white;
+        }
+        .leftsection .date.past::after{
+          background-color:rgb(87, 125, 164);
+        }
+        .rightsection{
+          display: inline-block;
+          position: absolute;
+          left:11ch;
+          width:calc(100% - 11ch);
+          height:100%;
+        }
+        .rightsection .event{
+          position: absolute;
+          text-align: left;
+          left:12px;
+          font-weight: 500;
+          font-size:14px;
+          height:0px;
+        }
+        .rightsection .eventtext{
+          top: 50%;
+          -webkit-transform: translateY(-50%);
+          -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+        }
+        .rightsection .event.past{
+          color: rgb(87, 125, 164);
+        }
+
+        .anticipationtext{
+          font-size:15px;
+          margin-top:12px;
+          font-style: italic;
+          max-width:45%;
+          min-width:200px;
+          align-self:stretch;
+        }
+        @media only screen and (max-width: 500px){
+          .timeline{
+            width: 100%;
+          }
+          .anticipationtext{
+            max-width: 100%;
+          }
+          .anticipationtext>div{
+            margin-top:0 !important;
+          }
+        }
+        .film-poster{
+          overflow: hidden;
+        }
+        .film-poster img{
+          transition:all 0.2s;
+        }
+        .film-description{
+          transition:all 0.2s;
+        }
+        h1{
+          font-size:21px;
+          color:white;
+        }
                     </style>
                         <div class="crew">
                                 <div class="crewmember" style="flex-basis: 40%">
@@ -707,6 +848,63 @@
         </section>
 
         <h3>[production schedule]</h3>
+        <section>
+                <% if(body.current.timeline.length>=2) {
+                    var firstdate = body.current.timeline[0].date 
+                    var currentdate = Date.now();
+                    var timeSpan = body.current.timeline[body.current.timeline.length-1].date - firstdate;
+                    var monthheight = body.current.monthheight;
+                    var heightmultiplier = monthheight/2592000000;
+                    var timelineheight = heightmultiplier*timeSpan;
+                    function getDatePosition(date){
+                      return (date-firstdate)*heightmultiplier;
+                    }
+    
+                    var timelineindicatorHeight = (body.current.timeline[body.current.timeline.length-1].date - currentdate) * heightmultiplier;
+                    if(timelineindicatorHeight<=0) timelineindicatorHeight = 0;
+                    if(timelineindicatorHeight>=timelineheight) timelineindicatorHeight=timelineheight;
+    
+                    var currentAnticipation = "";
+                    for(var i in body.current.timeline){
+                      if(body.current.timeline[i].date>currentdate){
+                        if(i==0){
+                          //first event hasn't occured yet
+                          currentAnticipation = body.current.timeline[i].anticipation;
+                        }
+                        else{
+                          currentAnticipation = body.current.timeline[i-1].anticipation;
+                        }
+                        break;
+                      }
+                    }
+                %>
+                <div class="timelinecontainer">
+                    <div class="timeline" style="height:<%= timelineheight %>px;">
+    
+                        <div class="leftsection">
+                            <div class="timelineindicator" style="height:<%= timelineindicatorHeight %>px;"></div>
+                          <% } %>
+                          <% body.current.timeline.forEach(event=>{ %>
+                                <div class="date <% if(currentdate>event.date) { %>past<% } %>" style="top:<%= getDatePosition(event.date) %>px;"><div class="datetext"><%= new Date(event.date).toLocaleDateString("en-US", { month:'long', day:'numeric'}) %></div></div>
+                          <% }); %>
+                        </div>
+                        <div class="rightsection">
+                            <% body.current.timeline.forEach(event=>{ %>
+                              <div class="event <% if(currentdate>event.date) { %>past<% } %>" style="top:<%= getDatePosition(event.date) %>px;"><div class="eventtext"><%= event.description %></div></div>
+                            <% }); %>
+                        </div>
+                    </div>
+                    <% if(currentAnticipation) { %>
+                      <div class="anticipationtext" >
+                        <div style="margin-top:<%= timelineheight-timelineindicatorHeight %>px">
+                            <%- currentAnticipation %>
+                        </div>
+    
+                      </div>
+                      <% } %>
+                </div>
+    
+          </section>
         <h3>[sustainability]</h3>
         <script>
 $('.accordion').accordion({

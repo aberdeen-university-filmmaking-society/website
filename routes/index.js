@@ -341,7 +341,49 @@ router.get('/tags/:tag', function(req, res, next) {
 /*2035 Welcome packs*/
 router.get('/films/2035/welcome/:username', function(req,res,next){
   /*sqlcon.*/
-  res.render('welcomepack', {page:'film'});
+  
+  var prodpage = productionsmanager.get();
+  var pastids = [];
+  prodpage.past.forEach(project=>{
+    pastids.push(project.filmid);
+  });
+  tagmanager.getPostsForTagAfter("aufsproductions",prodpage.current.startdate,function(posts){
+    if(posts){
+      posts.forEach(post=>{
+        post = setdetails(post, post.id, true);
+      })
+    }
+    if(pastids.length>0){
+      filmmanager.get(pastids,  function(pastfilms){
+        var pastprojects = [];
+        if(pastfilms){
+          pastfilms.forEach(film=>{
+            for(var i in prodpage.past){
+              if(prodpage.past[i].filmid==film.id){
+                film.description = deltaToHtml(JSON.parse(film.description).ops);
+                film.behindthescenes = JSON.parse(film.behindthescenes);
+                film.behindthescenes.story = deltaToHtml(JSON.parse(film.behindthescenes.story).ops);
+                film.behindthescenes.pics = [];
+                film = filmFilesToImages(film);
+                pastprojects.push({year: prodpage.past[i].year, film: setdetails(film)})
+                break;
+              }
+            }
+          });
+          pastprojects.sort(function(a, b) {
+            var textA = a.year.toUpperCase();
+            var textB = b.year.toUpperCase();
+            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+          });
+        }
+        pastprojects.sort((a, b) => (a.year < b.year) ? 1 : -1);
+        res.render('welcomepack', { page:'aufsproductions', body: productionsmanager.get(), pastprojects:pastprojects, posts:posts});
+      });
+    }
+    else{
+      res.render('welcomepack', { page:'aufsproductions', body: productionsmanager.get(), posts:posts});
+    }
+  });
 });
 
 
