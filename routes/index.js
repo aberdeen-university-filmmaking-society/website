@@ -195,13 +195,11 @@ router.get('/posts', function(req, res, next) {
   });
 });
 
-
-router.get('/posts/:id', function(req, res, next) {
-  postmanager.get(req.params.id, function(result){
+function showpost(id, req, res, next){
+  postmanager.get(id, function(result){
     if(result){
-      tagmanager.getTagsForPost(req.params.id,function(tags){
-        //result.content = deltaToHtml(JSON.parse(result.content).ops);
-        result = setdetails(result, req.params.id, true);
+      tagmanager.getTagsForPost(id,function(tags){
+        result = setdetails(result, id, true);
         res.render('post', { page:'post', post:result, tags:tags });
       });
     }
@@ -209,6 +207,13 @@ router.get('/posts/:id', function(req, res, next) {
       res.render('error',{ page:'error', error:{status:404, stack:""}, message:"Not found" });
     }
   });
+}
+
+router.get('/posts/:id', function(req, res, next) {
+  showpost(req.params.id);
+});
+router.get('/20years', function(req, res, next) {
+  showpost(1571497698228);
 });
 
 router.get('/films', function(req, res, next) {
