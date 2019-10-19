@@ -210,10 +210,10 @@ function showpost(id, req, res, next){
 }
 
 router.get('/posts/:id', function(req, res, next) {
-  showpost(req.params.id);
+  showpost(req.params.id,req,res,next);
 });
 router.get('/20years', function(req, res, next) {
-  showpost(1571497698228);
+  showpost(1571497698228, req,res,next);
 });
 
 router.get('/films', function(req, res, next) {
