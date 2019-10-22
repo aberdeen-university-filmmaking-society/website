@@ -5,6 +5,7 @@ var postmanager = require('../managers/postmanager');
 var filmmanager = require('../managers/filmmanager');
 var pagemanager = require('../managers/custompagemanager')
 var productionsmanager = require('../managers/productionsmanager');
+var auditionmanager = require('../managers/auditionmanager');
 var tagmanager = require('../managers/tagmanager');
 var moment = require('moment');
 var committee = require('../managers/committee');
@@ -256,35 +257,16 @@ function filmFilesToImages(result){
   return result;
 }
 
-router.get('/films/:slug', function(req, res, next) {
-  var SLUG = req.params.slug;
-  console.log("slug="+SLUG);
+function resolveFilmSlug(res, req, urlend, resolve){
   filmmanager.getbyslug(req.params.slug, function(result){
     if(result[0]){
-      result = result[0]
-      tagmanager.getTagsForFilm(result.id,function(tags){
-        result.behindthescenes = JSON.parse(result.behindthescenes);
-        result.credits = JSON.parse(result.credits);
-        result.techspecs = JSON.parse(result.techspecs);
-        result.description = deltaToHtml(JSON.parse(result.description).ops);
-        result.shortdesc = "Aberdeen University Filmmaking Society";
-        if(result.description) result.shortdesc = html2text(result.description);
-        result.behindthescenes.story = deltaToHtml(JSON.parse(result.behindthescenes.story).ops);
-        result.dateTimestamp = Number.parseInt(result.date);
-        result.date = formatDatePrecise(new Date(Number.parseInt(result.date)));
-        result.behindthescenes.pics = [];
-        result = filmFilesToImages(result);
-        filmmanager.getrecommended(result.id, result.dateTimestamp, function(similar){
-          res.render('film', { page:'film', film:result, tags:tags, recommended:similar });
-        });
-      });
+      resolve(result[0]);
     }
     else{
       sqlcon.query("SELECT * FROM `SlugRedirects` WHERE `oldslug`=? AND `type`=?", [SLUG, "film"], function(err, redirect){
-        console.log("REDIRECT="+redirect);
         if(!err && redirect && redirect[0]){
           filmmanager.get(redirect[0].id, function(realfilm){
-            if(!err && realfilm && realfilm[0]) res.redirect(302, "/films/"+realfilm[0].slug);
+            if(!err && realfilm && realfilm[0]) res.redirect(302, "/films/"+realfilm[0].slug+urlend);
             else res.render('error',{ page:'error', error:{status:404, stack:""}, message:"Not found" });
           })
         }
@@ -294,6 +276,46 @@ router.get('/films/:slug', function(req, res, next) {
       });
     }
   });
+}
+function polishFilmObject(film){
+  film.behindthescenes = JSON.parse(film.behindthescenes);
+  film.credits = JSON.parse(film.credits);
+  film.techspecs = JSON.parse(film.techspecs);
+  film.description = deltaToHtml(JSON.parse(film.description).ops);
+  film.shortdesc = "Aberdeen University Filmmaking Society";
+      if(film.description) film.shortdesc = html2text(film.description);
+  film.behindthescenes.story = deltaToHtml(JSON.parse(film.behindthescenes.story).ops);
+  film.dateTimestamp = Number.parseInt(film.date);
+  film.date = formatDatePrecise(new Date(Number.parseInt(film.date)));
+  film.behindthescenes.pics = [];
+  film = filmFilesToImages(film);
+  return film;
+}
+
+router.get('/films/:slug', function(req, res, next) {
+  resolveFilmSlug(res,req,undefined,function(result){
+    tagmanager.getTagsForFilm(result.id,function(tags){
+      result = polishFilmObject(result);
+      filmmanager.getrecommended(result.id, result.dateTimestamp, function(similar){
+        res.render('film', { page:'film', film:result, tags:tags, recommended:similar });
+      });
+    });
+  });
+});
+router.get('/films/:slug/audition', function(req,res,next){
+  resolveFilmSlug(res,req,'/audition',function(result){
+    result = polishFilmObject(result);
+    auditionmanager.get(result.id,function(audition){
+      if(audition){
+        res.render('audition', { page:'film', film:result, audition:audition });
+      }
+      else{
+        res.render('error',{ page:'error', error:{status:404, stack:""}, message:"Not found" });
+      }
+    });
+  });
+});
+router.post('/films/:slug/audition', function(req,res,next){
 });
 
 router.get('/productions/reveal', function(req, res, next) {

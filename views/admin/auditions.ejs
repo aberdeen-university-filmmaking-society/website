@@ -1,0 +1,197 @@
+<%- include header.ejs %>
+<script src="/javascripts/formbuilder.min.js"></script>
+<div class="section">
+    <div class="sectionheader"><span id="newpost-header">New Audition Form</span>
+        <div id="editpost-warning" style="display: none;font-size:12px;font-weight: normal;margin-top:4px;">Editing
+            audition&nbsp;<a target="_blank" style="color:white;" id="editpost-url"></a>
+        </div>
+    </div>
+    <input id="audition-filmid" type="text" class="smaller" placeholder="Film ID" autocomplete="off"><br>
+    <input id="audition-title" type="text" class="smaller" placeholder="Page title" autocomplete="off"><br><br>
+    <h3>Description</h3>
+        <p>Please describe the casting process, a synopsis of the film, and the characters that are being looked for</p>
+    <div id="auditiondescription"></div>    
+    <script src="/ckeditor/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace( 'auditiondescription' );
+    </script><br>
+        <h3>Questions</h3>
+        <p>It is advisable to ask for the name, the date of birth, the role which the actor is going for, and what experience they have</p>
+    <div id="audition-form">
+    </div>
+    <h3>Send audition responses to the following third-parties:</h3>
+    <div id="createaudition-emaillist">
+        <div class="createaudition-email autoaddlist">
+            <input type="text" class="email-name" placeholder="Full name" onchange="autoAddList(this)"><input type="email" class="email-address" placeholder="Email address" onchange="autoAddList(this)">
+        </div>
+    </div><br>
+    <button class="bigbtn" onclick="createaudition()">SAVE</button>
+    <button class="bigbtn" style="display: none;" id="editpost-cancel" onclick="stopedit()">CANCEL</button>
+</div>
+
+<div class="section">
+    <div class="sectionheader">Published</div>
+    <ul class="postlist">
+        <% if(locals.auditions) { %>
+            <% auditions.forEach(audition=>{ %>
+            <li class="postitem" style="height:48px;" data-id="<%= audition.filmid %>">
+                <div style="margin-right:174px;">
+                    <h4><%= audition.title %></h4>
+                </div>
+                <div class="actions">
+                    <button onclick="editaudition(<%= audition.filmid %>)"><i class="far fa-edit"></i></button>
+                    <button onclick="deleteaudition(<%= audition.filmid %>)"><i class="far fa-trash-alt"></i></button>
+                </div>
+            </li>
+            <% }); %>
+        <% } %>
+        </ul>
+</div>
+<script>
+        function autofillRowEmail(name, email){
+        return `<div class="createaudition-email autoaddlist">
+            <input type="text" class="email-name" value="${name}" placeholder="Full name" onchange="autoAddList(this)"><input type="email" value="${email}" class="email-address" placeholder="Email address" onchange="autoAddList(this)">
+        </div>`
+    }
+
+    function autoAddList(input){
+        var $container = $(input).parent();
+        var $inputs = $container.children();
+        if($inputs[0].value=="" && $inputs[1].value==""){
+            //It's empty, if it's not last delete it
+            if(!$container.is(":last-child")) 
+                $container.remove();
+        }
+        else{
+            //It's not empty, if it's last add an empty item
+            if($container.is(":last-child")){
+                $container.parent().append($container.clone().find('input').val(undefined).parent());
+            }
+        }
+    }
+
+var auditionForm = $(document.getElementById('audition-form')).formBuilder();
+
+var editingid;
+function editaudition(id) {
+        $.ajax({
+            type: "POST",
+            url: '/admin/auditions/get/' + id,
+            success: function (res) {
+                editingid = id;
+                $("#editpost-url").attr("href", "/films/" + id + "/audition").text(id);
+                $("#editpost-warning").show(0);
+                $("#editpost-cancel").show(0);
+                $("#newpost-header").text("Edit audition");
+                $("#audition-filmid").attr("disabled", true);
+                var audition = JSON.parse(res);
+                fillWithAuditionObject(audition);
+            }
+        });
+    }
+    function deleteaudition(id) {
+        if(confirm("Are you sure you want to delete this audition?")){
+            $.ajax({
+            type: "POST",
+            url: '/admin/auditions/remove/' + id,
+            success: function (res) {
+                $("[data-id='" + id + "']").remove();
+                if (editingid = id) {
+                    stopedit();
+                }
+            }
+        });
+        }
+    }
+    var editingid = undefined;
+
+    function stopedit() {
+        editingid = undefined;
+        $("#editpost-warning").hide(0);
+        $("#editpost-cancel").hide(0);
+        $("#audition-filmid").attr("disabled", false);
+        $("#newpost-header").text("New Audition Form");
+        window.location = '/admin/auditions';
+    }
+    function generateAuditionObject(){
+        var emails = {};  
+        $(".createaudition-email").each(function(){
+            if($(this).find(".email-name").val())
+                emails[$(this).find(".email-name").val()]=$(this).find(".email-address").val();
+        });
+        var auditionobject= {
+            filmid: $("#audition-filmid").val(),
+            title: $("#audition-title").val(),
+            emails:JSON.stringify(emails),
+            description:CKEDITOR.instances.auditiondescription.getData(),
+            form: auditionForm.formData,
+        };
+        return auditionobject;
+    }
+    function fillWithAuditionObject(audition) {
+        $("#audition-filmid").val(audition.filmid);
+        $("#audition-title").val(audition.title);
+        var emails = [];
+        if(audition.emails){
+            try{
+                emails = JSON.parse(audition.emails);
+            }
+            catch{}
+        }
+        $("#createaudition-emaillist").empty();
+        for(var name in emails){
+            $("#createaudition-emaillist").append(autofillRowEmail(name, emails[name]));
+        }
+        $("#createaudition-emaillist").append(autofillRowEmail('',''));
+        CKEDITOR.instances.auditiondescription.setData(audition.description);
+        auditionForm.actions.setData(audition.form);
+    }
+
+    function createaudition() {
+        var auditionobject = generateAuditionObject();
+        console.log(auditionobject)
+        if (editingid) {
+            $.ajax({
+                type: "POST",
+                url: '/admin/auditions/edit/' + editingid,
+                dataType: 'text',
+                contentType: "application/json",
+                async: true,
+                //json object to sent to the authentication url
+                data: JSON.stringify(auditionobject),
+                success: function (res) {
+                    console.log("edit successful");
+                    location.replace('/admin/auditions');
+                },
+                error: function (res) {
+                    if (res.errors != undefined) {
+                        var alertText = "";
+                        alert(res.errors.join("\n"));
+                    }
+                },
+            });
+        } else {
+            $.ajax({
+                type: "POST",
+                url: '/admin/auditions/create/',
+                dataType: 'text',
+                contentType: "application/json",
+                async: true,
+                //json object to sent to the authentication url
+                data: JSON.stringify(auditionobject),
+                success: function (res) {
+                    console.log(res);
+                    location.replace('/admin/auditions');
+                },
+                error: function (res) {
+                    if (res.errors != undefined) {
+                        var alertText = "";
+                        alert(res.errors.join("\n"));
+                    }
+                },
+            });
+        }
+    }
+</script>
+<br><br>
+<%- include footer.ejs %>

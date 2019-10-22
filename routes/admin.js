@@ -7,6 +7,8 @@ var pagemanger = require('../managers/custompagemanager');
 var tagmanager = require('../managers/tagmanager');
 var breakingnews = require('../managers/breakingnews');
 var productionsmanager = require('../managers/productionsmanager');
+var auditionmanager = require('../managers/auditionmanager');
+
 var committee = require('../managers/committee');
 var settings = require('../managers/settings');
 var passport = require('passport');
@@ -341,6 +343,43 @@ router.get('/update', function(req,res,next){
 });
 var filemanager = require('../managers/filemanager');
 router.use(filemanager.router);
+
+router.get('/auditions', function(req, res) {
+  // Prepare the context
+  auditionmanager.getall(function(results){
+      res.render('admin/auditions',{page:'auditions', auditions:results});
+  })
+  
+});
+
+router.post('/auditions/create',function(req, res) {
+  var result = auditionmanager.create(req.body, function(success){
+    if(success) res.sendStatus(200);
+    else res.sendStatus(500);
+  });
+});
+router.post('/auditions/remove/:id',function(req, res) {
+  auditionmanager.remove(req.params.id, function(success){
+    if(success) res.sendStatus(200);
+    else res.sendStatus(500);
+  });
+});
+router.post('/auditions/edit/:id',function(req, res) {
+  auditionmanager.edit(req.params.id, req.body, function(success){
+    if(success) res.sendStatus(200);
+    else res.sendStatus(500);
+  });
+});
+router.post('/auditions/get/:id',function(req, res) {
+  auditionmanager.get(req.params.id, function(success){
+    if(success) {
+        res.status(200).send(JSON.stringify(success));
+    }
+    else res.sendStatus(500);
+  });
+});
+
+
 
 router.get('/', function(req, res) {
   // Prepare the context

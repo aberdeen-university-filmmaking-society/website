@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+        <title><%= film.title %> | AUFS</title>
+        <meta property="og:title" content="<%= film.title %>">
+        <meta property="description" content="<%= film.shortdesc %>">
+        <meta property="og:description" content="<%= film.shortdesc %>"/>
+        <meta property="og:type" content="video.movie"/>
+        <% if(film.dateTimestamp) { %>
+        <meta property="og:video:release_date" content="<%= new Date(film.dateTimestamp).toISOString(); %>">
+        <% } %>
+        <meta property="og:url" content="<%= process.env.URL_START %>/films/<%= film.slug %>"/>
+        <meta property="og:image" content="<% if(film.poster) { %><%= process.env.URL_START + film.poster.thumb %><% } else if(film.youtubeid) { %>https://i.ytimg.com/vi/<%= film.youtubeid %>/mqdefault.jpg<% } %>">
+    <%- include partials/head.ejs %>
+    <link rel='stylesheet' href='/stylesheets/niceselect.css' />
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+    integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+  </head>
+  <body>
+    <style>
+        .video{
+            background-color:black;
+            width:100%;
+            margin-top:12px;
+            margin-bottom:24px;
+        }
+        .video iframe{
+            width: calc(100vw - (100vw - 100%)); 
+            height: 56.25vw;
+            max-width: 812px;
+            max-height: 450px;
+            margin:auto;
+            display: block;
+        }
+
+        .film-credit{
+            opacity:1;
+        }
+        .filmcredit-section{
+            line-height: 20px;
+        }
+        .film-credited{
+            opacity:0.5;
+        }
+        .carousell{
+            margin-top:12px;
+        }
+        .fb-required{
+            color:#ffa400 !important;
+            margin-left: 4px;
+        }
+        .parsley-errors-list {
+            list-style: none;
+            padding-left:4px;
+            margin-top:4px;
+        }
+        .parsley-errors-list li {
+            color:#ffa400;
+            font-size:12px;
+        }
+        input[type=text], input[type=date], textarea, select, .other-val{
+            background-color:rgba(255,255,255,0.05);
+            border:solid 1px rgba(255,255,255,0.5);
+            border-radius: 0px;
+            color:white;
+            margin-top:4px;
+            box-shadow: 0px 0px 12px rgba(0,0,0,0.2);
+            transition:all 0.2s;
+        }
+        select option:not(:checked) { 
+            color:black;
+        }
+        input[type=text].parsley-error, input[type=date].parsley-error, textarea.parsley-error, select.parsley-error, .other-val.parsley-error{
+            border: solid 1px #ffa400;
+        }
+        input[type=text]:hover, input[type=date]:hover, textarea:hover, select:hover, .other-val:hover{
+            background-color:rgba(255,255,255,0.1);
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+        }
+        input[type=text]:focus, input[type=date]:focus, textarea:focus, select:focus, .other-val:focus{
+            background-color:rgba(255,255,255,0.1);
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.4) !important;
+        }
+        .radio-group label{
+            cursor: pointer;
+        }
+        input[type=radio]
+        {
+             -webkit-appearance: none;
+             -moz-appearance: none;
+             appearance: none;
+             display: inline-block;
+             position: relative;
+             background-color: rgba(255,255,255,0.05);
+             color: #666;
+             top: 10px;
+             height: 24px;
+             width: 24px;
+             border:solid 1px rgba(255,255,255,0.5);
+             border-radius: 50px;
+             cursor: pointer;     
+             margin-right: 8px !important;
+             outline: none;
+             margin-top: 6px !important;
+             margin-bottom: 3px !important;
+             transition: all 0.2s;
+        }
+        input[type=radio]:checked::before
+        {
+             position: absolute;
+             height:12px;
+             width:12px;
+             border-radius: 12px;
+             background-color:white;
+             left: 5px;
+             top: 5px;
+             content: '';
+             transform: rotate(40deg);
+        }
+        input[type=radio]:hover
+        {
+             background-color: rgba(255,255,255,0.1);
+             box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+        }
+        input[type=radio]:checked
+        {
+             background-color: rgba(255,255,255,0.15);
+             box-shadow: 0px 0px 20px rgba(0,0,0,0.4) !important;
+        }
+        .disclaimer{
+            font-size: 12px;
+            margin-top:48px;
+        }
+        .auditionbtn{
+            margin-top:0px;
+            width:100%;
+            outline:none;
+            border:solid 2px rgba(255,255,255,1);
+            font-size:18px;
+            padding:24px;
+            font-family:Montserrat;
+            border-radius:6px;
+            color:white;
+            font-weight: 100;
+            background-color:rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
+    </style>
+    <%- include partials/header.ejs %>
+    <% if(film.css) { %>
+    <style>
+    <%- film.css %>
+    </style>
+    <% } %>
+    <main>
+        <section>
+            <h1><%= audition.title %></h1>
+            <% if(audition.description) { %>
+            <p><%- audition.description %></p>
+            <form id="mainform" data-parsley-validate="">
+                <div id="fb-render"></div>
+                <% if(audition.emails && audition.emails.length>0) { %>
+                <p class="disclaimer">By signing up, you accept that AUFS will keep this information until the casting process of <span style="color:white;"><%= film.title %></span> is over, and that it shall be shared with <span></span> in order to aid with the casting process. It will not be shared with any other third-party, and shall be permanently deleted once the casting process is over.</p>
+                <% } else { %>
+                <p class="disclaimer">By signing up, you accept that AUFS will keep this information until the casting process of <span style="color:white;"><%= film.title %></span> is over. It will not be shared with any other third-party, and shall be permanently deleted once the casting process is over.</p>
+                <% } %>
+                <input type="submit" class="auditionbtn" value="SIGN UP FOR AUDITION">
+            </form>
+            
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+            <script src="https://formbuilder.online/assets/js/form-render.min.js"></script>
+            <script src="/javascripts/parsley.min.js"></script>
+            <script>
+              var fbRender = document.getElementById('fb-render'),
+                  formData = `<%- audition.form %>`;
+              var formRenderOpts = {
+                formData
+              };
+              frInstance = $(fbRender).formRender(formRenderOpts);
+              $(function () {
+                $('#mainform').parsley().on('field:validated', function() {
+                  var ok = $('.parsley-error').length === 0;
+                  $('.bs-callout-info').toggleClass('hidden', !ok);
+                  $('.bs-callout-warning').toggleClass('hidden', ok);
+                })
+                .on('form:submit', function() {
+                  return false; // Don't submit form for this demo
+                });
+              });
+</script>
+            <% } %>
+        </section>
+    </main>
+        <%- include partials/footer.ejs %>
+  </body>
+</html>
