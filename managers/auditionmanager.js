@@ -65,13 +65,13 @@ function response2html(form){
         else if(field.type=="radio-group" || field.type=="select"){
             for(v in field.values){
                 if(field.response == field.values[v].value && field.values[v].label){
-                    field.response == htmlencode.htmlEncode(field.values[v].label);
+                    field.response ==  `<p style="margin-top:2px;">`+htmlencode.htmlEncode(field.values[v].label)+`</p>`;
                 }
             }
         }
         else if(field.type=="checkbox-group"){
             if(Array.isArray(field.response)){
-                list = "<ul>"
+                list = `<ul style="margin-top:0px">`
                 for(v1 in field.values){
                     for(v2 in field.response){
                         if(field.response[v2] == field.values[v1].value){
@@ -89,16 +89,17 @@ function response2html(form){
             else{
                 for(v in field.values){
                     if(field.response == field.values[v].value && field.values[v].label){
-                        field.response == htmlencode.htmlEncode(field.values[v].label);break;
+                        field.response == `<p style="margin-top:2px;">`+htmlencode.htmlEncode(field.values[v].label)+`</p>`;
+                        break;
                     }
                 }
             }
         }
         else{
-            field.response = htmlencode.htmlEncode(field.response);
+            field.response = `<p style="margin-top:2px;">`+htmlencode.htmlEncode(field.response)+`</p>`;
         }
         if(!field.label) field.label=field.name;
-        content+=`<h2 style="font-size:16px;margin-top:12px;margin-bottom:0px;">${field.label}</h2><p style="margin-top:2px;">${field.response}</p>`
+        content+=`<h2 style="font-size:16px;margin-top:12px;margin-bottom:0px;">${field.label}</h2>${field.response}`;
     }
     return `<!doctype html>
     <html>

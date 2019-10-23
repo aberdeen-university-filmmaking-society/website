@@ -341,7 +341,7 @@ router.post('/audition/:id', function(req,res,next){
       res.status(500).render('error',{ page:'error', error:{status:500, stack:result.details}, message:result.error});
     }
     else{
-      res.render('error',{ page:'error', error:{status:"Thanks!", stack:""}, message:"Your submission has been taken into account, we'll be in touch shortly!"});
+      res.render('auditionthanks',{ page:'auditionthanks' });
     }
   });
 });
