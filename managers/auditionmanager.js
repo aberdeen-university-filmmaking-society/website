@@ -105,7 +105,7 @@ function response2html(form){
       <head>
         <meta name="viewport" content="width=device-width" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>Simple Transactional Email</title>
+        <title>AUFS Audition</title>
       </head>
       <body class="">
         ${content}
