@@ -1,15 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-        <title><%= film.title %> | AUFS</title>
-        <meta property="og:title" content="<%= film.title %>">
-        <meta property="description" content="<%= film.shortdesc %>">
-        <meta property="og:description" content="<%= film.shortdesc %>"/>
-        <meta property="og:type" content="video.movie"/>
-        <% if(film.dateTimestamp) { %>
-        <meta property="og:video:release_date" content="<%= new Date(film.dateTimestamp).toISOString(); %>">
-        <% } %>
-        <meta property="og:url" content="<%= process.env.URL_START %>/films/<%= film.slug %>"/>
+        <title><%= audition.title %> | AUFS</title>
+        <meta property="og:title" content="<%= audition.title %>">
         <meta property="og:image" content="<% if(film.poster) { %><%= process.env.URL_START + film.poster.thumb %><% } else if(film.youtubeid) { %>https://i.ytimg.com/vi/<%= film.youtubeid %>/mqdefault.jpg<% } %>">
      <!--   <script src="https://cdn.alloyui.com/3.0.1/aui/aui-min.js"></script>
     <link href="https://cdn.alloyui.com/3.0.1/aui-css/css/bootstrap.min.css" rel="stylesheet"></link>-->
