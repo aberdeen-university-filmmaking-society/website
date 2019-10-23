@@ -11,7 +11,9 @@
         <% } %>
         <meta property="og:url" content="<%= process.env.URL_START %>/films/<%= film.slug %>"/>
         <meta property="og:image" content="<% if(film.poster) { %><%= process.env.URL_START + film.poster.thumb %><% } else if(film.youtubeid) { %>https://i.ytimg.com/vi/<%= film.youtubeid %>/mqdefault.jpg<% } %>">
-    <%- include partials/head.ejs %>
+     <!--   <script src="https://cdn.alloyui.com/3.0.1/aui/aui-min.js"></script>
+    <link href="https://cdn.alloyui.com/3.0.1/aui-css/css/bootstrap.min.css" rel="stylesheet"></link>-->
+        <%- include partials/head.ejs %>
     <link rel='stylesheet' href='/stylesheets/niceselect.css' />
     <script src="https://code.jquery.com/jquery-3.4.0.min.js"
     integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
@@ -87,6 +89,58 @@
         .radio-group label{
             cursor: pointer;
         }
+        input[type=checkbox]
+        {
+             -webkit-appearance: none;
+             -moz-appearance: none;
+             appearance: none;
+             display: inline-block;
+             position: relative;
+             background-color: rgba(255,255,255,0.05);
+             color: #666;
+             top: 10px;
+             height: 24px;
+             width: 24px;
+             border:solid 1px rgba(255,255,255,0.5);
+             border-radius: 4px;
+             cursor: pointer;     
+             margin-right: 8px !important;
+             outline: none;
+             margin-top: 6px !important;
+             margin-bottom: 3px !important;
+             transition: all 0.2s;
+        }
+        input[type=checkbox]::before
+        {
+             position: absolute;
+             border-radius: 12px;
+             color:white;
+             font-family: Arial, sans-serif;
+             content: url("/images/check.svg");
+             top:2px;
+             left:2px;
+             opacity:0;
+             transition:opacity 0.1s;
+        }
+        input[type=checkbox]:checked:before
+        {
+             opacity:1;
+        }
+        input[type=checkbox]:hover
+        {
+             background-color: rgba(255,255,255,0.1);
+             box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+        }
+        input[type=checkbox]:active
+        {
+             background-color: rgba(255,255,255,0.25);
+             box-shadow: 0px 0px 20px rgba(0,0,0,0.4) !important;
+        }
+        input[type=checkbox]:checked
+        {
+             background-color: rgba(255,255,255,0.25);
+        }
+
         input[type=radio]
         {
              -webkit-appearance: none;
@@ -138,7 +192,7 @@
             margin-top:0px;
             width:100%;
             outline:none;
-            border:solid 2px rgba(255,255,255,1);
+            border:solid 2px rgba(255,255,255,0.8);
             font-size:18px;
             padding:24px;
             font-family:Montserrat;
@@ -147,6 +201,18 @@
             font-weight: 100;
             background-color:rgba(0,0,0,0.1);
             cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0px 0px 24px rgba(0,0,0,0.2);
+        }
+        .auditionbtn:hover{
+            background-color:rgba(0,0,0,0.2);
+            border:solid 2px rgba(255,255,255,1);
+            box-shadow: 0px 0px 24px rgba(0,0,0,0.4);
+        }
+        .auditionbtn:active{
+            background-color:rgba(0,0,0,0.4);
+            border:solid 2px rgba(255,255,255,1);
+            box-shadow: 0px 0px 24px rgba(0,0,0,0.4);
         }
 
     </style>
@@ -158,17 +224,22 @@
     <% } %>
     <main>
         <section>
-            <h1><%= audition.title %></h1>
+            <h1 class="articletitle" style="margin-top:24px;font-weight:normal;"><%= audition.title %></h1>
             <% if(audition.description) { %>
             <p><%- audition.description %></p>
-            <form id="mainform" data-parsley-validate="">
+            <form id="mainform" data-parsley-validate="" method="POST" action="/audition/<%= audition.id %>">
                 <div id="fb-render"></div>
-                <% if(audition.emails && audition.emails.length>0) { %>
-                <p class="disclaimer">By signing up, you accept that AUFS will keep this information until the casting process of <span style="color:white;"><%= film.title %></span> is over, and that it shall be shared with <span></span> in order to aid with the casting process. It will not be shared with any other third-party, and shall be permanently deleted once the casting process is over.</p>
+                <div id="myScheduler">
+
+                </div>
+                <% if(audition.thirdparties) { %>
+                <p class="disclaimer">By signing up, you accept that AUFS will keep this information until the casting process of <span style="color:white;"><%= film.title %></span> is over, and that it shall be shared with
+                    <span style="color:white;"><%= audition.thirdparties %></span>
+                    in order to aid with the casting process. It will not be shared with any other third-party, and shall be permanently deleted once the casting process is over.</p>
                 <% } else { %>
                 <p class="disclaimer">By signing up, you accept that AUFS will keep this information until the casting process of <span style="color:white;"><%= film.title %></span> is over. It will not be shared with any other third-party, and shall be permanently deleted once the casting process is over.</p>
                 <% } %>
-                <input type="submit" class="auditionbtn" value="SIGN UP FOR AUDITION">
+                <input type="submit" class="auditionbtn" value="SEND">
             </form>
             
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -189,9 +260,40 @@
                   $('.bs-callout-warning').toggleClass('hidden', ok);
                 })
                 .on('form:submit', function() {
-                  return false; // Don't submit form for this demo
+                  return true; // Don't submit form for this demo
                 });
               });
+
+/*
+              YUI().use(
+  'aui-scheduler',
+  function(Y) {
+    var events = [
+      {
+        content: 'Event1',
+        endDate: new Date(2019, 1, 4, 2),
+        startDate: new Date(2019, 1, 4, 1),
+        disa
+      }
+    ];
+
+    var eventRecorder = new Y.SchedulerEventRecorder();
+    var weekView = new Y.SchedulerWeekView();
+
+    new Y.Scheduler(
+      {
+        boundingBox: '#myScheduler',
+        date: new Date(),
+        eventRecorder: eventRecorder,
+        items: events,
+        render: true,
+        views: [weekView]
+      }
+    );
+  }
+);*/
+
+
 </script>
             <% } %>
         </section>

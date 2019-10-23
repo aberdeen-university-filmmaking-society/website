@@ -307,6 +307,19 @@ router.get('/films/:slug/audition', function(req,res,next){
     result = polishFilmObject(result);
     auditionmanager.get(result.id,function(audition){
       if(audition){
+        if(audition.emails && audition.emails.length>0){
+          var parsedemails={}
+          var contacts = []
+          try{
+            parsedemails=JSON.parse(audition.emails);
+            for(var name in parsedemails){
+              if(name.trim().length>0)
+                contacts.push(name);
+            };
+            audition.thirdparties = arrayToSentence(contacts);
+          }
+          catch(ex){ };
+        }
         res.render('audition', { page:'film', film:result, audition:audition });
       }
       else{
@@ -315,7 +328,22 @@ router.get('/films/:slug/audition', function(req,res,next){
     });
   });
 });
-router.post('/films/:slug/audition', function(req,res,next){
+
+function arrayToSentence (arr) {
+  if(arr.length==1) return arr[0]
+  var last = arr.pop();
+  return arr.join(', ') + ' and ' + last;
+}
+
+router.post('/audition/:id', function(req,res,next){
+  auditionmanager.submitanswer(req.params.id, req.body, function(result){
+    if(result.error){
+      res.status(500).render('error',{ page:'error', error:{status:500, stack:result.details}, message:result.error});
+    }
+    else{
+      res.render('error',{ page:'error', error:{status:"Thanks!", stack:""}, message:"Your submission has been taken into account, we'll be in touch shortly!"});
+    }
+  });
 });
 
 router.get('/productions/reveal', function(req, res, next) {
