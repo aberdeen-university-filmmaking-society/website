@@ -98,7 +98,7 @@ function response2html(form){
             field.response = htmlencode.htmlEncode(field.response);
         }
         if(!field.label) field.label=field.name;
-        content+=`<h2 style="font-size:16px;margin-top:12px;">${field.label}</h2><p>${field.response}</p>`
+        content+=`<h2 style="font-size:16px;margin-top:12px;margin-bottom:0px;">${field.label}</h2><p style="margin-top:2px;">${field.response}</p>`
     }
     return `<!doctype html>
     <html>
