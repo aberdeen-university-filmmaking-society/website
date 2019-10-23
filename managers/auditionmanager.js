@@ -152,12 +152,15 @@ auditionmanager.submitanswer = function(auditionid, form, resolve){
                         });
                         var mailinglist=[];
                         for(name in audition.emails){
-                            var email =  audition.emails[name];
-                            mailinglist.push(email);
+                            var email =  audition.emails[name].trim();
+                            if(email && email.length>0){
+                                mailinglist.push(email);
+                            }
                         }
+                        
                         let mailOptions = {
                             from: '"AUFS Auditions" <auditions@aufilmmaking.co.uk>', // sender address
-                            to: mailinglist, // list of receivers
+                            to: mailinglist.join(", "), // list of receivers
                             subject: "New audition submission ("+auditionid+")", // Subject line
                             html: response2html(correctform)
                         };
