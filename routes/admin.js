@@ -38,8 +38,10 @@ app.get('/auth/signout', function(req,res,next){
   res.redirect('/');
 });
 app.all('/admin/*', function(req,res,next){
-
-  if(req.isUnauthenticated()){
+  if(req.query.key && req.path.startsWith('/admin/auditions/responses')){
+    next();
+  }
+  else if(req.isUnauthenticated()){
     res.redirect('/auth/google?redirect='+encodeURIComponent(req.originalUrl));
   }
   else{
@@ -379,9 +381,23 @@ router.post('/auditions/get/:id',function(req, res) {
   });
 });
 router.get('/auditions/responses/:id',function(req,res){
-  auditionmanager.getanswertable(req.params.id, function(table){
-    res.render('admin/auditionresponses',{html:table});
-  });
+  if(req.query.key){
+    auditionmanager.verifykey(req.params.id, req.query.key, function(valid){
+      if(valid){
+        auditionmanager.getanswertable(req.params.id, function(table){
+          res.render('admin/auditionresponses',{html:table});
+        });
+      }
+      else{
+        res.status(403).render('error',{ page:'error', error:{status:403}, message:"Forbidden", moreinfo:"Sorry, you are not allowed to view this data" });
+      }
+    });
+  }
+  else{
+    auditionmanager.getanswertable(req.params.id, function(table){
+      res.render('admin/auditionresponses',{html:table});
+    });
+  }
 });
 
 

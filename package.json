@@ -32,6 +32,7 @@
     "passport-google-oauth": "^2.0.0",
     "passport-google-oauth2": "^0.2.0",
     "quill-delta-to-html": "^0.10.8",
+    "randomkey": "^1.0.0",
     "request": "^2.88.0",
     "rimraf": "^2.6.3",
     "serve-favicon": "~2.4.5",

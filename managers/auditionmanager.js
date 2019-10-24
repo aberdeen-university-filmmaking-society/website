@@ -2,13 +2,16 @@ var auditionmanager = {}
 var filmmanager = require('./filmmanager');
 var nodemailer = require('nodemailer');
 var htmlencode = require('htmlencode');
+var randomkey = require('randomkey');
 
 auditionmanager.create = function(audition,resolve){
     if(audition.filmid){
         var id = Date.now().toString();
-        var sql = "INSERT INTO Auditions (filmid, description, title, form, emails, id) VALUES (?,?,?,?,?,?)";
-        sqlcon.query(sql, [audition.filmid, audition.description, audition.title, audition.form, audition.emails, id],function (err, result) {
+        var key = randomkey.generate(1024);
+        var sql = "INSERT INTO Auditions (filmid, description, title, form, emails, id, passkey) VALUES (?,?,?,?,?,?)";
+        sqlcon.query(sql, [audition.filmid, audition.description, audition.title, audition.form, audition.emails, id, key],function (err, result) {
             console.log(result);
+            
             if (err) resolve(false);
             else{
                 resolve(true);
@@ -41,7 +44,24 @@ auditionmanager.get = function(filmid, resolve){
     });
 }
 auditionmanager.getall = function(resolve){
-    var sql = "SELECT `Auditions`.*, count(AuditionResponses.auditionid) as response_count from Auditions left join AuditionResponses on (Auditions.id = AuditionResponses.auditionid) group by Auditions.id order by Auditions.id DESC";
+    var sql = `
+SELECT
+   Auditions.*,
+   count(AuditionResponses.auditionid) as response_count,
+   Films.slug 
+from
+   Auditions 
+   left join
+      AuditionResponses 
+      on (Auditions.id = AuditionResponses.auditionid) 
+   left JOIN
+      Films 
+      on (Auditions.filmid = Films.id) 
+group by
+   Auditions.id 
+order by
+   Auditions.id`;
+
     sqlcon.query(sql,function (err, result) {
         if (err) resolve(undefined);
         else resolve(result);
@@ -189,93 +209,119 @@ auditionmanager.getanswers = function(auditionid, resolve){
     });
 }
 
-auditionmanager.getanswertable = function(auditionid, resolve){
-    auditionmanager.getanswers(auditionid,function(answers){
-        var headers = new Map();
-        if(answers){
-            for(x in answers){
-                if(answers[x].form){
-                    try{
-                        var fields = JSON.parse(answers[x].form);
-                        fields.forEach(field=>{
-                            if(field.label){
-                                headers.set(field.name, field.label);
+auditionmanager.verifykey = function(auditionid, key, resolve){
+    var sql = "SELECT * FROM Auditions where id=?"
+    sqlcon.query(sql,[auditionid],function (err, result) {
+        if (err) {
+            resolve(false);
+        }
+        else if(result && result[0] && result[0].passkey==key){
+            resolve(true);
+        }
+        else{
+            resolve(false);
+        }
+    });
+}
+
+auditionmanager.getanswertable = function(auditionid, resolve, secret){
+    var sql = "SELECT * FROM Auditions where id=?";
+    sqlcon.query(sql,[auditionid],function (err, audition) {
+        if (err) resolve("No such audition exists");
+        else {
+            audition = audition[0];
+            auditionmanager.getanswers(auditionid,function(answers){
+                var headers = new Map();
+                if(answers){
+                    for(x in answers){
+                        if(answers[x].form){
+                            try{
+                                var fields = JSON.parse(answers[x].form);
+                                fields.forEach(field=>{
+                                    if(field.label){
+                                        headers.set(field.name, field.label);
+                                    }
+                                });
                             }
-                        });
+                            catch(exception){}
+                        }
                     }
-                    catch(exception){}
-                }
-            }
-            var html = "<table class='cell-border compact stripe'><thead><tr>"
-            headers.forEach(function(val,key){
-                html+=`<th data-name="${key}">${htmlencode.htmlEncode(val)}</th>`
-            });
-            html+="</tr></thead>";
-            html+="<tbody>"
-            for(x in answers){
-                if(answers[x].form){
-                    try{
-                        var fields = JSON.parse(answers[x].form);
-                        html+="<tr>"
-                        headers.forEach(function(val,key){
-                            var content = "&nbsp;"
-                            for(f in fields){
-                                var field = fields[f]
-                                if(field.name==key || field.name+"[]"==key){
-                                    if(field.response && field.response.replace || Array.isArray(field.response)){
-                                        if(field.type=="radio-group" || field.type=="select"){
-                                            for(v in field.values){
-                                                if(field.response == field.values[v].value && field.values[v].label){
-                                                    content =  htmlencode.htmlEncode(field.values[v].label);
+                    var html = "";
+                    if(secret){
+                        html+="<p class='notice'>Please do not share this link with anyone, all information on this page is strictly confidential</p>"
+                    }
+                    html += "<table class='cell-border compact stripe'><thead><tr>"
+                    headers.forEach(function(val,key){
+                        html+=`<th data-name="${key}">${htmlencode.htmlEncode(val)}</th>`
+                    });
+                    html+="</tr></thead>";
+                    html+="<tbody>"
+                    for(x in answers){
+                        if(answers[x].form){
+                            try{
+                                var fields = JSON.parse(answers[x].form);
+                                html+="<tr>"
+                                headers.forEach(function(val,key){
+                                    var content = "&nbsp;"
+                                    for(f in fields){
+                                        var field = fields[f]
+                                        if(field.name==key || field.name+"[]"==key){
+                                            if(field.response && field.response.replace || Array.isArray(field.response)){
+                                                if(field.type=="radio-group" || field.type=="select"){
+                                                    for(v in field.values){
+                                                        if(field.response == field.values[v].value && field.values[v].label){
+                                                            content =  htmlencode.htmlEncode(field.values[v].label);
+                                                        }
+                                                    }
                                                 }
-                                            }
-                                        }
-                                        else if(field.type=="checkbox-group"){
-                                            if(Array.isArray(field.response)){
-                                                list = `<ul>`
-                                                for(v1 in field.values){
-                                                    for(v2 in field.response){
-                                                        if(field.response[v2] == field.values[v1].value){
-                                                            if(field.values[v1].label){
-                                                                list+="<li>"+htmlencode.htmlEncode(field.values[v1].label)+"</li>"
+                                                else if(field.type=="checkbox-group"){
+                                                    if(Array.isArray(field.response)){
+                                                        list = `<ul>`
+                                                        for(v1 in field.values){
+                                                            for(v2 in field.response){
+                                                                if(field.response[v2] == field.values[v1].value){
+                                                                    if(field.values[v1].label){
+                                                                        list+="<li>"+htmlencode.htmlEncode(field.values[v1].label)+"</li>"
+                                                                    }
+                                                                    else{
+                                                                        list+="<li>"+field.values[v1].name+"</li>";
+                                                                    }
+                                                                }
                                                             }
-                                                            else{
-                                                                list+="<li>"+field.values[v1].name+"</li>";
+                                                        }
+                                                        content = list+"</ul>";
+                                                    }
+                                                    else{
+                                                        for(v in field.values){
+                                                            if(field.response == field.values[v].value && field.values[v].label){
+                                                                content = htmlencode.htmlEncode(field.values[v].label);
+                                                                break;
                                                             }
                                                         }
                                                     }
                                                 }
-                                                content = list+"</ul>";
-                                            }
-                                            else{
-                                                for(v in field.values){
-                                                    if(field.response == field.values[v].value && field.values[v].label){
-                                                        content = htmlencode.htmlEncode(field.values[v].label);
-                                                        break;
-                                                    }
+                                                else{
+                                                    content = htmlencode.htmlEncode(field.response);
                                                 }
                                             }
-                                        }
-                                        else{
-                                            content = htmlencode.htmlEncode(field.response);
+                                            break;
                                         }
                                     }
-                                    break;
-                                }
+                                    html+="<td>"+content+"</td>"
+                                });
+                                html+="</tr>"
                             }
-                            html+="<td>"+content+"</td>"
-                        });
-                        html+="</tr>"
+                            catch(exception){}
+                        }
                     }
-                    catch(exception){}
+                    html+="</tbody></table>"
+                    resolve(html);
+                    console.log(html);
                 }
-            }
-            html+="</tbody></table>"
-            resolve(html);
-            console.log(html);
-        }
-        else{
-            return('No answers');
+                else{
+                    return('No answers');
+                }
+            });
         }
     });
 }

@@ -34,9 +34,9 @@
     <ul class="postlist" style="margin-top: -12px;margin-bottom: -12px;">
         <% if(locals.auditions) { %>
             <% auditions.forEach(audition=>{ %>
-            <li class="postitem" style="padding:16px 24px;" data-id="<%= audition.filmid %>">
+            <li class="postitem" style="padding:10px 24px;" data-id="<%= audition.filmid %>">
                 <div style="margin-right:174px;">
-                    <h4><%= audition.title %></h4>
+                    <h4><a target="_blank" href="/films/<%= audition.slug %>/audition"><%= audition.title %></a></h4>
                     <% if(audition.response_count==0) { %>
                         <h5>No responses</h5>
                     <% } else if(audition.response_count==1) { %>
@@ -44,7 +44,7 @@
                     <% } else { %>
                         <h5><%= audition.response_count %> Responses</h5>
                     <% } %>
-                    
+                    <h6><a target="_blank" href="/admin/auditions/responses/<%= audition.id %>?key=<%= audition.passkey %>">Shareable private link</a></h6>
                 </div>
                 <div class="actions">
                     <button title="Open audition results" onclick="viewaudition(<%= audition.id %>)"><i class="far fa-comments"></i></button>
@@ -57,12 +57,6 @@
         </ul>
 </div>
 <script>
-        function autofillRowEmail(name, email){
-        return `<div class="createaudition-email autoaddlist">
-            <input type="text" class="email-name" value="${name}" placeholder="Full name" onchange="autoAddList(this)"><input type="email" value="${email}" class="email-address" placeholder="Email address" onchange="autoAddList(this)">
-        </div>`
-    }
-
     function autoAddList(input){
         var $container = $(input).parent();
         var $inputs = $container.children();
