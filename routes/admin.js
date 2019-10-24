@@ -386,7 +386,7 @@ router.get('/auditions/responses/:id',function(req,res){
       if(valid){
         auditionmanager.getanswertable(req.params.id, function(table){
           res.render('admin/auditionresponses',{html:table});
-        });
+        }, true);
       }
       else{
         res.status(403).render('error',{ page:'error', error:{status:403}, message:"Forbidden", moreinfo:"Sorry, you are not allowed to view this data" });
@@ -396,7 +396,7 @@ router.get('/auditions/responses/:id',function(req,res){
   else{
     auditionmanager.getanswertable(req.params.id, function(table){
       res.render('admin/auditionresponses',{html:table});
-    });
+    }, false);
   }
 });
 

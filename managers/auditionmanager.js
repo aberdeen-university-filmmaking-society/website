@@ -75,7 +75,7 @@ auditionmanager.remove = function(filmid,resolve){
         else resolve(true);
     });
 }
-function response2html(form){
+function response2html(form,audition){
     var content="";
     for(i in form){
         var field = form[i];
@@ -130,6 +130,8 @@ function response2html(form){
       </head>
       <body class="">
         ${content}
+        <br><br>
+        <a style='font-size:11px;' href="${process.env.URL_START}/admin/auditions/responses/${audition.id}?key=${audition.passkey}">View all responses</a>
       </body>
     </html>`
 }
@@ -183,7 +185,7 @@ auditionmanager.submitanswer = function(auditionid, form, resolve){
                             from: '"AUFS Auditions" <auditions@aufilmmaking.co.uk>', // sender address
                             to: mailinglist.join(", "), // list of receivers
                             subject: "New audition submission ("+auditionid+")", // Subject line
-                            html: response2html(correctform)
+                            html: response2html(correctform, audition)
                         };
                     
                         transporter.sendMail(mailOptions, (error, info) => {
@@ -247,9 +249,6 @@ auditionmanager.getanswertable = function(auditionid, resolve, secret){
                         }
                     }
                     var html = "";
-                    if(secret){
-                        html+="<p class='notice'>Please do not share this link with anyone, all information on this page is strictly confidential</p>"
-                    }
                     html += "<table class='cell-border compact stripe'><thead><tr>"
                     headers.forEach(function(val,key){
                         html+=`<th data-name="${key}">${htmlencode.htmlEncode(val)}</th>`
