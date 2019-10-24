@@ -142,6 +142,12 @@ function editaudition(id) {
         };
         return auditionobject;
     }
+    function autofillRowEmail(name, email){
+        return `<div class="createaudition-email autoaddlist">
+            <input type="text" class="email-name" value="${name}" placeholder="Full name" onchange="autoAddList(this)"><input type="email" value="${email}" class="email-address" placeholder="Email address" onchange="autoAddList(this)">
+        </div>`
+    }
+
     function fillWithAuditionObject(audition) {
         $("#audition-filmid").val(audition.filmid);
         $("#audition-title").val(audition.title);
