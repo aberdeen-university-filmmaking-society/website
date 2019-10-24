@@ -22,7 +22,7 @@
         
         <link rel="stylesheet" type="text/css" href="/datatables/datatables.min.css"/>
         <script type="text/javascript" src="/datatables/datatables.min.js"></script>
-
+        <script type="text/javascript" src="/datatables/buttons.colVis.min.js"></script>
     </head>
 <body>
         <style>
@@ -254,7 +254,8 @@
               .dataTables_wrapper .dataTables_paginate {
                 float: right;
                 text-align: right;
-                padding-top: 0.25em; }
+                padding-top: 0.25em;
+                margin-bottom: 6px; }
                 .dataTables_wrapper .dataTables_paginate .paginate_button {
                   box-sizing: border-box;
                   display: inline-block;
@@ -434,22 +435,41 @@
             padding-left: 0;
             list-style: none;
         }
+        .collapsebtn{
+            font-weight:bold;
+        }
                 </style>
                     <div>
                             <%- html %>
                         </div>
                         <script>
                             $(document).ready( function () {
-                                $('table').DataTable({
-                                    dom:"<'top'Blfr>t<'bottom'ip>",
-                                    buttons: [
-                                        'copy', 'csv', 'excel', 'pdf','colvis'
-                                    ],
-                                    colReorder: true,
-                                    fixedColumns: true,
-                                    fixedHeader: true,
-                                    responsive:true,
-                                    autoWidth:false
+                                var table = $('table').DataTable({
+                                        dom:"<'top'Blfr>t<'bottom'ip>",
+                                        buttons: [
+                                            'copy', 'csv', 'excel', 'pdf','colvis',{
+                                                text: 'Collapse/Expand',
+                                                className: 'collapsebtn',
+                                                action: function ( e, dt, node, config ) {
+                                                    table.columns().every( function (i) {
+                                                        if(i>0){
+                                                            var header = $(this.header());
+                                                            if(header.hasClass('none'))
+                                                                header.removeClass('none');
+                                                            else
+                                                                header.addClass('none');
+                                                        }
+                                                    } );
+                                                    table.responsive.rebuild();
+                                                    table.responsive.recalc();
+                                                }
+                                            }
+                                        ],
+                                        colReorder: true,
+                                        fixedColumns: true,
+                                        fixedHeader: true,
+                                        responsive:true,
+                                        autoWidth:false
                                 });
                             } );
                         </script>
