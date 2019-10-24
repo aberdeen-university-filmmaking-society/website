@@ -221,8 +221,8 @@ auditionmanager.getanswertable = function(auditionid, resolve){
                             var content = "&nbsp;"
                             for(f in fields){
                                 var field = fields[f]
-                                if(field.name==key){
-                                    if(field.response && field.response.replace){
+                                if(field.name==key || field.name+"[]"==key){
+                                    if(field.response && field.response.replace || Array.isArray(field.response)){
                                         if(field.type=="radio-group" || field.type=="select"){
                                             for(v in field.values){
                                                 if(field.response == field.values[v].value && field.values[v].label){
