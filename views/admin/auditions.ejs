@@ -31,12 +31,20 @@
 
 <div class="section">
     <div class="sectionheader">Published</div>
-    <ul class="postlist">
+    <ul class="postlist" style="margin-top: -12px;margin-bottom: -12px;">
         <% if(locals.auditions) { %>
             <% auditions.forEach(audition=>{ %>
-            <li class="postitem" style="height:48px;" data-id="<%= audition.filmid %>">
+            <li class="postitem" style="padding:16px 24px;" data-id="<%= audition.filmid %>">
                 <div style="margin-right:174px;">
                     <h4><%= audition.title %></h4>
+                    <% if(audition.response_count==0) { %>
+                        <h5>No responses</h5>
+                    <% } else if(audition.response_count==1) { %>
+                        <h5>1 Response</h5>
+                    <% } else { %>
+                        <h5><%= audition.response_count %> Responses</h5>
+                    <% } %>
+                    
                 </div>
                 <div class="actions">
                     <button title="Open audition results" onclick="viewaudition(<%= audition.id %>)"><i class="far fa-comments"></i></button>

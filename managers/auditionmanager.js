@@ -41,7 +41,7 @@ auditionmanager.get = function(filmid, resolve){
     });
 }
 auditionmanager.getall = function(resolve){
-    var sql = "SELECT * FROM Auditions ORDER by id DESC";
+    var sql = "SELECT `Auditions`.*, count(AuditionResponses.auditionid) as response_count from Auditions left join AuditionResponses on (Auditions.id = AuditionResponses.auditionid) group by Auditions.id order by Auditions.id DESC";
     sqlcon.query(sql,function (err, result) {
         if (err) resolve(undefined);
         else resolve(result);
@@ -226,7 +226,7 @@ auditionmanager.getanswertable = function(auditionid, resolve){
                                         if(field.type=="radio-group" || field.type=="select"){
                                             for(v in field.values){
                                                 if(field.response == field.values[v].value && field.values[v].label){
-                                                    content ==  htmlencode.htmlEncode(field.values[v].label);
+                                                    content =  htmlencode.htmlEncode(field.values[v].label);
                                                 }
                                             }
                                         }
@@ -250,7 +250,7 @@ auditionmanager.getanswertable = function(auditionid, resolve){
                                             else{
                                                 for(v in field.values){
                                                     if(field.response == field.values[v].value && field.values[v].label){
-                                                        content == htmlencode.htmlEncode(field.values[v].label);
+                                                        content = htmlencode.htmlEncode(field.values[v].label);
                                                         break;
                                                     }
                                                 }
@@ -260,8 +260,6 @@ auditionmanager.getanswertable = function(auditionid, resolve){
                                             content = htmlencode.htmlEncode(field.response);
                                         }
                                     }
-                                        
-                                    empty = false;
                                     break;
                                 }
                             }
