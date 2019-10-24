@@ -378,6 +378,11 @@ router.post('/auditions/get/:id',function(req, res) {
     else res.sendStatus(500);
   });
 });
+router.get('/auditions/responses/:id',function(req,res){
+  auditionmanager.getanswertable(req.params.id, function(table){
+    res.render('admin/auditionresponses',{html:table});
+  });
+});
 
 
 

@@ -182,10 +182,65 @@ auditionmanager.submitanswer = function(auditionid, form, resolve){
     });
 };
 auditionmanager.getanswers = function(auditionid, resolve){
-    var sql = "SELECT * FROM AuditionResponses where auditionid=? ORDER by id DESC";
-    sqlcon.query(sql,[filmid],function (err, result) {
+    var sql = "SELECT * FROM AuditionResponses where auditionid=?";
+    sqlcon.query(sql,[auditionid],function (err, result) {
         if (err) resolve(undefined);
         else resolve(result);
+    });
+}
+
+auditionmanager.getanswertable = function(auditionid, resolve){
+    auditionmanager.getanswers(auditionid,function(answers){
+        var headers = new Map();
+        if(answers){
+            for(x in answers){
+                if(answers[x].form){
+                    try{
+                        var fields = JSON.parse(answers[x].form);
+                        fields.forEach(field=>{
+                            if(field.label){
+                                headers.set(field.name, field.label);
+                            }
+                        });
+                    }
+                    catch(exception){}
+                }
+            }
+            var html = "<table class='cell-border compact stripe'><thead><tr>"
+            headers.forEach(function(val,key){
+                html+=`<th data-name="${key}">${htmlencode.htmlEncode(val)}</th>`
+            });
+            html+="</tr></thead>";
+            html+="<tbody>"
+            for(x in answers){
+                if(answers[x].form){
+                    try{
+                        var fields = JSON.parse(answers[x].form);
+                        html+="<tr>"
+                        headers.forEach(function(val,key){
+                            var content = "&nbsp;"
+                            for(f in fields){
+                                if(fields[f].name==key){
+                                    if(fields[f].response && fields[f].response.replace)
+                                        content = htmlencode.htmlEncode(fields[f].response);
+                                    empty = false;
+                                    break;
+                                }
+                            }
+                            html+="<td>"+content+"</td>"
+                        });
+                        html+="</tr>"
+                    }
+                    catch(exception){}
+                }
+            }
+            html+="</tbody></table>"
+            resolve(html);
+            console.log(html);
+        }
+        else{
+            return('No answers');
+        }
     });
 }
 

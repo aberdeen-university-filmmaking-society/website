@@ -39,6 +39,7 @@
                     <h4><%= audition.title %></h4>
                 </div>
                 <div class="actions">
+                    <button title="Open audition results" onclick="viewaudition(<%= audition.id %>)"><i class="far fa-comments"></i></button>
                     <button onclick="editaudition(<%= audition.filmid %>)"><i class="far fa-edit"></i></button>
                     <button onclick="deleteaudition(<%= audition.filmid %>)"><i class="far fa-trash-alt"></i></button>
                 </div>
@@ -71,6 +72,17 @@
     }
 
 var auditionForm = $(document.getElementById('audition-form')).formBuilder();
+
+function viewaudition(id){
+    var popup = window.open("/admin/auditions/responses/"+id, "Responses", "menubar=no,location=no");
+    if (popup.outerWidth < screen.availWidth || popup.outerHeight < screen.availHeight)
+    {
+      popup.moveTo(0,0);
+      popup.resizeTo(screen.availWidth, screen.availHeight);
+    }
+    
+    
+}
 
 var editingid;
 function editaudition(id) {
