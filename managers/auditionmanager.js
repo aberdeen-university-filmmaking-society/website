@@ -220,9 +220,47 @@ auditionmanager.getanswertable = function(auditionid, resolve){
                         headers.forEach(function(val,key){
                             var content = "&nbsp;"
                             for(f in fields){
-                                if(fields[f].name==key){
-                                    if(fields[f].response && fields[f].response.replace)
-                                        content = htmlencode.htmlEncode(fields[f].response);
+                                var field = fields[f]
+                                if(field.name==key){
+                                    if(field.response && field.response.replace){
+                                        if(field.type=="radio-group" || field.type=="select"){
+                                            for(v in field.values){
+                                                if(field.response == field.values[v].value && field.values[v].label){
+                                                    content ==  htmlencode.htmlEncode(field.values[v].label);
+                                                }
+                                            }
+                                        }
+                                        else if(field.type=="checkbox-group"){
+                                            if(Array.isArray(field.response)){
+                                                list = `<ul>`
+                                                for(v1 in field.values){
+                                                    for(v2 in field.response){
+                                                        if(field.response[v2] == field.values[v1].value){
+                                                            if(field.values[v1].label){
+                                                                list+="<li>"+htmlencode.htmlEncode(field.values[v1].label)+"</li>"
+                                                            }
+                                                            else{
+                                                                list+="<li>"+field.values[v1].name+"</li>";
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                content = list+"</ul>";
+                                            }
+                                            else{
+                                                for(v in field.values){
+                                                    if(field.response == field.values[v].value && field.values[v].label){
+                                                        content == htmlencode.htmlEncode(field.values[v].label);
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else{
+                                            content = htmlencode.htmlEncode(field.response);
+                                        }
+                                    }
+                                        
                                     empty = false;
                                     break;
                                 }
