@@ -3,11 +3,12 @@ var filmmanager = require('./filmmanager');
 var nodemailer = require('nodemailer');
 var htmlencode = require('htmlencode');
 var randomkey = require('randomkey');
+var moment = require('moment');
 
 auditionmanager.create = function(audition,resolve){
     if(audition.filmid){
         var id = Date.now().toString();
-        var key = randomkey.generate(1024);
+        var key = randomkey.generate(128);
         var sql = "INSERT INTO Auditions (filmid, description, title, form, emails, id, passkey) VALUES (?,?,?,?,?,?)";
         sqlcon.query(sql, [audition.filmid, audition.description, audition.title, audition.form, audition.emails, id, key],function (err, result) {
             console.log(result);
@@ -226,6 +227,17 @@ auditionmanager.verifykey = function(auditionid, key, resolve){
     });
 }
 
+moment.locale('en', {
+    calendar : {
+        lastDay : '[Yesterday at] LT',
+        sameDay : 'LT',
+        nextDay : '[Tomorrow at] LT',
+        lastWeek : 'dddd [at] LT',
+        nextWeek : 'dddd [at] LT',
+        sameElse : 'L'
+    }
+});
+
 auditionmanager.getanswertable = function(auditionid, resolve, secret){
     var sql = "SELECT * FROM Auditions where id=?";
     sqlcon.query(sql,[auditionid],function (err, audition) {
@@ -248,10 +260,12 @@ auditionmanager.getanswertable = function(auditionid, resolve, secret){
                             catch(exception){}
                         }
                     }
+                    var dateName="submissiondate-4350209332";
+                    headers.set(dateName,"Submission time");
                     var html = "";
                     html += "<table class='cell-border compact stripe'><thead><tr>"
                     headers.forEach(function(val,key){
-                        html+=`<th data-name="${key}">${htmlencode.htmlEncode(val)}</th>`
+                        html+=`<th data-name="${key}">${htmlencode.htmlEncode(val)}</th>`;
                     });
                     html+="</tr></thead>";
                     html+="<tbody>"
@@ -262,51 +276,58 @@ auditionmanager.getanswertable = function(auditionid, resolve, secret){
                                 html+="<tr>"
                                 headers.forEach(function(val,key){
                                     var content = "&nbsp;"
-                                    for(f in fields){
-                                        var field = fields[f]
-                                        if(field.name==key || field.name+"[]"==key){
-                                            if(field.response && field.response.replace || Array.isArray(field.response)){
-                                                if(field.type=="radio-group" || field.type=="select"){
-                                                    for(v in field.values){
-                                                        if(field.response == field.values[v].value && field.values[v].label){
-                                                            content =  htmlencode.htmlEncode(field.values[v].label);
+                                    if(key==dateName){
+                                        html+=`<td data-sort="${answers[x].responseid}">${moment(answers[x].responseid, "x").calendar()}</td>`;
+                                    }
+                                    else{
+                                        for(f in fields){
+                                            var field = fields[f]
+                                            if(field.name==key || field.name+"[]"==key){
+                                                
+                                                if(field.response && field.response.replace || Array.isArray(field.response)){
+                                                    if(field.type=="radio-group" || field.type=="select"){
+                                                        for(v in field.values){
+                                                            if(field.response == field.values[v].value && field.values[v].label){
+                                                                content =  htmlencode.htmlEncode(field.values[v].label);
+                                                            }
                                                         }
                                                     }
-                                                }
-                                                else if(field.type=="checkbox-group"){
-                                                    if(Array.isArray(field.response)){
-                                                        list = `<ul>`
-                                                        for(v1 in field.values){
-                                                            for(v2 in field.response){
-                                                                if(field.response[v2] == field.values[v1].value){
-                                                                    if(field.values[v1].label){
-                                                                        list+="<li>"+htmlencode.htmlEncode(field.values[v1].label)+"</li>"
-                                                                    }
-                                                                    else{
-                                                                        list+="<li>"+field.values[v1].name+"</li>";
+                                                    else if(field.type=="checkbox-group"){
+                                                        if(Array.isArray(field.response)){
+                                                            list = `<ul>`
+                                                            for(v1 in field.values){
+                                                                for(v2 in field.response){
+                                                                    if(field.response[v2] == field.values[v1].value){
+                                                                        if(field.values[v1].label){
+                                                                            list+="<li>"+htmlencode.htmlEncode(field.values[v1].label)+"</li>"
+                                                                        }
+                                                                        else{
+                                                                            list+="<li>"+field.values[v1].name+"</li>";
+                                                                        }
                                                                     }
                                                                 }
                                                             }
+                                                            content = list+"</ul>";
                                                         }
-                                                        content = list+"</ul>";
-                                                    }
-                                                    else{
-                                                        for(v in field.values){
-                                                            if(field.response == field.values[v].value && field.values[v].label){
-                                                                content = htmlencode.htmlEncode(field.values[v].label);
-                                                                break;
+                                                        else{
+                                                            for(v in field.values){
+                                                                if(field.response == field.values[v].value && field.values[v].label){
+                                                                    content = htmlencode.htmlEncode(field.values[v].label);
+                                                                    break;
+                                                                }
                                                             }
                                                         }
                                                     }
+                                                    else{
+                                                        content = htmlencode.htmlEncode(field.response);
+                                                    }
                                                 }
-                                                else{
-                                                    content = htmlencode.htmlEncode(field.response);
-                                                }
+                                                break;
                                             }
-                                            break;
                                         }
+                                        html+=`<td>${content}</td>`
                                     }
-                                    html+="<td>"+content+"</td>"
+                                   
                                 });
                                 html+="</tr>"
                             }

@@ -451,7 +451,7 @@
                                                 text: 'Collapse/Expand',
                                                 className: 'collapsebtn',
                                                 action: function ( e, dt, node, config ) {
-                                                    table.columns().every( function (i) {
+                                                    dt.columns().every( function (i) {
                                                         if(i>0){
                                                             var header = $(this.header());
                                                             if(header.hasClass('none'))
@@ -460,8 +460,8 @@
                                                                 header.addClass('none');
                                                         }
                                                     } );
-                                                    table.responsive.rebuild();
-                                                    table.responsive.recalc();
+                                                    dt.responsive.rebuild();
+                                                    dt.responsive.recalc();
                                                 }
                                             }
                                         ],
@@ -470,7 +470,8 @@
                                         fixedHeader: true,
                                         responsive:true,
                                         autoWidth:false,
-                                        "pageLength":25
+                                        "pageLength":25,
+                                        "order":[$("th").length-1, 'desc']
                                 });
                             } );
                         </script>
