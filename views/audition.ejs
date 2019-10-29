@@ -279,6 +279,9 @@
                     if (date1_tomorrow.getFullYear() == date2.getFullYear() && date1_tomorrow.getMonth() == date2.getMonth() && date1_tomorrow.getDate() == date2.getDate()) {
                         $("#countdown").text(`Applications end tomorrow at ${('0' + date2.getHours()).slice(-2)}:${('0' + date2.getMinutes()).slice(-2)}`);
                     }
+                    else if (date1.getFullYear() == date2.getFullYear() && date1.getMonth() == date2.getMonth() && date1.getDate() == date2.getDate()) {
+                        $("#countdown").text(`Applications end today at ${('0' + date2.getHours()).slice(-2)}:${('0' + date2.getMinutes()).slice(-2)}`);
+                    }
                     else{
                         $("#countdown").text(`Applications end on ${('0' + date2.getDate()).slice(-2)}/${('0' + (date2.getMonth()+1)).slice(-2)} at ${('0' + date2.getHours()).slice(-2)}:${('0' + date2.getMinutes()).slice(-2)}`);
                     }
