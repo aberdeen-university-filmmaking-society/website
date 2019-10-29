@@ -267,11 +267,11 @@ function resolveFilmSlug(res, req, urlend, resolve){
         if(!err && redirect && redirect[0]){
           filmmanager.get(redirect[0].id, function(realfilm){
             if(!err && realfilm && realfilm[0]) res.redirect(302, "/films/"+realfilm[0].slug+urlend);
-            else res.render('error',{ page:'error', error:{status:404, stack:""}, message:"Not found" });
+            else res.status(404).render('error',{ page:'error', error:{status:404, stack:""}, message:"Not found" });
           })
         }
         else{
-          res.render('error',{ page:'error', error:{status:404, stack:""}, message:"Not found" });
+          res.status(404).render('error',{ page:'error', error:{status:404, stack:""}, message:"Not found" });
         }
       });
     }
@@ -321,7 +321,7 @@ router.get('/films/:slug/audition', function(req,res,next){
           catch(ex){ };
         }
         if(audition.end && new Date(audition.end) < new Date()){
-          res.render('error', { page:'error', error:{status:410}, message:"Gone", moreinfo:'Sorry, but we are no longer accepting auditions for the casting of '+result.title+"!"});
+          res.status(410).render('error', { page:'error', error:{status:410}, message:"Gone", moreinfo:'Sorry, but we are no longer accepting auditions for the casting of '+result.title+"!"});
         }
         else{
           res.render('audition', { page:'film', film:result, audition:audition });
@@ -329,7 +329,7 @@ router.get('/films/:slug/audition', function(req,res,next){
         
       }
       else{
-        res.render('error',{ page:'error', error:{status:404, stack:""}, message:"Not found" });
+        res.status(404).render('error',{ page:'error', error:{status:404, stack:""}, message:"Not found" });
       }
     });
   });
@@ -391,7 +391,7 @@ router.get('/tags/:tag', function(req, res, next) {
       res.render('tags',{ page:'tags', results:joined, tag:tag, filter:req.query.filter });
     }
     else{
-      res.render('error',{ page:'error', error:{status:404, stack:""}, message:"No content tagged with '"+req.params.tag+"'" });
+      res.status(404).render('error',{ page:'error', error:{status:404, stack:""}, message:"No content tagged with '"+req.params.tag+"'" });
     }
   });
 });
