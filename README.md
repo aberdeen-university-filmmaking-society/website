@@ -18,6 +18,8 @@ These can be set in a `.env` file placed alongside `app.js`
 * **`GM_PATH`**: The location of gm (GraphicsMagick). Can be undefined if unecessary.
 * **`URL_START`**: The beginning of the URL (ex: `https://aufilmmaking.co.uk`), used for redirections and various link generation features
 * **`SESSION_SECRET`**: Any random passcode (used by express-session)
+* **`AUDITION_EMAIL`**: The email address the Auditions are sent from
+* **`AUDITION_PASSWORD`**: The password of the specified email account
 
 ### Socket message types
 
