@@ -263,7 +263,7 @@ function resolveFilmSlug(res, req, urlend, resolve){
       resolve(result[0]);
     }
     else{
-      sqlcon.query("SELECT * FROM `SlugRedirects` WHERE `oldslug`=? AND `type`=?", [SLUG, "film"], function(err, redirect){
+      sqlcon.query("SELECT * FROM `SlugRedirects` WHERE `oldslug`=? AND `type`=?", [req.params.slug, "film"], function(err, redirect){
         if(!err && redirect && redirect[0]){
           filmmanager.get(redirect[0].id, function(realfilm){
             if(!err && realfilm && realfilm[0]) res.redirect(302, "/films/"+realfilm[0].slug+urlend);
