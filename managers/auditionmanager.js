@@ -9,10 +9,9 @@ auditionmanager.create = function(audition,resolve){
     if(audition.filmid){
         var id = Date.now().toString();
         var key = randomkey.generate(128);
-        var sql = "INSERT INTO Auditions (filmid, description, title, form, emails, id, passkey) VALUES (?,?,?,?,?,?)";
-        sqlcon.query(sql, [audition.filmid, audition.description, audition.title, audition.form, audition.emails, id, key],function (err, result) {
+        var sql = "INSERT INTO Auditions (filmid, description, title, form, emails, end, id, passkey) VALUES (?,?,?,?,?,?,?)";
+        sqlcon.query(sql, [audition.filmid, audition.description, audition.title, audition.form, audition.emails, audition.end,id, key],function (err, result) {
             console.log(result);
-            
             if (err) resolve(false);
             else{
                 resolve(true);
@@ -25,8 +24,8 @@ auditionmanager.create = function(audition,resolve){
 }
 auditionmanager.edit = function(filmid, audition, resolve){
     if(audition.filmid){
-        var sql = "UPDATE Auditions SET description=?, title=?, form=?, emails=? WHERE filmid=?";
-        sqlcon.query(sql, [audition.description, audition.title, audition.form, audition.emails, audition.filmid],function (err, result) {
+        var sql = "UPDATE Auditions SET description=?, title=?, form=?, emails=?, end=? WHERE filmid=?";
+        sqlcon.query(sql, [audition.description, audition.title, audition.form, audition.emails, audition.end, audition.filmid],function (err, result) {
             if (err) resolve(false);
             else{
                 resolve(true);

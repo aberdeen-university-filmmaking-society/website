@@ -320,7 +320,13 @@ router.get('/films/:slug/audition', function(req,res,next){
           }
           catch(ex){ };
         }
-        res.render('audition', { page:'film', film:result, audition:audition });
+        if(audition.end && new Date(audition.end) < new Date()){
+          res.render('error', { page:'error', error:{status:410}, message:"Gone", moreinfo:'Sorry, but we are no longer accepting auditions for the casting of '+result.title+"!"});
+        }
+        else{
+          res.render('audition', { page:'film', film:result, audition:audition });
+        }
+        
       }
       else{
         res.render('error',{ page:'error', error:{status:404, stack:""}, message:"Not found" });

@@ -8,6 +8,16 @@
     </div>
     <input id="audition-filmid" type="text" class="smaller" placeholder="Film ID" autocomplete="off"><br>
     <input id="audition-title" type="text" class="smaller" placeholder="Page title" autocomplete="off"><br><br>
+    <input id="audition-end" type="text" placeholder="End of auditions">
+    <script>
+        const audition_endtime = flatpickr("#audition-end",
+        {
+            enableTime: true,
+            dateFormat: "d/m - H:i",
+            time_24hr: true,
+            onReady() { this.showTimeInput = true }
+        });
+    </script>
     <h3>Description</h3>
         <p>Please describe the casting process, a synopsis of the film, and the characters that are being looked for</p>
     <div id="auditiondescription"></div>    
@@ -98,6 +108,7 @@ function editaudition(id) {
                 $("#editpost-cancel").show(0);
                 $("#newpost-header").text("Edit audition");
                 $("#audition-filmid").attr("disabled", true);
+                audition_endtime.setDate(null);
                 var audition = JSON.parse(res);
                 fillWithAuditionObject(audition);
             }
@@ -139,6 +150,7 @@ function editaudition(id) {
             emails:JSON.stringify(emails),
             description:CKEDITOR.instances.auditiondescription.getData(),
             form: auditionForm.formData,
+            end: audition_endtime.selectedDates[0]
         };
         return auditionobject;
     }
@@ -151,6 +163,7 @@ function editaudition(id) {
     function fillWithAuditionObject(audition) {
         $("#audition-filmid").val(audition.filmid);
         $("#audition-title").val(audition.title);
+        audition_endtime.setDate(audition.end);
         var emails = [];
         if(audition.emails){
             try{
