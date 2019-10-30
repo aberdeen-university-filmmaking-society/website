@@ -68,19 +68,19 @@ tagmanager.getTagsForPost = function(id, resolve){
 tagmanager.getContentForTag = function(tagid,filter, resolve){
     if(filter) filter = filter.toLowerCase();
     if(filter == "films"){
-        sqlcon.query("SELECT * FROM Films WHERE id in (SELECT filmid FROM Taggings WHERE tagid = ?) WHERE hidden=false", [tagid], function(err,results){
+        sqlcon.query("SELECT * FROM Films WHERE id in (SELECT filmid FROM Taggings WHERE tagid = ?) AND hidden=false", [tagid], function(err,results){
             if(err) resolve(undefined);
             else resolve([results,undefined])
         });
     }
     else if(filter == "posts"){
-        sqlcon.query("SELECT * FROM Posts WHERE id in (SELECT postid FROM Taggings WHERE tagid = ?) WHERE hidden=false", [tagid], function(err,results){
+        sqlcon.query("SELECT * FROM Posts WHERE id in (SELECT postid FROM Taggings WHERE tagid = ?) AND hidden=false", [tagid], function(err,results){
             if(err) resolve(undefined);
             else resolve([undefined, results])
         });
     }
     else{
-        sqlcon.query("SELECT * FROM Films WHERE id in (SELECT filmid FROM Taggings WHERE tagid = ?) WHERE hidden=false; SELECT * FROM Posts WHERE id in (SELECT postid FROM Taggings WHERE tagid = ?) WHERE hidden=false", [tagid, tagid], function(err,results){
+        sqlcon.query("SELECT * FROM Films WHERE id in (SELECT filmid FROM Taggings WHERE tagid = ?) AND hidden=false; SELECT * FROM Posts WHERE id in (SELECT postid FROM Taggings WHERE tagid = ?) AND hidden=false", [tagid, tagid], function(err,results){
             if(err) resolve(undefined);
             else resolve(results)
         });
