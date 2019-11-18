@@ -108,7 +108,7 @@
     %>
     <% if(film.behindthescenes && (film.behindthescenes.story!=undefined || (film.behindthescenes.pics && film.behindthescenes.pics.length>0))) { %>
         <section class="mobilemargin-none" style="margin-bottom:12px;">
-            <h1 class="sectionheader mobilemargin-left">BEHIND THE SCENES</h1>
+            <h1 id="behindthescenes" class="sectionheader mobilemargin-left">BEHIND THE SCENES</h1>
             <div class="film-bts-story mobilemargin-left mobilemargin-right"><%- film.behindthescenes.story %></div>
             <% if(film.behindthescenes.pics && film.behindthescenes.pics.length>0) { %>
                 <div class="carousell mobilepadding-left gallery" style="filter: drop-shadow(0px 0px 12px rgba(0,0,0,0.3));">
@@ -121,7 +121,7 @@
         <% } %>
     <% if(film.techspecs && Object.entries(film.techspecs).length > 0) { %>
         <section class="filmcredit-section" style="margin-bottom:12px;">
-            <h1 class="sectionheader">TECHNICAL DETAILS</h1>
+            <h1 id="technicaldetails" class="sectionheader">TECHNICAL DETAILS</h1>
             <% for(var spec in film.techspecs) { %>
                 <div><span class="film-credit"><%= spec %>:</span>&nbsp;<span class="film-credited"><%= film.techspecs[spec] %></span></div>
             <% } %>
@@ -129,7 +129,7 @@
         <% } %>
     <% if(recommended && recommended.length && recommended.length>0) { %>
         <section class="mobilemargin-none recommendedfilms">
-            <h1 class="sectionheader mobilemargin-left">RECOMMENDED</h1>
+            <h1 id="recommended" class="sectionheader mobilemargin-left">RECOMMENDED</h1>
         <div class="carousell mobilepadding-left" style="margin-top:0px;">
                 <% function formatDate(e){var r=e.getMonth(),t=e.getFullYear();return["January","February","March","April","May","June","July","August","September","October","November","December"][r]+" "+t} %>
                 <% recommended.forEach(film=>{ %>
