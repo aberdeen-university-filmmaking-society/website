@@ -9,7 +9,7 @@ var acceptedids = ["faq","headerinsert","cssmods","homepageinsert"]
 custompagemanager.hints={
     faq:'Questions/Answers are in HTML. Make sure <a href="https://www.freeformatter.com/html-escape.html">special characters are escaped!</a>',
     headerinsert:'This HTML is inserted below the logo in the header.',
-    cssmods:'This HTML is inserted at the top of every page, above the header.<br>Enclose all your custom css in a &lt;style&gt; tag, it will apply to the entire website (excluding voting pages).<b>Temporary CSS modifications ONLY</b>',
+    cssmods:'This HTML is inserted at the top of every page, above the header.<br>Enclose all your custom css in a &lt;style&gt; tag, it will apply to the entire website (excluding admin pages).<b>Temporary CSS modifications ONLY</b>',
     homepageinsert:'This HTML is inserted at the top of the home page, before the hero post'
 }
 const storage = require('./storage');
