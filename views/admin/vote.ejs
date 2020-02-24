@@ -60,21 +60,7 @@
                 </div>
                 <label for="settingsMultiplevotes">Allow fraudulent voting</label>
             </div>
-            <div class="togglecontainer">
-                    <label for="settingsDramaticmusic">Stressful music:</label>
-                    <select id="settingsMusic" onchange="changedsettings('votingmusic',$(this).val());">
-                        <option value="0" <% if(settings.votingmusic==0){ %>selected<% } %>>Disabled</option>
-                        <option value="1" <% if(settings.votingmusic==1){ %>selected<% } %>>Ambient</option>
-                        <option value="2" <% if(settings.votingmusic==2){ %>selected<% } %>>Intense</option>
-                    </select>
-                </div>
-                <div class="togglecontainer">
-                        <div>
-                            <input id="settingsDramaticreveal" class="toggle" type="checkbox" onchange="changedsettings('dramaticreveal',$('#settingsDramaticreveal').is(':checked'))" <% if(settings.dramaticreveal){ %>checked<% } %>>
-                            <label for="settingsDramaticreveal"></label>
-                        </div>
-                        <label for="settingsDramaticreveal">Dramatic reveal delay</label>
-                    </div>
+
                     <div class="togglecontainer">
                         <div>
                             <input id="settingsZeroforlast" class="toggle" type="checkbox" onchange="changedsettings('zeroforlast',$('#settingsZeroforlast').is(':checked'))" <% if(settings.zeroforlast){ %>checked<% } %>>
@@ -82,8 +68,30 @@
                         </div>
                         <label for="settingsDramaticreveal">Zero points for being ranked last</label>
                     </div>
+                    <div class="togglecontainer">
+                        <div>
+                            <input id="settingsHideResultOrder" class="toggle" type="checkbox" onchange="changedsettings('hideresultorder',$('#settingsHideResultOrder').is(':checked'))" <% if(settings.hideresultorder){ %>checked<% } %>>
+                            <label for="settingsHideResultOrder"></label>
+                        </div>
+                        <label for="settingsDramaticreveal">Hide results order/score</label>
+                    </div>
                     <label for="settingsNovotetext">"No active vote" text</label>
                     <input id="settingsNovotetext" type="text" onchange="changedsettings('novotetext',$('#settingsNovotetext').val())" <% if(settings.novotetext){ %>value="<%= settings.novotetext%>"<% } %>>
+                    <div class="togglecontainer">
+                        <label for="settingsDramaticmusic">Stressful music:</label>
+                        <select id="settingsMusic" onchange="changedsettings('votingmusic',$(this).val());">
+                            <option value="0" <% if(settings.votingmusic==0){ %>selected<% } %>>Disabled</option>
+                            <option value="1" <% if(settings.votingmusic==1){ %>selected<% } %>>Ambient</option>
+                            <option value="2" <% if(settings.votingmusic==2){ %>selected<% } %>>Intense</option>
+                        </select>
+                    </div>
+                    <div class="togglecontainer">
+                            <div>
+                                <input id="settingsDramaticreveal" class="toggle" type="checkbox" onchange="changedsettings('dramaticreveal',$('#settingsDramaticreveal').is(':checked'))" <% if(settings.dramaticreveal){ %>checked<% } %>>
+                                <label for="settingsDramaticreveal"></label>
+                            </div>
+                            <label for="settingsDramaticreveal">Dramatic reveal delay</label>
+                        </div>
 
             <div class="av-stats">
                 <p>

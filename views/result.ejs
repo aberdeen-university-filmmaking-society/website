@@ -616,16 +616,25 @@
               var existingoption = $("#av-options [data-id='" + option.title + "']");
               if(option.percent<previouspercent || dropinpercent){
                   existingoption.addClass("faded");
+                  if(realsettings.hideresultorder)
+                    existingoption.addClass("hidden");
                   dropinpercent=true;
               }
               else{
                 existingoption.removeClass("faded");
+                if(realsettings.hideresultorder)
+                    existingoption.removeClass("hidden");
               }
               var leftmargin="0px;";
               if(option.displaypercent!="0%") leftmargin="8px"
-              existingoption.find(".graph-bar").attr("style", "width:" + option.displaypercent);
-              existingoption.find(".graph-percent").text(option.displaypercent).attr("style", `left:${option.displaypercent};margin-left:${leftmargin}`);
-              existingoption.find(".graph-votecount").text(option.votestext);
+              if(realsettings.hideresultorder){
+                existingoption.find(".graph-percent").text("");
+              }
+              else{
+                existingoption.find(".graph-bar").attr("style", "width:" + option.displaypercent);
+                existingoption.find(".graph-percent").text(option.displaypercent).attr("style", `left:${option.displaypercent};margin-left:${leftmargin}`);
+                existingoption.find(".graph-votecount").text(option.votestext);
+              }
               previouspercent = option.percent;
             });
           }
