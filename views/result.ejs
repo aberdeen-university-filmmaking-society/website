@@ -542,13 +542,14 @@
     function showresults(vote, results, totalvotes, dramaticreveal) {
       $("#av-options .graph-element").removeClass("pending");
       var timeoutdelay = 0;
-      $(".graph-percent").text("0%");
+      if(!realsettings.hideresultorder)
+        $(".graph-percent").text("0%");
       if (realsettings.dramaticreveal && !realsettings.showresults){
         if(realsettings.votingmusic ==2){
           timeoutdelay = randomNumber(4000, 16000);
         }
         else{
-          timeoutdelay = randomNumber(3000,12000);
+          timeoutdelay = randomNumber(3000,7000);
         }
         
         console.log("timeout delay is " + timeoutdelay);
