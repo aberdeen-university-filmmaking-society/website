@@ -30,8 +30,7 @@ votemanager.initdb = async function(){
     });
 }
 votemanager.savedb = async function(){
-    var ting = maptoarray(voteList);
-    storage.save('votelist', ting);
+    storage.save('votelist', maptoarray(voteList));
 }
 //var app = require("./app");
 
@@ -173,6 +172,7 @@ votemanager.stopVote = function(timestampId){
         if(timestampId == activeVoteId){
             activeVoteId = undefined;
             vote.results = maptoarray(voteResult);
+            vote.votecount = hasVoted.length;
             voteList.set(timestampId,vote);
             votemanager.savedb();
             io.emit("vote.stop",timestampId);
@@ -215,7 +215,8 @@ votemanager.getActiveVote = function(){
     return voteList.get(activeVoteId);
 }
 votemanager.getVote = function(id){
-    return voteList.get(id);
+    var vote = voteList.get(id);
+    return vote;
 }
 votemanager.hasVoted = function(id){
     if(id == undefined) return false;

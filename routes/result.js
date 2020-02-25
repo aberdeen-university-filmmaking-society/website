@@ -20,15 +20,22 @@ function shuffle(array) {
 }
 
 /* GET vote page. */
-router.get('/', function(req, res, next) {
-  var active = votemanager.getActiveVote();
-  if(active != undefined){
-    active.options = shuffle(active.options);
-    res.render('result', { vote: active, activeId: active.id, realsettings:JSON.stringify(settings.get()) });
+router.get('/:id?', function(req, res, next) {
+  if(req.params.id){
+    var requestedvote = votemanager.getVote(Number.parseInt(req.params.id));
+    res.render('result', { vote: requestedvote, activeId: null, realsettings:JSON.stringify(settings.get()) });
   }
   else{
-    res.render('result', {realsettings:JSON.stringify(settings.get())});
+    var active = votemanager.getActiveVote();
+    if(active != undefined){
+      active.options = shuffle(active.options);
+      res.render('result', { vote: active, activeId: active.id, realsettings:JSON.stringify(settings.get()) });
+    }
+    else{
+      res.render('result', {realsettings:JSON.stringify(settings.get())});
+    }
   }
+
 });
 
 module.exports = router;

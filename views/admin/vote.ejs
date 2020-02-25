@@ -120,6 +120,7 @@
                     <h5><%- decodeURIComponent(vote.subtitle) %></h5>
                     
                     <div class="actions">
+                    <% if(vote.results) { %><button onclick="votelistResults(<%= id %>)"><i class="fas fa-poll"></i></button><% } %>
                         <button onclick="votelistDuplicate(<%= id %>)"><i class="far fa-copy"></i></button>
                         <button onclick="votelistRemove(<%= id %>)"><i class="far fa-trash-alt"></i></button>
                         <button class="armbtn" onclick="votelistArm(<%= id %>)"><i
@@ -145,6 +146,10 @@
 
         function votelistRemove(id) {
             $.post("/admin/vote/remove/" + id);
+        }
+
+        function votelistResults(id){
+            window.open("/results/"+id);
         }
 
         function votelistDuplicate(id){
@@ -316,13 +321,20 @@
             $("[data-id='" + id + "']").remove();
         });
         socket.on('vote.start', function (vote) {
+            voteresultsExist = false;
             activevoteid = vote.id;
             $(".savedvote").removeClass("armed active");
             $("[data-id='" + vote.id + "']").removeClass("armed").addClass("active");
         });
+        var voteresultsExist = false;
+        socket.on('vote.result.update', function (vote, results, totalvotes, show) {
+            voteresultsExist = activevoteid;
+        });
         socket.on('vote.stop', function (id) {
             activevoteid = undefined;
             $("[data-id='" + id + "']").removeClass("active");
+            if(voteresultsExist == id)
+                $("[data-id='" + id + "'] .actions").prepend(`<button onclick="votelistResults(${id})"><i class="fas fa-poll"></i></button>`)
         });
         socket.on('vote.arm.start', function (vote) {
             $(".savedvote").removeClass("armed active");

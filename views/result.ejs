@@ -317,20 +317,44 @@
       <% } else { %>
       var activevoteid; 
       <% } %>
-      const socket = io('',{
-        page:'result',
-            transports: ['polling']
+
+    
+    const socket = io('',{
+      page:'result',
+          transports: ['polling']
+      });
+
+    var voteresults;
+    var activevote;
+    var totalvotecount;
+    var realsettings = JSON.parse('<%- realsettings %>');
+
+    var ispassive = false;
+    if(window.location.pathname.match(/\/results\/.+/)){
+      var vote = JSON.parse('<%- JSON.stringify(locals.vote) %>');
+      socket.disconnect();
+      ispassive = true;
+      var votecounter = 0;
+      if(vote.votecount){
+        votecounter = vote.votecount;
+      }
+      else{
+        vote.results.forEach(option => {
+          votecounter += option[1];
         });
+      }
+
+      addoptions(vote.options);
+      showresults(vote, vote.results, votecounter, false)
+      $("#votecount").text(votecounter + " votes");
+    }
 
     var votestate = 'none';
     function newvotestate(newstate){
       votestate=newstate;
       $("#resultcontainer").attr("data-votestate",newstate);
     }
-    var voteresults;
-    var activevote;
-    var totalvotecount;
-    var realsettings = JSON.parse('<%- realsettings %>');
+
     if(realsettings.multiplevotes) $("#fraudWarning").show(0);
     else $("#fraudWarning").hide(0);
     var sound_start = new Howl({
@@ -544,7 +568,7 @@
       var timeoutdelay = 0;
       if(!realsettings.hideresultorder)
         $(".graph-percent").text("0%");
-      if (realsettings.dramaticreveal && !realsettings.showresults){
+      if (realsettings.dramaticreveal && !realsettings.showresults && !ispassive){
         if(realsettings.votingmusic ==2){
           timeoutdelay = randomNumber(4000, 16000);
         }
@@ -556,14 +580,14 @@
         $(".thirdgradient").attr("style", "transition-duration:1000ms;");
         $(".thirdgradient").addClass("dramatic");
       }
-      if (realsettings.votingmusic>0 && !realsettings.showresults) {
+      if (realsettings.votingmusic>0 && !realsettings.showresults && !ispassive) {
         sound_stress.fade(1, 0, 200);
         sound_interrogation.volume(1);
         sound_interrogation.play();
       }
       setTimeout(function () {
         var secondtimeout = 0;
-        if(realsettings.votingmusic>0 && !realsettings.showresults){
+        if(realsettings.votingmusic>0 && !realsettings.showresults && !ispassive){
           sound_interrogation.fade(1, 0, 300)
           sound_answer.play();
           secondtimeout=1200;
@@ -617,18 +641,18 @@
               var existingoption = $("#av-options [data-id='" + option.title + "']");
               if(option.percent<previouspercent || dropinpercent){
                   existingoption.addClass("faded");
-                  if(realsettings.hideresultorder)
+                  if(realsettings.hideresultorder && !ispassive)
                     existingoption.addClass("hidden");
                   dropinpercent=true;
               }
               else{
                 existingoption.removeClass("faded");
-                if(realsettings.hideresultorder)
+                if(realsettings.hideresultorder && !ispassive)
                     existingoption.removeClass("hidden");
               }
               var leftmargin="0px;";
               if(option.displaypercent!="0%") leftmargin="8px"
-              if(realsettings.hideresultorder){
+              if(realsettings.hideresultorder && !ispassive){
                 existingoption.find(".graph-percent").text("");
               }
               else{
