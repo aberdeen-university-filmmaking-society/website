@@ -274,9 +274,16 @@ router.post('/productions/past', function(req,res,next){
   res.sendStatus(200);
 });
 router.post('/committee/update', function(req,res,next){
-  committee.update(req.body.ausaurl, req.body.committeename, function(result){
+  committee.sync(req.body.ausaurl, req.body.committeename, function(result){
     if(result==undefined) res.sendStatus(500);
-    else res.sendStatus(200);
+    else res.send(result);
+  });
+});
+
+router.post('/committee/save', function(req,res,next){
+  committee.save(req.body, function(result){
+    if(result==null) res.sendStatus(200);
+    else res.status(500).send(result);
   });
 });
 

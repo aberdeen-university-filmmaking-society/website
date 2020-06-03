@@ -85,8 +85,12 @@ table, th, td {
     <div class="section">
             <div class="sectionheader">Committee</div>
             <input type="text" id="committeename" placeholder="Committee year" style="font-weight: bold;" value="<% if(committee && committee.name) { %><%= committee.name %><% } %>">
+            <b style="display:block;margin-top:12px;margin-bottom:2px;">Automatically fetch committee details from AUSA website</b>
             <input type="text" id="ausaURL" value="<%  if(committee && committee.ausaurl) { %><%= committee.ausaurl %><% } %>" placeholder="Society page on AUSA's website">
-            <button class="bigbtn" onclick="updatecommittee()">Save details &amp; sync committee with AUSA website</button>
+            <button class="bigbtn" style="margin-top:0;" onclick="updatecommittee()">Get committee from AUSA website</button>
+            <b style="display:block;margin-top:12px;margin-bottom:2px;">Manually edit committee details</b>
+            <div style="height:256px;" id="codeeditor_committee"><%= JSON.stringify(locals.committee, null, '\t') %></div>
+            <button class="bigbtn" onclick="savecommittee()">Save</button>
         </div>
         <div class="section">
             <script src="/javascripts/eventsource.min.js"></script>
@@ -188,6 +192,10 @@ table, th, td {
                 }
             });
         }
+
+        var committeeeditor = ace.edit("codeeditor_committee");
+        //editor.setTheme("ace/theme/monokai");
+        committeeeditor.session.setMode("ace/mode/json");
         function updatecommittee(){
             $.ajax({
                 type: "POST",
@@ -196,15 +204,32 @@ table, th, td {
                 contentType: 'application/json',
                 url: '/admin/committee/update',
                 success: function (res) {
-                    console.log(res);
-                    alert("Succesfully synced comittee list with the AUSA website!");
+                    committeeeditor.session.setValue(JSON.stringify(JSON.parse(res), null, '\t'));
+                    alert("Succesfully synced the committee! Click save in order to keep the changes");
                 },
                 error: function(res){
                     console.log(res);
+                    alert("Failed to get committee list!");
+                }
+            });
+        }
+
+        function savecommittee(){
+            $.ajax({
+                type: "POST",
+                dataType: 'text',
+                data: committeeeditor.getValue(),
+                contentType: 'application/json',
+                url: '/admin/committee/save',
+                success: function (res) {
+                    alert("Successfully updated committee list!");
+                },
+                error: function(res){
                     alert("Failed to sync committee list!");
                 }
             });
         }
+
         var entityMap = {
   '&': '&amp;',
   '<': '&lt;',
