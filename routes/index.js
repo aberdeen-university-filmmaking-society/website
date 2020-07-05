@@ -116,9 +116,9 @@ function finishIndexResponse(req,res, results, setsobj, heropost){
       }
 
       if(heropost)
-        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:films, highlightedfilms:highlightedfilms, posts:results, heropost: setdetails(heropost, heropost.id, true), productionsfilms:productionsfilmsProcessed});
+        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:films, highlightedfilms:iterateover(highlightedfilms, filmFilesToImages), posts:results, heropost: setdetails(heropost, heropost.id, true), productionsfilms:productionsfilmsProcessed});
       else
-        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:films, highlightedfilms:highlightedfilms, posts:results, productionsfilms:productionsfilmsProcessed });
+        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:films, highlightedfilms:iterateover(highlightedfilms, filmFilesToImages), posts:results, productionsfilms:productionsfilmsProcessed });
     });
 });
 
@@ -290,6 +290,16 @@ function polishFilmObject(film){
   film.behindthescenes.pics = [];
   film = filmFilesToImages(film);
   return film;
+}
+
+function iterateover(films, func){
+  let output = [];
+  if(films.length){
+    for (let i = 0; i < films.length; i++) {
+      output.push(func(films[i]));
+    }
+  }
+  return output;
 }
 
 router.get('/films/:slug', function(req, res, next) {
