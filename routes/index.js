@@ -106,7 +106,7 @@ function finishIndexResponse(req,res, results, setsobj, heropost){
   productionsmanager.get().past.forEach(project=>{
     pastids.push(project.filmid);
   });
-  filmmanager.homepage(setsobj.homepage_filmcount, function(films){
+  filmmanager.homepage(setsobj.homepage_filmcount, function(films, highlightedfilms){
     filmmanager.get(pastids, function(productionsfilms){
       var productionsfilmsProcessed = [];
       if(productionsfilms){
@@ -116,9 +116,9 @@ function finishIndexResponse(req,res, results, setsobj, heropost){
       }
 
       if(heropost)
-        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:films, posts:results, heropost: setdetails(heropost, heropost.id, true), productionsfilms:productionsfilmsProcessed});
+        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:films, highlightedfilms:highlightedfilms, posts:results, heropost: setdetails(heropost, heropost.id, true), productionsfilms:productionsfilmsProcessed});
       else
-        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:films, posts:results, productionsfilms:productionsfilmsProcessed });
+        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:films, highlightedfilms:highlightedfilms, posts:results, productionsfilms:productionsfilmsProcessed });
     });
 });
 

@@ -99,6 +99,7 @@
          });
     </script>
     <input id="createfilm-hidden" type="checkbox"><label for="createfilm-hidden">Hidden post</label><br>
+    <input id="createfilm-highlight" type="checkbox"><label for="createfilm-highlight">Highlighted film</label><br>
     <button class="bigbtn" id="createvote" onclick="createfilm()">PUBLISH</button>
     <button class="bigbtn" style="display: none;" id="editpost-cancel" onclick="stopedit()">CANCEL</button>
 </div>
@@ -277,6 +278,7 @@ function slugify(string) {
             slug: $("#createfilm-slug").val(),
             description: JSON.stringify(quillDescription.getContents()),
             hidden: $('#createfilm-hidden').is(":checked"),
+            highlight : $('#createfilm-highlight').is(":checked"),
             techspecs: JSON.stringify(techspecs),
             credits:JSON.stringify(credits),
             behindthescenes:JSON.stringify(behindthescenes),
@@ -312,6 +314,7 @@ function slugify(string) {
         $("#createfilm-slug").val(film.slug);
         $("#createfilm-imdb").val(film.imdb);
         $("#createfilm-hidden").prop("checked", film.hidden);
+        $("#createfilm-highlight").prop("checked", film.highlight);
         if(film.css)
             csseditor.setValue(film.css);
         $("#tags").tagit("removeAll");
