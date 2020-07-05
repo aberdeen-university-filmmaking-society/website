@@ -126,7 +126,7 @@ filmmanager.homepage = function(count, resolve){
     sqlcon.query("SELECT * FROM Films WHERE hidden=false AND (highlight=false OR highlight is NULL) ORDER by date DESC LIMIT "+ Number.parseInt(count), function (err, all) {
         if (err) resolve(undefined);
         else{
-            sqlcon.query("SELECT * FROM Films WHERE highlight=true", function (err, highlighted) {
+            sqlcon.query("SELECT * FROM Films WHERE highlight=true ORDER by date DESC", function (err, highlighted) {
                 if (err) resolve(undefined);
                 else resolve(all, highlighted);
             });
