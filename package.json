@@ -41,6 +41,6 @@
     "socket.io": "^2.2.0",
     "tch-nedb-session": "^1.0.3",
     "underscore": "^1.9.1",
-    "uuid": "^3.3.2"
+    "uuid": "^3.4.0"
   }
 }

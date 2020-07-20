@@ -8,6 +8,7 @@ var tagmanager = require('../managers/tagmanager');
 var breakingnews = require('../managers/breakingnews');
 var productionsmanager = require('../managers/productionsmanager');
 var auditionmanager = require('../managers/auditionmanager');
+var equipementmanager = require('../managers/equipementmanager');
 
 var committee = require('../managers/committee');
 var settings = require('../managers/settings');
@@ -407,7 +408,57 @@ router.get('/auditions/responses/:id',function(req,res){
   }
 });
 
+router.get('/equipement', function(req,res,next){
+  equipementmanager.getEquipement(function(err1, equipementlist){
+    if(err1){
+      res.status(500).render('error', {page:'error', error:{status:500}, message:"Unable to load equipement list!", moreinfo:err1.message })
+    }
+    else{
+      equipementmanager.getBookings(function(err2,bookinglist){
+        if(err2){
+          res.status(500).render('error', {page:'error', error:{status:500}, message:"Unable to load equipement bookings!", moreinfo:err2.message })
+        }
+        else{
+          res.render('admin/equipement', { page:"equipement", equipement: equipementlist, bookings: bookinglist })
+        }
+      });
+    }
+  });
+});
+router.post('/equipement/items/create',function(req, res) {
+  console.log("creating film");
+  equipementmanager.createEquipement(req.body, function(err, result){
+    if(err) res.status(500).send({errors:err});
+    else res.status(200).send(result);
+  })
+});
+router.post('/equipement/items/remove/:id',function(req, res) {
+  equipementmanager.removeEquipement(req.params.id, function(success){
+    if(success) res.sendStatus(200);
+    else res.sendStatus(500);
+  });
+});
+router.post('/equipement/items/edit/:id',function(req, res) {
+  equipementmanager.editEquipement(req.params.id, req.body, function(success){
+    if(!res.headersSent){
+      if(success) res.sendStatus(200);
+      else res.sendStatus(500);
+    }
 
+  });
+});
+router.post('/equipement/items/reposition', function(req,res){
+  equipementmanager.repositionEquipement(req.body, function(success){
+    if(success) res.sendStatus(200);
+    else res.sendStatus(200);
+  });
+});
+router.get('/equipement/items/:id',function(req, res) {
+  equipementmanager.getEquipementById(req.params.id, function(err,item){
+    if(err) res.status(500).send(err);
+    else res.status(200).send(item[0]);
+  });
+});
 
 router.get('/', function(req, res) {
   // Prepare the context
