@@ -195,6 +195,19 @@ ul.savedvotes{
   font-size:24px;
   background: linear-gradient(45deg, rgba(8,128,144,1) 0%, rgba(5,24,117,1) 100%);
 }
+.sectionheader .spinner{
+	background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40"><style> circle { animation: 3s a infinite linear, 2s o infinite linear; }@keyframes a {from{stroke-dasharray:90 10}50%25{stroke-dasharray:10 90}to{stroke-dasharray:90 10}}@keyframes o {from{stroke-dashoffset:75}to{stroke-dashoffset:375}}<%2Fstyle><circle r="15.9154943092" stroke-width="7" fill="none" stroke="white" stroke-linecap="round" /></svg>');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 24px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 54px;
+  width: 48px;
+  display: none;
+}
+
 .savedvotes:empty::after{
   content:attr(empty);
   display: block;

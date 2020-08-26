@@ -8,8 +8,8 @@ var moment = require('moment');
 auditionmanager.create = function(audition,resolve){
     if(audition.filmid){
         var id = Date.now().toString();
-        var key = randomkey.generate(128);
-        var sql = "INSERT INTO Auditions (filmid, description, title, form, emails, end, id, passkey) VALUES (?,?,?,?,?,?,?)";
+        var key = randomkey(128);
+        var sql = "INSERT INTO Auditions (filmid, description, title, form, emails, end, id, passkey) VALUES (?,?,?,?,?,?,?,?)";
         sqlcon.query(sql, [audition.filmid, audition.description, audition.title, audition.form, audition.emails, audition.end,id, key],function (err, result) {
             console.log(result);
             if (err) resolve(false);

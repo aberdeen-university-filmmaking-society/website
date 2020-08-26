@@ -10,6 +10,7 @@ var tagmanager = require('../managers/tagmanager');
 var moment = require('moment');
 var committee = require('../managers/committee');
 var settings = require('../managers/settings');
+const equipmentmanager = require('../managers/equipmentmanager');
 var QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtmlConverter;
 
 function setdetails(post, timestamp, includeauthor){
@@ -406,6 +407,19 @@ router.get('/tags/:tag', function(req, res, next) {
   });
 });
   
+});
+
+router.get('/equipment', function(req,res,next){
+  equipmentmanager.getEquipment(function(err,result){
+    if(err)  res.status(404).render('error',{ page:'error', error:{status:404, stack:""}, message:"No equipment available to book!" });
+    else res.render('equipment', {page:'equipment', equipment:result})
+  });
+});
+
+router.post('/equipment/book', function(req,res,next){
+  equipmentmanager.book(req.body, false, function(result){
+    
+  });
 });
 
 

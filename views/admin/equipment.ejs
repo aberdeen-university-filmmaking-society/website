@@ -1,0 +1,708 @@
+<%- include header.ejs %>
+<style>
+        .toggle + label {
+            width:80px;
+            height:40px;
+            border-radius: 40px;
+        }
+        input.toggle + label:after {
+  width: 42px;
+  background-color: #fff;
+  border-radius: 100%;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s;
+}
+input.toggle:checked + label:after {
+  margin-left: 40px;
+}
+input.toggle + label:before {
+    border-radius: 20px;
+}
+input.toggle:checked + label:before {
+    background-color: rgb(129, 0, 0);
+}
+.togglecontainer{
+    margin-left:50%;
+    transform: translateX(-44px);
+}
+.bn-togglelabel{
+    font-size:16px;
+    display: block;
+    font-weight: bold;
+    text-align: center;
+    width:100%;
+    user-select: none;
+    cursor: pointer;
+}
+.togglecontainercontainer{
+    width:100%;
+    padding:12px;
+    background-color:rgba(0, 0, 0, 0.025);
+    box-sizing: border-box;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+.postitem>img{
+    width: 32px;
+    height: 48px;
+    float: left;
+    margin-right: 12px;
+    object-fit: contain;
+}
+
+.bookingheader{
+    cursor: pointer;
+}
+
+.eqBookings{
+    border-bottom: rgb(213, 213, 213) 1px solid;
+    margin: 0px -24px;
+    margin-top: 12px;
+}
+.eqBooking{
+    display:flex;
+    border-top:rgb(213, 213, 213) 1px solid;
+    border-bottom: rgb(213, 213, 213) 1px solid;
+    position:relative;
+    height:32px;
+    line-height: 32px;
+    padding:0px 24px;
+    transition: background-color 0.2s;
+}
+.eqBooking:hover{
+    background-color: rgba(0, 0, 0, 0.1);
+}
+.eqBooking.eventhover{
+    background-color: rgba(0, 0, 0, 0.1);   
+}
+
+.eqActions {
+    height:32px;
+    margin-right:24px
+}
+.eqActions button{
+    height:32px !important;
+    width:32px !important;
+    padding:0px !important;
+    font-size:14px !important;
+}
+.eqActions button.confirm{
+    color:rgba(5, 117, 63,1);
+}
+.eqActions button.confirm:hover{
+  background-color: rgba(5, 117, 63, 0.25)
+}
+.eqActions button.confirm.hover{
+  background-color: rgba(5, 117, 63, 0.25)
+}
+.eqActions button.confirm:active{
+  background:rgba(5, 117, 63,0.5);
+}
+.eqActions button.confirm.select{
+    background:rgba(5, 117, 63,1);
+    color:white;
+}
+.eqActions button.deny{
+    color:rgb(117, 5, 20);
+}
+.eqActions button.deny:hover{
+  background-color: rgba(117, 5, 20, 0.25)
+}
+.eqActions button.deny.hover{
+  background-color: rgba(117, 5, 20, 0.25)
+}
+.eqActions button.deny:active{
+  background:rgba(117, 5, 20,0.5);
+}
+.eqActions button.deny.select{
+    background:rgb(117, 5, 20);
+    color:white;
+}
+.eqActions .eqName{
+    font-weight: 500;
+    font-size: 12px;
+}
+.timespan{
+    margin-left: 24px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    margin-top:6px;
+    position: relative;
+    height: 32px;
+}
+.timespan .eqActions{
+    margin-top:4px;
+}
+.timespan>span{
+    position: absolute;
+    bottom: 4px;
+}
+
+.calendarEvent-projectname{
+    font-size:11px;
+    font-weight: bold;
+}
+.calendarEvent-length{
+    font-size:9px;
+}
+
+.eventhover{
+    opacity:1;
+}
+.fc-timeline-event{
+    transition:opacity 0.2s;
+}
+.postitem{
+    transition:opacity 0.2s;
+}
+.ignored{
+    opacity:0.2;
+}
+.partialignored{
+    opacity:0.6;
+}
+.postitem.ignore{
+    opacity:0.25;
+}
+.bookingbatches .postitem.ignored{
+    opacity:0.5;
+}
+    </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.6.1/randomColor.min.js" integrity="sha512-vPeZ7JCboHcfpqSx5ZD+/jpEhS4JpXxfz9orSvAPPj0EKUVShU2tgy7XkU+oujBJKnWmu4hU7r9MMQNWPfXsYw==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.1.0/main.min.js" integrity="sha256-whipTPgW7h5J4dASYqBjimA0wUdvXKQuecTKB5wOkxk=" crossorigin="anonymous"></script>
+<div class="section" style="max-width: 2000px;flex-basis: 1200px;">
+    <div class="sectionheader">Booking calendar</div>
+    <div style="display: flex;">
+        <div style="min-width: 400px;border-right:rgb(213, 213, 213) solid 1px;margin-right:12px;margin-top:-12px;padding-top:12px;">
+            <div style="position: relative;">
+                <span style="font-weight:bold;font-size:20px;">Requests</span>
+                <div style="position:absolute;right:24px;top:4px;font-weight: bold;font-size: 12px;line-height: 20px;"><i class="fas fa-filter"></i> Filter</div>
+            </div>
+
+            <ul id="bookingbatches" class="postlist">
+
+            </ul>
+        </div>
+        <div id="calendar"></div>
+    </div>
+
+</div>
+<div class="section" style="flex-basis:700px;">
+    <div class="sectionheader">Equipment<div id="equipment-spinner" class="spinner"></div></div>
+    <div style="display: none;font-size:12px;font-weight: normal;margin-top:4px;">Drag to reorder</div>
+    <ul id="equipmentlist" class="postlist" style="margin-top: -12px;margin-bottom: -12px;">
+        <% if(locals.equipment) { %>
+            <% equipment.forEach(equip=>{ %>
+            <li class="postitem" style="padding:10px 24px;" data-id="<%= equip.id %>" data-position="<%= equip.position %>">
+                <img src="<%= equip.image %>">
+                <div style="margin-right:174px;">
+                    <h4><%= equip.name %></h4>
+                    <h6><%= equip.category %></h6>
+                    <h5><%= equip.description %></h5>
+                    
+                </div>
+                <div class="actions">
+                    <button onclick="editEquipment('<%= equip.id %>')"><i class="far fa-edit"></i></button>
+                    <button onclick="removeEquipment('<%= equip.id %>')"><i class="far fa-trash-alt"></i></button>
+                </div>
+            </li>
+            <% }); %>
+        <% } %>
+        </ul><br>
+    <button class="smallbtn" onclick="addEquipmentModal(true)">Add equipment</button>
+</div>
+<div id="modal-equipment" class="modal">
+    <div id="modal-equipment-header" class="sectionheader">Add Equipment</div>
+    <input id="createequipment-name" type="text" class="smaller" placeholder="Name ('Neewer Light Stand')" autocomplete="off"><br>
+    <input id="createequipment-description" type="text" class="smaller" placeholder="Description ('2m stand, compatible with the LED Panels and the SLB60')" autocomplete="off"><br>
+    <input id="createequipment-image" type="text" class="smaller" placeholder="Image URL" autocomplete="off"><br>
+    <input id="createequipment-category" type="text" class="smaller" placeholder="Category (e.g. Light equipment)" autocomplete="off"><br>
+    <button class="bigbtn" onclick="saveEquipment()">SAVE</button>
+</div>
+<div id="modal-booking" class="modal">
+    <div id="modal-booking-header" class="sectionheader">New booking</div>
+    <input id="createbooking-projectname" type="text" class="smaller" placeholder="Project Name" autocomplete="off"><br>
+    <input id="createbooking-notes" type="text" class="smaller" placeholder="Notes" autocomplete="off"><br>
+    <h5>Student details (optional)</h5>
+    <input id="createbooking-studentname" type="text" class="smaller" placeholder="Student Name" autocomplete="off"><br>
+    <input id="createbooking-studentid" type="text" class="smaller" placeholder="Student ID" autocomplete="off"><br>
+    <input id="createbooking-studentemail" type="email" class="smaller" placeholder="Student Email" autocomplete="off"><br>
+    <button class="bigbtn" onclick="saveBooking()">SAVE</button>
+    <button class="smallbtn" onclick>Save for all bookings with </button>
+</div>
+
+    <script>
+
+function guidGenerator() {
+    var S4 = function() {
+       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
+let equipmentById = new Map();
+<% if(locals.equipment) { %>
+    let equipmentlist = JSON.parse(`<%- JSON.stringify(locals.equipment) %>`);
+    for (let i = 0; i < equipmentlist.length; i++) {
+        equipmentById.set(equipmentlist[i].id, equipmentlist[i]);
+    }
+<% } %>
+
+
+let editingid;
+let editingposition;
+
+$('#equipmentlist').sortable({
+                    stop:function(){
+                        updatePositions();
+                    },
+                    animation:150,
+                    axis:'y'
+                });
+
+function updatePositions(){
+    let positionChanges = [];
+    
+    $('.postlist .postitem').each(function(i,el){
+        let item = $(el);
+        if(item.attr('data-position') != i){
+            item.attr('data-position', i);
+            positionChanges.push({id: item.attr('data-id'), position: item.attr('data-position')});
+        }
+    });
+    if(positionChanges && positionChanges.length>0){
+        $(".postlist").sortable("disable");
+        $("#equipment-spinner").show();
+        $.ajax({
+            type: "POST",
+            url: '/admin/equipment/items/reposition',
+            dataType: 'text',
+            contentType: "application/json",
+            data: JSON.stringify(positionChanges),
+            success: function (res) {
+                $(".postlist").sortable("enable");
+                $("#equipment-spinner").hide();
+            },
+            error:function(err){
+                alert("Failed to reposition equipment items!");
+                $(".postlist").sortable("enable");
+                $("#equipment-spinner").hide();
+            }
+        });
+    }
+}
+
+function generateEquipmentObject(){
+    return{
+        name:$("#createequipment-name").val(),
+        description:$("#createequipment-description").val(),
+        image:$("#createequipment-image").val(),
+        category:$("#createequipment-category").val()
+    }
+}
+
+function editEquipment(id){
+    $("#equipment-spinner").show();
+    $.ajax({
+            type: "GET",
+            url: '/admin/equipment/items/' + id,
+            success: function (res) {
+                $("#equipment-spinner").hide();
+                $("#createequipment-name").val(res.name);
+                $("#createequipment-description").val(res.description);
+                $("#createequipment-image").val(res.image);
+                $("#createequipment-category").val(res.category);
+                editingid = id;
+                editingposition = res.position;
+                $("#modal-equipment-header").text("Edit Equipment");
+                addEquipmentModal();
+            }
+        });
+}
+function removeEquipment(id) {
+    
+        if(confirm("Are you absolutely sure you want to delete this item? Any bookings for it will be unreversebly deleted!")){
+            $("#equipment-spinner").show();
+            $.ajax({
+            type: "POST",
+            url: '/admin/equipment/items/remove/' + id,
+            success: function (res) {
+                $(`.postlist [data-id='${id}']`).remove();
+                $("#equipment-spinner").hide();
+            },
+            error: function(err){
+                alert("Failed to remove item!");
+                $("#equipment-spinner").hide();
+            }
+        });
+        }
+    }
+
+function saveEquipment() {
+        var equipmentObject = generateEquipmentObject();
+        $("#equipment-spinner").show();
+        if (editingid) {
+            equipmentObject.position = editingposition;
+            equipmentObject.id = editingid;
+            $.ajax({
+                
+                type: "POST",
+                url: '/admin/equipment/items/edit/' + editingid,
+                dataType: 'text',
+                contentType: "application/json",
+                async: true,
+                //json object to sent to the authentication url
+                data: JSON.stringify(equipmentObject),
+                success: function (res) {
+                    console.log("edit successful");
+                    $(`.postlist [data-id='${editingid}']`).remove();
+                    addEquipmentToUI(equipmentObject);
+                    $.modal.close();
+                    $("#equipment-spinner").hide();
+                },
+                error: function (res) {
+                    if (res.errors != undefined) {
+                        var alertText = "";
+                        alert(res.errors.join("\n"));
+                        $("#equipment-spinner").hide();
+                    }
+                },
+            });
+        } else {
+            equipmentObject.position = equipmentObject.length != undefined ? equipmentObject.length : 0; //if the length isn't undefined, return it. Otherwise, return 0
+            $.ajax({
+                type: "POST",
+                url: '/admin/equipment/items/create',
+                dataType: 'text',
+                contentType: "application/json",
+                async: true,
+                //json object to sent to the authentication url
+                data: JSON.stringify(equipmentObject),
+                success: function (res) {
+                    $.modal.close();
+                    addEquipmentToUI(JSON.parse(res));
+                    $("#equipment-spinner").hide();
+                    //TODO add equipment to DOM
+                },
+                error: function (res) {
+                    if (res.errors != undefined) {
+                        var alertText = "";
+                        alert(res.errors.join("\n"));
+                        $("#equipment-spinner").hide();
+                    }
+                },
+            });
+        }
+    }
+
+function addEquipmentModal(blank){
+    if(blank){
+        $("#createequipment-name").val('');
+        $("#createequipment-description").val('');
+        $("#createequipment-image").val('');
+        $("#createequipment-category").val('');
+    }
+    $("#modal-equipment").modal();
+}
+
+
+function sortPostItems(a,b) {
+    const startA = parseInt($(a).data('position'));
+    const startB = parseInt($(b).data('position'));	
+    return startA - startB;
+}
+function addEquipmentToUI(equipmentObject){
+    $(".postlist").append(`<li class="postitem" style="padding:10px 24px;" data-id="${equipmentObject.id}" data-position="${equipmentObject.position}">
+        <div style="margin-right:174px;">
+            <h4>${equipmentObject.name}</h4>
+            <h5>${equipmentObject.description}</h5>
+        </div>
+        <div class="actions">
+            <button onclick="editEquipment('${equipmentObject.id}')"><i class="far fa-edit"></i></button>
+            <button onclick="removeEquipment('${equipmentObject.id}')"><i class="far fa-trash-alt"></i></button>
+        </div>
+    </li>`);
+    $('.postlist').html($('.postlist .postitem').sort(sortPostItems))
+}
+
+$("#modal-equipment").on($.modal.CLOSE, function(event,modal){
+    editingid = undefined;
+    $("#modal-equipment-header").text("Add Equipment");
+});
+
+
+let resources = undefined;
+<% if(locals.equipment) { %>
+    resources = JSON.parse(`<%- JSON.stringify(locals.equipment) %>`);
+<% } %>
+
+var calendar;
+document.addEventListener('readystatechange', function() {
+    if(document.readyState!="complete") return;
+    let today = new Date();
+    let startDate = new Date("2019-09-01");
+    let endDate = new Date("2020-08-31");
+    let nowIndicator = Math.floor((today - startDate) / (1000 * 60 * 60))-48+":00";
+        var calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'resourceTimelineAcademicYear',
+            headerToolbar:false,
+            slotMinWidth:22,
+            schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+            resourceGroupField: 'category',
+            selectable: true,
+            selectMirror:true,
+            nowIndicator:true,
+            now: new Date(),
+            scrollTime: nowIndicator,
+            contentHeight: "auto",
+            resourcesInitiallyExpanded:true,
+            selectOverlap:false,
+            select: function(e){
+                console.log(e);
+                let events = calendar.getEvents();
+                let merged = false;
+                let previousmerge;
+                for (let i = 0; i < events.length; i++) {
+                    let res=events[i].getResources();
+                    if(res[0].id == e.resource.id){
+                        if(events[i].endStr == e.startStr){
+                            if(merged) { merged = false; return;}
+                            events[i].setEnd(e.end);
+                            previousmerge = events[i];
+                            merged = true;
+                        }
+                        if(events[i].startStr == e.endStr){
+                            if(merged) { merged = false; return;}
+                            events[i].setStart(e.start);
+                            previousmerge = events[i];
+                            merged = true;
+                        }
+                    }
+                }
+                if(!merged){
+                    calendar.addEvent({
+                        id:guidGenerator(),
+                        start:e.start,
+                        end:e.end,
+                        editable:true,
+                        resourceId:e.resource.id,
+                        overlap:false,
+                        resourceEditable:true
+                    })
+                }
+            },
+            slotDuration:"12:00:00",
+            slotLabelInterval:"24:00:00",
+            slotLabelFormat: [
+                {year:"numeric"},
+                {month:"long"},
+                {weekday:"short"},
+                {day:"2-digit"}
+            ],
+            views:{
+                resourceTimelineAcademicYear: {
+                    type: 'resourceTimeline',
+                    visibleRange: {
+                        start: startDate,
+                        end: endDate
+                    }
+                }
+            },
+            resourceOrder: 'position',
+            resources: resources,
+            events: individualbookings,
+            resourceLabelContent: function(arg) {
+                let props = arg.resource.extendedProps;
+                return props.name;
+            },
+            resourceAreaHeaderContent: function(arg){
+                return "";
+            },
+            eventContent:function(arg){
+                console.log(arg);
+                let daysStyle = "";
+                let daysoffset = getDaysOffset(arg.event);
+                if(daysoffset == "0.5 DAY") {
+                    daysoffset="HALF DAY";
+                    daysStyle="transform:rotate(-90deg);left:-4px;line-height:8px;bottom:4px;";
+                    //daysoffset="<span>0.5</span><br><span style='font-size:6px;'>DAY</span>";
+                }
+                let html = `
+                <div class="calendarEvent">
+                    <div class="calendarEvent-projectname">${arg.event.extendedProps.batchname}</div>
+                    <div class="calendarEvent-length" style="${daysStyle}">${daysoffset}</div>
+                </div>
+                `
+                return {html:html}
+            },
+            eventMouseEnter:function(e){
+                highlightItem(e.event.id, e.event.extendedProps.batchid);
+                highlightBatch(e.event.extendedProps.batchid);
+            },
+            eventMouseLeave:function(e){
+                unhighlightItem();
+                unhighlightBatch();
+            }
+        });
+        calendar.render();
+        $("#mainform").show();
+        $(".spinner").hide();
+      });
+
+      function highlightBatch(id){
+        $(`.fc-timeline-event:not(.batchid-${id})`).addClass("ignored");
+        $(`#bookingbatches .postitem:not(.batchid-${id})`).addClass("ignored");
+      }
+      function highlightItem(id, batchid){
+        $(`.fc-timeline-event.id-${id}`).addClass("eventhover");
+        $(`#bookingbatches .eqBooking.id-${id}`).addClass("eventhover");
+        $(`.fc-timeline-event.batchid-${batchid}:not(.id-${id})`).addClass("partialignored");
+      }
+      function unhighlightBatch(){
+        $(".fc-timeline-event").removeClass("ignored");
+        $(`#bookingbatches .postitem`).removeClass("ignored");
+      }
+      function unhighlightItem(){
+        $(`.fc-timeline-event`).removeClass("eventhover");
+        $(`.fc-timeline-event`).removeClass("partialignored");
+        $(`#bookingbatches .eqBooking`).removeClass("eventhover");
+      }
+      function removeEvent(id){
+          calendar.getEventById(id).remove();
+      }
+      function getDaysOffset(event){
+        let diff = (event.end - event.start)/(1000 * 60 * 60 * 24)
+        if(diff<=1) return diff + " DAY";
+        else return diff + " DAYS";
+      }
+      function getNightsOffset(event){
+        let diff = (event.end - event.start)/(1000 * 60 * 60 * 24)
+        if(diff<=1) return diff + " DAY";
+        else return diff + " DAYS";
+      }
+
+      let individualbookings = [];
+      let bookingbatches = [];
+                <% if(locals.bookings) { %>
+                   bookingbatches = JSON.parse(`<%- JSON.stringify(bookings) %>`)
+                <% } %>
+
+                for (let i in bookingbatches) {
+                    const booking = bookingbatches[i];
+                    let bookinglength = 0;
+                    if(booking.bookings && booking.bookings.length && booking.bookings.length>0)
+                        bookinglength = booking.bookings.length;
+                    let items = ``;
+                    for (let i = 0; i < booking.bookings.length; i++) {
+                        individualbookings.push({
+                           start:booking.bookings[i].start,
+                           end:booking.bookings[i].end,
+                           resourceId:booking.bookings[i].equipmentid,
+                           id:booking.bookings[i].id,
+                           classNames:["batchid-"+booking.id, "id-"+booking.bookings[i].id],
+                           batchid:booking.id,
+                           batchname:booking.projectname
+                        });
+                        booking.bookings[i].timespan = humanizeDate(booking.bookings[i].start) + "&nbsp;<i class='fas fa-arrow-right'></i>&nbsp;" + humanizeDate(booking.bookings[i].end)
+                        booking.bookings[i].timeid = new Date(booking.bookings[i].start).valueOf() + new Date(booking.bookings[i].end).valueOf() + booking.id;
+                    }
+                    booking.bookings.sort((a, b) => (a.timespan > b.timespan) ? 1 : -1)
+                    let previoustimespan = "";
+                    for (let i = 0; i < booking.bookings.length; i++) {
+                        const item = booking.bookings[i];
+                        console.log(item);
+                        let eq = equipmentById.get(item.equipmentid);
+                        let currenttimeid = "";
+                        if(item.timespan != previoustimespan){
+                            items += `<div class="timespan"><span>${item.timespan}</span>
+                                <div class="actions eqActions">
+                                <button title="Accept" class="confirm" onmouseover="selectall('mouseover', this, '${item.timeid+"a"}')" onmouseout="selectall('mouseout', this, '${item.timeid+"a"}')" onclick="selectall('click', this, '${item.timeid+"a"}')"><i class="fas fa-check"></i></button>
+                                <button title="Deny" class="deny" onmouseover="selectall('mouseover', this, '${item.timeid+"b"}')" onmouseout="selectall('mouseout', this, '${item.timeid+"b"}')" onclick="selectall('click', this, '${item.timeid+"b"}')"><i class="fas fa-times"></i></button>
+                            </div>
+                                </div>`;
+                            previoustimespan = item.timespan;
+                            currenttimeid = item.timeid;
+                        }
+                        items+=`
+                        <div class="eqBooking id-${item.id}" onmouseenter="highlightItem('${item.id}', '${booking.id}')" onmouseleave="unhighlightItem()">
+                            <div class="eqName">${eq.name}</div>
+                            <div class="actions eqActions">
+                                <button title="Accept" class="confirm" data-timeid="${item.timeid+"a"}" onclick="select(this)"><i class="fas fa-check"></i></button>
+                                <button title="Deny" class="deny" data-timeid="${item.timeid+"b"}" onclick="select(this)"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        `
+                    }
+                    $("#bookingbatches").append(`
+                    <li class="postitem batchid-${booking.id}" onmouseenter="highlightBatch('${booking.id}')" onmouseleave="unhighlightBatch()" style="padding:10px 24px;margin-right:12px;">
+                        <div>
+                            <div class="bookingheader">
+                            <h6 style="float:right;">${booking.studentname}&nbsp;<code>${booking.studentid}</code></h6>
+                            <h4>${booking.projectname}</h4>
+                            <h5 style="color:red;opacity:1;">${bookinglength} item(s) requested</h5>
+                            </div>
+                            <div class="bookingdetails" style="display:none;">
+                                <div class="eqBookings">
+                                    ${items}
+                                </div>
+                                <p style="font-size:11px;">${booking.projectdescription}</p>
+                                <button class="bigbtn">RESPOND</button>
+                                <button class="smallbtn inline">EDIT</button>
+                                <button class="smallbtn inline">DENY ALL</button>
+                                <button class="smallbtn inline">REMOVE</button>
+                            </div>
+                        </div>
+                    </li>
+                    `);
+                }
+
+                function itemEnter(id){}
+
+                $("#bookingbatches .bookingheader").click(function(e){
+                    $(this).siblings(".bookingdetails").slideToggle(100);
+                });
+                function select(e){
+                    let btn = $(e);
+                    if(btn.hasClass("select")){
+                        btn.removeClass("select");
+                    }
+                    else{
+                        btn.siblings("button").removeClass("select");
+                        btn.addClass("select");
+                    }
+                }
+                function selectall(op, e, timeid){
+                    console.log(op);
+                    let btn = $(`[data-timeid="${timeid}"]`);
+                    if(op=="mouseover"){
+                        btn.addClass('hover');
+                    }
+                    else if(op=="mouseout"){
+                        btn.removeClass('hover');
+                    }
+                    else if(op=="click"){
+                        if(btn.hasClass("select")){
+                            btn.removeClass("select");
+                        }
+                        else{
+                            btn.siblings("button").removeClass("select");
+                            btn.addClass("select");
+                        }
+                    }
+
+                }
+                function humanizeDate(input){
+                    input = new Date(input);
+                    var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+                    var monthName = monthNames[input.getMonth()]
+                    var dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+                    var dayName = dayNames[input.getDay()]
+                    var date = input.getDate();
+                    return `${dayName} ${input.getDate()}/${input.getMonth()}`;
+                }
+                
+    </script>
+</div>
+</div>

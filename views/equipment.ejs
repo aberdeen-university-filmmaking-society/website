@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <title>Equipment Booking | Aberdeen University Filmmaking Society - AUFS</title>
+      <meta property="og:title" content="Equipment Booking">
+      <meta name="description" content="Aberdeen University Filmmaking Society is a place for its members to learn filmmaking (by making films) while having fun and acquiring valuable skills.">
+      <meta property="og:description" content="Aberdeen University Filmmaking Society is a place for its members to learn filmmaking (by making films) while having fun and acquiring valuable skills.">
+      <meta property="og:url" content="<%= process.env.URL_START %>/about"/>
+      <meta property="og:type" content="article"/>
+      <meta property="og:image" content="<%= process.env.URL_START %>/images/cover.jpg">
+
+ <%- include partials/head.ejs %>
+
+ <link rel="stylesheet" href="/stylesheets/inputs.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <link rel="stylesheet" href="/stylesheets/formrender.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.1.0/main.min.css" integrity="sha256-YvJXHfpJcx3ZyGXve2IK1dMIlQGc0u4Cdtma5nlwVZ0=" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.1.0/main.min.js" integrity="sha256-whipTPgW7h5J4dASYqBjimA0wUdvXKQuecTKB5wOkxk=" crossorigin="anonymous"></script>
+    <script src="/javascripts/parsley.min.js"></script>
+</head>
+  <body>
+
+    <%- include partials/header.ejs %>
+    <style>
+
+
+table.fc-scrollgrid {
+    border:none !important;
+}
+.fc-datagrid-body td {border-color: rgba(255,255,255,0.1);}
+
+td.fc-timeline-slot.fc-day-past {
+    border: dashed 1px rgba(255,255,255,0.1);
+}
+.fc-timeline-slot.fc-timeline-slot-major.fc-slot-mon {
+    border-style: solid;
+    border-bottom-style: none;
+    border-color: white;
+}
+
+td.fc-timeline-slot {
+    border-color: rgba(255,255,255,0.2);
+}
+
+.fc-cell-shaded {
+    width: 0;
+}
+
+td.fc-resource-timeline-divider.fc-cell-shaded {width: 0px;}
+span.fc-datagrid-expander {
+    width: 90%;
+    position: absolute;
+}
+
+.fc-resource-group .fc-datagrid-cell-main {
+    margin-left: 22px;
+    user-select: none;
+}
+.fc-timeline-header-row:nth-child(3) .fc-day-past {
+    opacity: 0.5;
+}
+
+.fc-timeline-header-row:nth-child(4) .fc-day-past {
+    opacity: 0.5;
+}
+
+
+span.fc-datagrid-cell-main {
+    display: block;
+    white-space:normal;
+}
+
+.fc-datagrid-expander.fc-datagrid-expander-placeholder{
+    display:none;
+}
+.fc-icon{
+    display: none;
+}
+.fc-timeline-events{
+    height: 100% !important;
+    box-sizing: border-box !important;
+}
+.fc-timeline-event-harness{
+    height:100%;
+}
+.fc-timeline-event{
+    height:100%;
+}
+.equipment-name {
+    font-weight: bold;
+}
+img.equipment-image {
+    float:left;
+    margin-right: 6px;
+    height:32px;
+    width:32px;
+    object-fit:contain;
+}
+
+.equipment-description {
+    font-size: 10px;
+    opacity: 0.75;
+}
+
+.fc-scroller::-webkit-scrollbar {
+  height: 8px;
+
+}
+.fc-scroller::-webkit-scrollbar-track {
+  background: rgba(208,208,208,.15);
+  outline: 1px solid white;
+  border-radius:4px;
+}
+
+/* Handle */
+.fc-scroller::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.75);
+  border-radius:4px;
+}
+
+/* Handle on hover */
+.fc-scroller::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.fc .fc-scrollgrid>tbody table, .fc .fc-scrollgrid>tfoot table{
+  border-bottom-style:inherit;
+}
+.fc .fc-scrollgrid-section, .fc .fc-scrollgrid-section>td{
+    border-bottom:none;
+    border-right:none;
+}
+
+.fc .fc-timeline-body{
+    margin-bottom:4px;
+}
+.fc-datagrid-body {
+    margin-bottom: 4px;
+}
+
+.fc-event.fc-event-draggable{
+    cursor: move;
+}
+.fc-event-main{
+    width:100%;
+    height:100%;
+}
+.eventRemove{
+    position:absolute;
+    right:4px;
+    top:4px;
+    color:#c10000;
+    cursor:pointer;
+    font-size:14px;
+}
+.eventLength{
+    color: #094c82;
+    position: absolute;
+    bottom: 0;
+    left: 4px;
+    font-weight: 800;
+    font-size: 9px;
+}
+#mainform{
+    display: none;
+}
+.spinner::after{
+    content: "Loading...";
+    font-style: italic;
+    position: absolute;
+    margin-left: 42px;
+    margin-top: 7px;
+    font-size: 16px;
+}
+    </style>
+    <main>
+    <section>
+        <h1 class="pagetitle" style="margin-bottom:6px">Book equipment</h1>
+        <p style="color:white;">If you are a member of AUFS, you can book equipment the society owns. Please select all the equipment you wish to book (and when), and fill out the simple form below.</p>
+        <p><i>Click and drag to select a time period on each row - tap and hold if using a touchscreen</i></p>
+            <div class="spinner"></div>
+        <div id="calendar" style="margin-bottom:15px;"></div>
+        <form id="mainform" data-parsley-validate="" method="POST" action="/equipment/book">
+            <div>
+                <div class="rendered-form">
+                    <div class="formbuilder-text form-group field-bookingProjectName"><label for="bookingProjectName"
+                            class="formbuilder-text-label">Project Name<span class="formbuilder-required">*</span><span
+                                class="tooltip-element"
+                                tooltip="The name of the film/project for which the equipment will be used">?</span></label><input
+                            type="text" class="form-control" name="bookingProjectName" id="bookingProjectName"
+                            title="The name of the film/project for which the equipment will be used"
+                            required="required" aria-required="true"></div>
+                    <div class="formbuilder-textarea form-group field-bookingProjectDescription"><label
+                            for="bookingProjectDescription" class="formbuilder-textarea-label">Project
+                            Description</label><textarea type="textarea" class="form-control"
+                            name="bookingProjectDescription" id="bookingProjectDescription"></textarea></div>
+                    <div class="formbuilder-text form-group field-bookingStudentName"><label for="bookingStudentName"
+                            class="formbuilder-text-label">Student name<span
+                                class="formbuilder-required">*</span></label><input type="text" class="form-control"
+                            name="bookingStudentName" id="bookingStudentName" required="required" aria-required="true">
+                    </div>
+                    <div class="formbuilder-text form-group field-bookingStudentId"><label for="bookingStudentId"
+                            class="formbuilder-text-label">Student ID<span class="formbuilder-required">*</span><span
+                                class="tooltip-element"
+                                tooltip="We ask this in order to verify that you have bought an AUFS membership">?</span></label><input
+                            type="text" class="form-control" name="bookingStudentId" id="bookingStudentId"
+                            title="We ask this in order to verify that you have bought an AUFS membership"
+                            required="required" aria-required="true"></div>
+                    <div class="formbuilder-text form-group field-bookingStudentEmail"><label for="bookingStudentEmail"
+                            class="formbuilder-text-label">Student email<span class="formbuilder-required">*</span><span
+                                class="tooltip-element"
+                                tooltip="This is required so that we can let you know if your booking has been accepted or denied">?</span></label><input
+                            type="email" class="form-control" name="bookingStudentEmail" id="bookingStudentEmail"
+                            title="This is required so that we can let you know if your booking has been accepted or denied"
+                            required="required" aria-required="true"></div>
+                    <input id="bookingsarray" name="bookingsarray" type="hidden">
+                </div>
+            </div>
+            <p class="disclaimer">By booking equipement through this website, you accept that AUFS will keep this data until the booking period is over, in order to verify your status as a society member and organize equipment handovers with other members.</p>
+            <input type="submit" class="auditionbtn" value="BOOK">
+        </form>
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="/javascripts/parsley.min.js"></script>
+    
+    <script>
+
+function guidGenerator() {
+    var S4 = function() {
+       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
+//set up form
+  $('#mainform').submit('form:submit', function() {
+    let events = calendar.getEvents();
+        let bookingsArray = [];
+        for (let i = 0; i < events.length; i++) {
+            let resid=events[i].getResources()[0].id;
+            if(resid){
+                bookingsArray.push({
+                    start:events[i].startStr,
+                    end:events[i].endStr,
+                    equipmentid:resid
+                })
+            }
+        }
+        $("#bookingsarray").val(JSON.stringify(bookingsArray));
+        if(bookingsArray.length>0){
+            return true;
+        }
+        else{
+            alert("You must select at least one date for at least one item of equipment! You can simply select the days you wish to book on the row of the equipement item you want.")
+            return false;
+        }
+    });
+
+let resources = undefined;
+<% if(locals.equipment) { %>
+    resources = JSON.parse(`<%- JSON.stringify(locals.equipment) %>`);
+<% } %>
+
+var calendar;
+document.addEventListener('readystatechange', function() {
+    if(document.readyState!="complete") return;
+    let today = new Date();
+    let startDate = new Date("2019-09-01");
+    let endDate = new Date("2020-08-31");
+    let nowIndicator = Math.floor((today - startDate) / (1000 * 60 * 60))-48+":00";
+        var calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'resourceTimelineAcademicYear',
+            headerToolbar:false,
+            slotMinWidth:22,
+            schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+            resourceGroupField: 'category',
+            selectable: true,
+            selectMirror:true,
+            nowIndicator:true,
+            now: new Date(),
+            scrollTime: nowIndicator,
+            contentHeight: "auto",
+            resourcesInitiallyExpanded:true,
+            eventBackgroundColor:"white",
+            selectOverlap:false,
+            select: function(e){
+                console.log(e);
+                let events = calendar.getEvents();
+                let merged = false;
+                let previousmerge;
+                for (let i = 0; i < events.length; i++) {
+                    let res=events[i].getResources();
+                    if(res[0].id == e.resource.id){
+                        if(events[i].endStr == e.startStr){
+                            if(merged) { merged = false; return;}
+                            events[i].setEnd(e.end);
+                            previousmerge = events[i];
+                            merged = true;
+                        }
+                        if(events[i].startStr == e.endStr){
+                            if(merged) { merged = false; return;}
+                            events[i].setStart(e.start);
+                            previousmerge = events[i];
+                            merged = true;
+                        }
+                    }
+                }
+                if(!merged){
+                    calendar.addEvent({
+                        id:guidGenerator(),
+                        start:e.start,
+                        end:e.end,
+                        editable:true,
+                        resourceId:e.resource.id,
+                        overlap:false,
+                        resourceEditable:true
+                    })
+                }
+            },
+            slotDuration:"12:00:00",
+            slotLabelInterval:"24:00:00",
+            slotLabelFormat: [
+                {year:"numeric"},
+                {month:"long"},
+                {weekday:"short"},
+                {day:"2-digit"}
+            ],
+            views:{
+                resourceTimelineAcademicYear: {
+                    type: 'resourceTimeline',
+                    visibleRange: {
+                        start: startDate,
+                        end: endDate
+                    }
+                }
+            },
+            resourceOrder: 'position',
+            resources: resources,
+            resourceLabelContent: function(arg) {
+                let props = arg.resource.extendedProps;
+                let html = `
+                  <div data-id="${props.id}">
+                    <img class="equipment-image" src="${props.image}"></img>
+                    <div class="equipment-name">${props.name}</div>
+                    <div class="equipment-description">${props.description}</div>
+                  </div>`
+                innerText = arg.resource.extendedProps.name;
+                return {html:html}
+            },
+            resourceAreaHeaderContent: function(arg){
+                return "";
+            },
+            eventContent:function(arg){
+                console.log(arg);
+                let daysStyle = "";
+                let daysoffset = getDaysOffset(arg.event);
+                if(daysoffset == "0.5 DAY") {
+                    daysoffset="HALF DAY";
+                    daysStyle="    transform:rotate(-90deg);left:-4px;line-height:8px;bottom:4px;";
+                    //daysoffset="<span>0.5</span><br><span style='font-size:6px;'>DAY</span>";
+                }
+                let html = `
+                <div>
+                    <i class="fas fa-times eventRemove" onclick="removeEvent('${arg.event.id}')"></i>
+                    <div style="${daysStyle}" class="eventLength">${daysoffset}</div>
+                </div>
+                `
+                return {html:html}
+            }
+        });
+        calendar.render();
+        $("#mainform").show();
+        $(".spinner").hide();
+      });
+      function removeEvent(id){
+          calendar.getEventById(id).remove();
+      }
+      function getDaysOffset(event){
+        let diff = (event.end - event.start)/(1000 * 60 * 60 * 24)
+        if(diff<=1) return diff + " DAY";
+        else return diff + " DAYS";
+      }
+      function getNightsOffset(event){
+        let diff = (event.end - event.start)/(1000 * 60 * 60 * 24)
+        if(diff<=1) return diff + " DAY";
+        else return diff + " DAYS";
+      }
+
+    </script>
+  </main>
+    <%- include partials/footer.ejs %>
+  </body>
+  <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+  integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+</html>
