@@ -80,9 +80,57 @@ equipmentmanager.getEquipmentById = async function(id, resolve) {
     });
 }
 
-equipmentmanager.getBookings = async function(resolve) {
-    var sql = "SELECT * FROM EquipmentBooking; SELECT * FROM EquipmentBookingBatch";
+equipmentmanager.getConfirmedBookings = async function(year, resolve){
+    let datequery = makeDateQuery(year);
+    var sql = `SELECT EquipmentBooking.id, EquipmentBooking.start, EquipmentBooking.end, EquipmentBooking.equipmentid FROM EquipmentBooking INNER JOIN EquipmentBookingBatch ON EquipmentBooking.bookingbatchid = EquipmentBookingBatch.id ${datequery} WHERE EquipmentBooking.confirmstate=1 OR EquipmentBooking.confirmstate=3`;
     sqlcon.query(sql, function(err, result) {
+        if(err) resolve(err, undefined);
+        else{
+            resolve(undefined,result);
+        }
+    });
+}
+
+function makeDateQuery(year){
+    if(year==undefined) year= new Date().getFullYear(); //if the year isn't specified, assume the current year
+    year = Number(year);
+    let startdate = new Date(year+"-08-31"); //for year 2020, start date is 31/08/20 (01/09/20 in UI)
+    let enddate = new Date((year+1)+"-09-01"); //for year 2020, end date is 01/09/21 (31/08/21 in UI)
+    return `AND EquipmentBookingBatch.start >= ${mysql.escape(startdate)} AND EquipmentBookingBatch.end <= ${mysql.escape(enddate)}`;
+}
+
+equipmentmanager.getBookings = async function(active, archived, alltime, year, resolve) {
+    let query = "";
+    let datequery = makeDateQuery(year);
+        if(alltime) datequery = "";
+    let activequery = `SELECT EquipmentBooking.* FROM EquipmentBooking INNER JOIN EquipmentBookingBatch ON EquipmentBooking.bookingbatchid = EquipmentBookingBatch.id AND EquipmentBookingBatch.archived=0`;
+    let archivedquery = `SELECT EquipmentBooking.* FROM EquipmentBooking INNER JOIN EquipmentBookingBatch ON EquipmentBooking.bookingbatchid = EquipmentBookingBatch.id AND EquipmentBookingBatch.archived=1 ${datequery}`
+    if(active && archived && alltime){
+        //show everything
+        query = `SELECT * FROM EquipmentBooking; 
+                 SELECT * FROM EquipmentBookingBatch ORDER BY creationtime DESC`;
+    }
+    else if(active && archived){
+        //only show for the specified year
+        query = `${activequery} UNION ${archivedquery};
+        SELECT * FROM EquipmentBookingBatch WHERE archived=0 UNION SELECT * FROM EquipmentBookingBatch WHERE archived=1 ${datequery} ORDER BY creationtime DESC`
+    }
+    else if(active){
+        //only select the active elements
+        query = `${activequery};
+                 SELECT * FROM EquipmentBookingBatch WHERE archived=0 ORDER BY creationtime DESC`;
+    }
+    else if(archived){
+        //only select the archived bookings
+        query = `${archivedquery};
+            SELECT * FROM EquipmentBookingBatch WHERE archived=1 ${datequery} ORDER BY creationtime DESC`;
+    }
+    else{
+        resolve(undefined, []);
+        return;
+    }
+
+    sqlcon.query(query, function(err, result) {
         if(err) resolve(err, undefined);
         else{
             let individualbookings = result[0];
@@ -103,17 +151,172 @@ equipmentmanager.getBookings = async function(resolve) {
     });
 }
 
+equipmentmanager.getBookingBatch = async function(id, resolve){
+    sqlcon.query("SELECT * FROM EquipmentBookingBatch WHERE id=?; SELECT * FROM EquipmentBooking WHERE bookingbatchid=?", [id,id], function(err, result) {
+        if(err) resolve(err, undefined);
+        else{
+            if(result[0] && result[0][0]){
+                result[0][0].statustext = makeResponse(result[1]);
+                result[0][0].bookings = result[1];
+                resolve(undefined, result[0][0]);
+            }
+            else{
+                resolve(404, undefined);
+            }
+        }
+    });
+}
+function makeResponse(bookings){
+    let statusText = "No bookings!";
+    if(bookings && bookings.length){
+        let ignored = 0;
+        let confirmed = 0;
+        let edited = 0;
+        let denied = 0;
+        let total = bookings.length;
 
-equipmentmanager.removeBooking = async function(id, resolve) {
-    var sql = "DELETE FROM EquipmentBooking where id=?";
+        for (let i = 0; i < bookings.length; i++) {
+            const booking = bookings[i];
+            switch (booking.confirmstate) {
+                case 1: confirmed++; break;
+                case 2: denied++; break;
+                case 3: edited++; break;
+                default: ignored++; break;
+            }
+        }
+        if(ignored>0 && confirmed==0 && edited==0 && denied==0){
+            statusText= `Your request has not yet been seen by the equipment manager! We'll send an email to ${result[0].studentemail} once your request has been reviewed.`
+        }
+        else if(ignored>0){
+            statusText = `<b>${ignored}</b> of your equipment requests have not yet been reviewed by the Equipment Manager. ${makeSubResponse(confirmed,denied,edited, ignored)}`
+        }
+        else if(confirmed>0 && ignored==0 && edited==0 && denied==0){
+            statusText= `All your equipment requests have been accepted!`
+        }
+        else if(denied>0 && confirmed==0 && edited==0 && ignored==0){
+            statusText = `All your equipment requests have been denied - the equipment manager will have provided further details by email`
+        }
+        else if(edited>0 && confirmed==0 && ignored==0 && denied==0){
+            statusText = `All your equipment requests have been edited - please review these changes in the calendar below. The equipment manager will have provided further details in the update email`
+        }
+        else if(edited>0 && confirmed>0 && denied>0){
+            statusText = `<b>${confirmed}</b> of your booking requests ${pluralizeHaveBeen(confirmed,false)} accepted, <b>${edited}</b> ${pluralizeHaveBeen(edited,false)} modified, and <b>${denied}</b> ${pluralizeHaveBeen(denied,false)} denied.`
+        }
+        else{
+            return makeSubResponse(confirmed, denied, edited,);
+        }
+    }
+    return statusText;
+}
+function makeSubResponse(confirmed, denied, edited){
+    if(confirmed>0 && denied>0 && edited>0){
+        return `<b>${confirmed}</b> ${pluralizeHaveBeen(confirmed,true)} accepted, <b>${edited}</b> ${pluralizeHaveBeen(edited,false)} modified, and <b>${denied}</b> ${pluralizeHaveBeen(denied,false)} denied.`
+    }
+    else if(confirmed>0 && denied>0){
+        return `<b>${confirmed}</b> ${pluralizeHaveBeen(denied,true)} accepted and <b>${denied}</b> ${pluralizeHaveBeen(denied,false)} denied.`
+    }
+    else if(confirmed>0 && edited>0){
+        return `<b>${confirmed}</b> ${pluralizeHaveBeen(confirmed,true)} accepted and <b>${edited}</b> ${pluralizeHaveBeen(edited,false)} modified.`
+    }
+    else if(denied>0 && edited>0){
+        return `<b>${edited}</b> ${pluralizeHaveBeen(edited,true)} modified and <b>${denied}</b> ${pluralizeHaveBeen(denied,false)} denied.`
+    }
+    else if(confirmed>0){
+        return `<b>${confirmed}</b> ${pluralizeHaveBeen(confirmed,true)} accepted.`
+    }
+    else if(edited>0){
+        return `<b>${edited}</b> ${pluralizeHaveBeen(edited,true)} modified.`
+    }
+    else if(denied>0){
+        return `<b>${denied}</b> ${pluralizeHaveBeen(denied,true)} denied.`
+    }
+}
+function pluralizeHaveBeen(value, includerequests){
+    if(includerequests){
+        if(value==1) return "request has been";
+        else return "requests have been";
+    }
+    else{
+        if(value==1) return "has been";
+        else return "have been";
+    }
+}
+
+equipmentmanager.removeBookingBatch = async function(id, resolve) {
+    var sql = "DELETE FROM EquipmentBookingBatch where id=?";
     sqlcon.query(sql, [id], function(err, result) {
-        if (err) resolve(false);
+        if (err) resolve(err);
         else {
-            resolve(true);
+            resolve();
+        }
+    });
+}
+equipmentmanager.archiveBookingBatch = async function(id, archivestate, resolve) {
+    sqlcon.query("UPDATE EquipmentBookingBatch SET archived=? WHERE id=? ", [archivestate, id], function(err, result) {
+        if (err) resolve(err);
+        else {
+            resolve();
         }
     });
 }
 
+/*confirmstate
+0=not confirmed
+1=accepted
+2=denied
+3=edited
+*/
+equipmentmanager.saveBookingBatch = async function(id, body, resolve){
+    let queries = [];
+    let acceptIds = [];
+    let denyIds = [];
+    let undefinedIds = [];
+    let earliestStart = new Date(body.bookings[0].start);
+    let latestEnd = new Date(body.bookings[0].end);
+    for (let i = 0; i < body.bookings.length; i++) {
+        const b = body.bookings[i];
+        switch (b.confirmstate) {
+            case 1:
+                acceptIds.push(b.id);
+                break;
+            case 2:
+                denyIds.push(b.id);
+                break;
+            case 3:
+                queries.push(`UPDATE EquipmentBooking SET confirmstate=3, start=${mysql.escape(b.start)}, end=${mysql.escape(b.end)} WHERE id=${mysql.escape(b.id)}`)
+                break;
+            default:
+                undefinedIds.push(b.id);
+                break;
+        }
+        if(i==0){
+            earliestStart = new Date(b.start);
+            latestEnd = new Date(b.end);
+        }
+        else{
+            let start = new Date(b.start);
+            let end = new Date(b.end);
+            if(start<earliestStart) earliestStart = start;
+            if(end>latestEnd) latestEnd = end;
+        }
+    }
+    if(acceptIds.length>0) queries.push(`UPDATE EquipmentBooking SET confirmstate=1 WHERE id IN (${mysql.escape(acceptIds)})`);
+    if(denyIds.length>0) queries.push(`UPDATE EquipmentBooking SET confirmstate=2 WHERE id IN (${mysql.escape(denyIds)})`);
+    if(undefinedIds.length>0) queries.push(`UPDATE EquipmentBooking SET confirmstate=0 WHERE id IN (${mysql.escape(undefinedIds)})`);
+
+    queries.push(`UPDATE EquipmentBookingBatch SET archived=${mysql.escape(body.archive)}, start=${mysql.escape(earliestStart)}, end=${mysql.escape(latestEnd)} WHERE id=${mysql.escape(id)}`)
+    sqlcon.query(queries.join(";"), function(err, results){
+        if(err){
+            resolve(err, undefined);
+        }
+        else{
+            //send email
+            sqlcon.query(`SELECT * From EquipmentBookingBatch WHERE id=?`, [id], function(err2,results2){
+                emailStudentResponse(body.message, results2[0]);
+            });
+        }
+    });
+}
 
 equipmentmanager.book = async function(form, admin, resolve) {
     console.log(form);
@@ -129,8 +332,23 @@ equipmentmanager.book = async function(form, admin, resolve) {
         resolve(new Error("You must select at least one booking date!"));
         return;
     }
-    var sql = "INSERT INTO EquipmentBookingBatch (id, projectname, projectdescription, studentname, studentid, studentemail, iscommittee) VALUES (?,?,?,?,?,?,?)"
-    sqlcon.query(sql, [batchid, form.bookingProjectName, form.bookingProjectDescription, form.bookingStudentName, form.bookingStudentId, form.bookingStudentEmail, admin], function(err1, result1) {
+    let earliestStart = new Date();
+    let latestEnd = new Date();
+    for (let i = 0; i < bookings.length; i++) {
+        let b = bookings[i];
+        if(i==0){
+            earliestStart = new Date(b.start);
+            latestEnd = new Date(b.end);
+        }
+        else{
+            let start = new Date(b.start);
+            let end = new Date(b.end);
+            if(start<earliestStart) earliestStart = start;
+            if(end>latestEnd) latestEnd = end;
+        }
+    }
+    var sql = "INSERT INTO EquipmentBookingBatch (id, projectname, projectdescription, studentname, studentid, studentemail, iscommittee, start, end) VALUES (?,?,?,?,?,?,?,?,?)"
+    sqlcon.query(sql, [batchid, form.bookingProjectName, form.bookingProjectDescription, form.bookingStudentName, form.bookingStudentId, form.bookingStudentEmail, admin, earliestStart, latestEnd], function(err1, result1) {
         if (err1) {
             resolve(err1);
         }
@@ -144,13 +362,10 @@ equipmentmanager.book = async function(form, admin, resolve) {
                 //id, start, end, equipmentid, bookingbatchid, confirmstate=0 (not confirmed)
             }
             let escaped = mysql.escape(paramedBookings);
-            console.log(escaped);
             sqlcon.query("INSERT INTO EquipmentBooking (id, start, end, equipmentid, bookingbatchid, confirmstate) VALUES " + escaped, function (err2, result2) {
                 if (err2) resolve(err2)
                 else {
                     resolve(result2);
-                    console.log("ids")
-                    console.log(equipmentIds);
                     sqlcon.query("SELECT * FROM `Equipment` WHERE id IN (?)", [equipmentIds], function(err3, result3){
                         if(!err3 && result3 && result3.length>0){
                             for (let i = 0; i < bookings.length; i++) {
@@ -209,6 +424,7 @@ function emailAUFS(id, form, formhtml){
     });
 }
 function emailStudent(id, form, formhtml){
+    url= process.env.URL_START+"/equipment?view="+id;
     let html = `<!doctype html>
     <html>
       <head>
@@ -218,7 +434,9 @@ function emailStudent(id, form, formhtml){
       </head>
       <body class="">
       <h3>Thank you for requesting equipment from AUFS!</h3>
-      <p>The society's equipment manager has been contacted to confirm your booking request. We'll be in contact to confirm everything shortly!</p>
+      <p>The society's equipment manager has been contacted to check your booking request. We'll be in contact to confirm everything shortly!</p>
+      <p>You can view your booking request from the following link:</p>
+      <a href="${url}">${url}</a>
       <p>In the meantime, here's a copy of exactly what you requested:</p>
       ${formhtml}
       </body>
@@ -230,7 +448,7 @@ function emailStudent(id, form, formhtml){
             address: "equipment@aufilmmaking.co.uk"
         },
         to: form.bookingStudentEmail, // list of receivers
-        subject: "AUFS Booking request " + form.bookingStudentName, // Subject line
+        subject: `Request confirmation for ${form.bookingProjectName}`, // Subject line
         html: html
     };
     transporter.sendMail(mailOptions, (error, info) => {
@@ -240,6 +458,41 @@ function emailStudent(id, form, formhtml){
         console.log('Message %s sent: %s', info.messageId, info.response);
     });
 }
+
+function emailStudentResponse(message, booking){
+    url= process.env.URL_START+"/equipment?view="+booking.id;
+    let html = `<!doctype html>
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>AUFS Equipment Request</title>
+      </head>
+      <body>
+      <p>${message}</p>
+      <hr>
+      <p>You can view your booking request from the following link:</p>
+        <a href="${url}">${url}</a>
+      </body>
+    </html>`
+
+    let mailOptions = {
+        from: {
+            name: "AUFS Equipment Booking",
+            address: "equipment@aufilmmaking.co.uk"
+        },
+        to: booking.studentemail, // list of receivers
+        subject: `Request update for ${booking.projectname}`, // Subject line
+        html: html
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message %s sent: %s', info.messageId, info.response);
+    });
+}
+
 
 function equipmentform2html(form, bookings){
     let bookinglist = '';

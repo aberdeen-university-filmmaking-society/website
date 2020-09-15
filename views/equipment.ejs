@@ -23,6 +23,11 @@
     <%- include partials/header.ejs %>
     <style>
 
+#calendar{
+    /*box-shadow: 0px 0px 24px rgba(0,0,0,0.2);*/
+    padding-top: 12px;
+    padding-bottom: 4px;
+}
 
 table.fc-scrollgrid {
     border:none !important;
@@ -103,19 +108,54 @@ img.equipment-image {
 }
 
 .fc-scroller::-webkit-scrollbar {
-  height: 8px;
+  height: 12px;
 
 }
 .fc-scroller::-webkit-scrollbar-track {
   background: rgba(208,208,208,.15);
-  outline: 1px solid white;
-  border-radius:4px;
+  border-radius:6px;
+}
+.fc-scroller::-webkit-scrollbar-button
+{
+    width:24px;
+    background: url('images/scrollright.svg'), rgba(255, 255, 255, 0);
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius:5px;
+}
+.fc-scroller::-webkit-scrollbar-button:hover {
+    background: url('images/scrollright.svg'), rgba(255, 255, 255, 0.1);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.fc-scroller::-webkit-scrollbar-button:active {
+    background: url('images/scrollright.svg'), rgba(255, 255, 255, 0.5);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.fc-scroller::-webkit-scrollbar-button:decrement
+{
+    width:24px;
+    background: url('images/scrollleft.svg'), rgba(255, 255, 255, 0);
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius:6px;
+}
+.fc-scroller::-webkit-scrollbar-button:decrement:hover {
+    background: url('images/scrollleft.svg'), rgba(255, 255, 255, 0.1);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.fc-scroller::-webkit-scrollbar-button:decrement:active {
+    background: url('images/scrollleft.svg'), rgba(255, 255, 255, 0.5);
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 /* Handle */
 .fc-scroller::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.75);
-  border-radius:4px;
+  border-radius:6px;
 }
 
 /* Handle on hover */
@@ -164,6 +204,10 @@ img.equipment-image {
 #mainform{
     display: none;
 }
+.spinner{
+    position: absolute;
+    bottom:-66px;
+}
 .spinner::after{
     content: "Loading...";
     font-style: italic;
@@ -172,14 +216,70 @@ img.equipment-image {
     margin-top: 7px;
     font-size: 16px;
 }
+.fc-header-toolbar .fc-button{
+    background-color:transparent !important;
+    border:none !important;
+    opacity:0.5;
+    transition: opacity 0.2s;
+    outline:none !important;
+    height:22px;
+    width:32px;
+    background-image: url('images/chevron.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.fc-button:hover{
+    opacity:0.75;
+}
+.fc-button:active{
+    opacity:1;
+}
+.fc-prevYearCustom-button{
+    transform:rotate(180deg)
+}
+.fc-header-toolbar{
+    justify-content:flex-end !important;
+}
+
+.caption .box{
+    width:24px;
+    height:12px;
+    display:inline-block;
+    margin-right:12px;
+    border: solid 1px rgba(255,255,255,0.25);
+    margin-bottom:-2px;
+}
+.caption{
+    text-align:left;
+    font-weight: 400;
+    color:rgba(255,255,255,0.75);
+    font-size:10px;
+    line-height: 16px;
+}
+section{
+    max-width:1200px;
+    position: relative;
+}
     </style>
     <main>
     <section>
+        <% if(locals.selectedbooking) { %>
+            <h1 class="pagetitle" style="margin-bottom:6px">Request for <%= selectedbooking.projectname %></h1>
+            <p style="color:white;font-size:1.2em;line-height:1.4em;opacity:0.6;"><%- selectedbooking.statustext %></p>
+
+        <% } else { %>
         <h1 class="pagetitle" style="margin-bottom:6px">Book equipment</h1>
         <p style="color:white;">If you are a member of AUFS, you can book equipment the society owns. Please select all the equipment you wish to book (and when), and fill out the simple form below.</p>
         <p><i>Click and drag to select a time period on each row - tap and hold if using a touchscreen</i></p>
+        <% } %>
             <div class="spinner"></div>
-        <div id="calendar" style="margin-bottom:15px;"></div>
+    </section>
+    <section style="margin:24px auto;">
+        <div id="calendar"></div>
+    </section>
+    <section style="max-width:512px;margin-top:48px;">
+    <% console.log("show form=" + (!locals.selectedbooking)) %>
+    <% if(!locals.selectedbooking) { %>
         <form id="mainform" data-parsley-validate="" method="POST" action="/equipment/book">
             <div>
                 <div class="rendered-form">
@@ -219,6 +319,7 @@ img.equipment-image {
             <p class="disclaimer">By booking equipement through this website, you accept that AUFS will keep this data until the booking period is over, in order to verify your status as a society member and organize equipment handovers with other members.</p>
             <input type="submit" class="auditionbtn" value="BOOK">
         </form>
+    <% } %>
     </section>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="/javascripts/parsley.min.js"></script>
@@ -237,6 +338,7 @@ function guidGenerator() {
     let events = calendar.getEvents();
         let bookingsArray = [];
         for (let i = 0; i < events.length; i++) {
+            if(events[i].title != "useradded") continue;
             let resid=events[i].getResources()[0].id;
             if(resid){
                 bookingsArray.push({
@@ -261,12 +363,98 @@ let resources = undefined;
     resources = JSON.parse(`<%- JSON.stringify(locals.equipment) %>`);
 <% } %>
 
+let selectedbooking = undefined;
+<% if(locals.selectedbooking) { %>
+    selectedbooking = JSON.parse(`<%- JSON.stringify(locals.selectedbooking) %>`);
+<% } %>
+
+let bookings = [];
+let initialbookings = undefined;
+<% if(locals.bookings) { %>
+    initialbookings = JSON.parse(`<%- JSON.stringify(locals.bookings) %>`);
+<% } %>
+
+let hasselectedbookings = (selectedbooking && selectedbooking.bookings && selectedbooking.bookings.length);
+let ignoredbookings = 0;
+let confirmedbookings = 0;
+let deniedbookings = 0;
+let editedbookings = 0;
+
+function loadBookings(){
+    if(initialbookings){
+        for (let i = 0; i < initialbookings.length; i++) {
+            let b = initialbookings[i];
+            let addtobookings = true;
+            b.display = "background";
+            b.resourceId = initialbookings[i].equipmentid;
+            if(hasselectedbookings){
+                for (let j = 0; j < selectedbooking.bookings.length; j++) {
+                    if(selectedbooking.bookings[j].id == b.id){
+                        addtobookings = false;
+                        break;
+                    }
+                }
+            }
+            if(addtobookings)
+                bookings.push(b);
+        }
+    }
+    if(hasselectedbookings){
+        for (let j = 0; j < selectedbooking.bookings.length; j++) {
+            let b = selectedbooking.bookings[j]
+            b.title = "readonly"
+            b.display = "block"
+            b.resourceId = b.equipmentid;
+            if(b.confirmstate==0){
+                b.color = 'rgba(255, 255, 255, 0.25)'
+                ignoredbookings++;
+            }
+            else if(b.confirmstate==1){
+                b.color = 'rgb(25 149 120)'
+                confirmedbookings++;
+            }
+            if(b.confirmstate==2){
+                b.color = 'rgb(124 55 74)'
+                deniedbookings++;
+            }
+            if(b.confirmstate==3){
+                b.color = 'rgb(149 139 25)'
+                editedbookings++;
+            }
+            bookings.push(b);
+        }
+    }
+}
+loadBookings();
+
+function reloadBookings(){
+        $(".spinner").show();
+        $.ajax({
+            type: "GET",
+            url: UpdateQueryString("ajax",true),
+            success: function (res) {
+                initialbookings = res;
+                bookings = []
+                loadBookings();
+                calendar.removeAllEventSources();
+                calendar.addEventSource(bookings);
+                $(".spinner").hide();
+            },
+            error: function (err) {
+                alert("Failed to reload bookings! " + err);
+                $(".spinner").hide();
+            }
+        });
+    }
+
+
 var calendar;
 document.addEventListener('readystatechange', function() {
     if(document.readyState!="complete") return;
     let today = new Date();
-    let startDate = new Date("2019-09-01");
-    let endDate = new Date("2020-08-31");
+    let startDate = new Date(today.getFullYear()+"-09-01");
+    if(today.getMonth()<8) startDate = new Date((today.getFullYear()-1)+"-09-01");
+
     let nowIndicator = Math.floor((today - startDate) / (1000 * 60 * 60))-48+":00";
         var calendarEl = document.getElementById('calendar');
         calendar = new FullCalendar.Calendar(calendarEl, {
@@ -284,12 +472,39 @@ document.addEventListener('readystatechange', function() {
             resourcesInitiallyExpanded:true,
             eventBackgroundColor:"white",
             selectOverlap:false,
+            events:bookings,
+            customButtons:{
+                prevYearCustom:{
+                    click:function(){
+                        calendar.prevYear();
+                        updatequery();
+                        reloadBookings();
+                    }
+                },
+                nextYearCustom:{
+                    click:function(){
+                        calendar.nextYear();
+                        updatequery();
+                        reloadBookings();
+                    }
+                }
+            },
+            headerToolbar:{
+              start: 'prevYearCustom',
+              center: 'title',
+              end: 'nextYearCustom'
+            },
+            buttonIcons:{
+                prevYearCustom: 'left-double-arrow',
+                nextYearCustom: 'right-double-arrow'
+            },
             select: function(e){
-                console.log(e);
+                if(selectedbooking) return; //if we're currently viewing a booking, don't allow creating new ones
                 let events = calendar.getEvents();
                 let merged = false;
                 let previousmerge;
                 for (let i = 0; i < events.length; i++) {
+                    if(events[i].display=="background") continue;
                     let res=events[i].getResources();
                     if(res[0].id == e.resource.id){
                         if(events[i].endStr == e.startStr){
@@ -314,7 +529,8 @@ document.addEventListener('readystatechange', function() {
                         editable:true,
                         resourceId:e.resource.id,
                         overlap:false,
-                        resourceEditable:true
+                        resourceEditable:true,
+                        title:"useradded"
                     })
                 }
             },
@@ -327,11 +543,25 @@ document.addEventListener('readystatechange', function() {
                 {day:"2-digit"}
             ],
             views:{
-                resourceTimelineAcademicYear: {
+                resourceTimelineAcademicYear:{
                     type: 'resourceTimeline',
-                    visibleRange: {
-                        start: startDate,
-                        end: endDate
+                    visibleRange: function(currentDate){
+                        let today = new Date(currentDate.valueOf());
+                        let year = today.getFullYear();
+                        if(today.getMonth()>7){
+                            //after the 1st of September
+                            return{
+                                start: new Date(year+"-09-01"),
+                                end: new Date((year+1)+"-08-31")
+                            }
+                        }
+                        else{
+                            //before the 1st of September
+                            return{
+                                start: new Date((year-1)+"-09-01"),
+                                end: new Date(year+"-08-31")
+                            }
+                        }
                     }
                 }
             },
@@ -349,20 +579,46 @@ document.addEventListener('readystatechange', function() {
                 return {html:html}
             },
             resourceAreaHeaderContent: function(arg){
-                return "";
+                if(hasselectedbookings){
+                    let rows = "";
+                    if(ignoredbookings){
+                        rows+="<div class='caption'><div class='box' style='background-color:rgba(255,255,255,0.25)'></div>Unanswered request</div>";
+                    }
+                    if(confirmedbookings){
+                        rows+="<div class='caption'><div class='box' style='background-color:rgba(25 149 20)'></div>Accepted request</div>";
+                    }
+                    if(deniedbookings){
+                        rows+="<div class='caption'><div class='box' style='background-color:rgba(124 55 74)'></div>Denied request</div>";
+                    }
+                    if(editedbookings){
+                        rows+="<div class='caption'><div class='box' style='background-color:rgba(149 139 25)'></div>Modified request</div>";
+                    }
+                    return{html:rows}
+                }
+                else{
+                    return "";
+                }
             },
             eventContent:function(arg){
-                console.log(arg);
+                if(arg.event.display == "background") return;
                 let daysStyle = "";
                 let daysoffset = getDaysOffset(arg.event);
                 if(daysoffset == "0.5 DAY") {
                     daysoffset="HALF DAY";
-                    daysStyle="    transform:rotate(-90deg);left:-4px;line-height:8px;bottom:4px;";
+                    daysStyle="transform:rotate(-90deg);left:-4px;line-height:8px;bottom:4px;";
                     //daysoffset="<span>0.5</span><br><span style='font-size:6px;'>DAY</span>";
+                }
+                
+                let removeeventbtn = "";
+                if(arg.event.title=="readonly"){
+                    daysStyle+="color:white;"
+                }
+                else{
+                    removeeventbtn = `<i class="fas fa-times eventRemove" onclick="removeEvent('${arg.event.id}')"></i>`
                 }
                 let html = `
                 <div>
-                    <i class="fas fa-times eventRemove" onclick="removeEvent('${arg.event.id}')"></i>
+                    ${removeeventbtn}
                     <div style="${daysStyle}" class="eventLength">${daysoffset}</div>
                 </div>
                 `
@@ -372,6 +628,13 @@ document.addEventListener('readystatechange', function() {
         calendar.render();
         $("#mainform").show();
         $(".spinner").hide();
+        let queryyear = undefined;
+        <% if(locals.year) { %> 
+            queryyear = <%= locals.year %>; 
+        <% } %>
+        if(queryyear){
+            calendar.gotoDate(queryyear+"-09-01")
+        }
       });
       function removeEvent(id){
           calendar.getEventById(id).remove();
@@ -386,6 +649,51 @@ document.addEventListener('readystatechange', function() {
         if(diff<=1) return diff + " DAY";
         else return diff + " DAYS";
       }
+
+function updatequery(){
+    let activeyear = calendar.view.activeStart.getFullYear();
+    let yearquery = undefined;
+    if(new Date().getFullYear() != activeyear) {
+        yearquery = activeyear;
+    }
+    window.history.replaceState({}, null, UpdateQueryString("year", yearquery));
+}
+
+function UpdateQueryString(key, value, url) {
+    if (!url) url = window.location.href;
+    var re = new RegExp("([?&])" + key + "=.*?(&|#|$)(.*)", "gi"),
+        hash;
+
+    if (re.test(url)) {
+        if (typeof value !== 'undefined' && value !== null) {
+            return url.replace(re, '$1' + key + "=" + value + '$2$3');
+        } 
+        else {
+            hash = url.split('#');
+            url = hash[0].replace(re, '$1$3').replace(/(&|\?)$/, '');
+            if (typeof hash[1] !== 'undefined' && hash[1] !== null) {
+                url += '#' + hash[1];
+            }
+            return url;
+        }
+    }
+    else {
+        if (typeof value !== 'undefined' && value !== null) {
+            var separator = url.indexOf('?') !== -1 ? '&' : '?';
+            hash = url.split('#');
+            url = hash[0] + separator + key + '=' + value;
+            if (typeof hash[1] !== 'undefined' && hash[1] !== null) {
+                url += '#' + hash[1];
+            }
+            return url;
+        }
+        else {
+            return url;
+        }
+    }
+}
+
+
 
     </script>
   </main>

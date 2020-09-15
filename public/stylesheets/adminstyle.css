@@ -489,6 +489,10 @@ label{
   vertical-align: middle;
   margin-left:12px;
 }
+.togglecontainer.small{
+  font-size:11px;
+  margin-left:20px;
+}
 .togglecontainer > div{
   display: inline-block;
   vertical-align: middle;
@@ -511,6 +515,11 @@ label{
   border-radius: 20px;
   user-select: none;
   cursor: pointer;
+}
+.toggle.small + label{
+  padding:1px;
+  width:20px;
+  height:10px;
 }
 input.toggle + label:before,
 input.toggle + label:after {
@@ -535,14 +544,24 @@ input.toggle + label:after {
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
   transition: all 0.4s;
 }
+input.toggle.small + label:after {
+  width:11px;
+}
 input.toggle:hover + label:after {
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.4);
 }
 input.toggle:checked + label:before {
   background-color: rgba(8,128,144,1) ;
 }
+input.toggle:disabled + label:before{
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity:0.5;
+}
 input.toggle:checked + label:after {
   margin-left: 20px;
+}
+input.toggle.small:checked + label:after{
+  margin-left:10px;
 }
 .switch {
   position: relative;

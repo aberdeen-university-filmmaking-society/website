@@ -410,9 +410,33 @@ router.get('/tags/:tag', function(req, res, next) {
 });
 
 router.get('/equipment', function(req,res,next){
-  equipmentmanager.getEquipment(function(err,result){
-    if(err)  res.status(404).render('error',{ page:'error', error:{status:404, stack:""}, message:"No equipment available to book!" });
-    else res.render('equipment', {page:'equipment', equipment:result})
+  equipmentmanager.getEquipment(function(err1,result){
+    if(err1)  res.status(404).render('error',{ page:'error', error:{status:404, stack:""}, message:"No equipment available to book!" });
+    else{
+      equipmentmanager.getConfirmedBookings(req.query.year, function(err2,bookings){
+        if(err2)  res.status(404).render('error',{ page:'error', error:{status:500, stack:""}, message:"Error retrieving existing bookings" });
+        else{
+          if(req.query.ajax){
+            res.send(bookings);
+          }
+          else{
+            if(req.query.view){
+              equipmentmanager.getBookingBatch(req.query.view, function(err3, booking){
+                if(err3 || booking == undefined){
+                  res.status(404).render('error',{ page:'error', error:{status:404, stack:""}, message:"Booking request does not exist" });
+                }
+                else{
+                  res.render('equipment', {page:'equipment', equipment:result, bookings:bookings, selectedbooking:booking, year:req.query.year});
+                }
+              });
+            }
+            else{
+              res.render('equipment', {page:'equipment', equipment:result, bookings:bookings, year:req.query.year})
+            }
+          }
+        }
+      });
+    }
   });
 });
 
