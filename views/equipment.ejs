@@ -1,3 +1,5 @@
+<!--HumanDate.min.js-->
+<% !function(){var e={months:["January","February","March","April","May","June","July","August","September","October","November","December"],toUTC:function(e){var t=e?new Date(e):new Date;return t=new Date(t.getUTCFullYear(),t.getUTCMonth(),t.getUTCDate(),t.getUTCHours(),t.getUTCMinutes(),t.getUTCSeconds())},monthName:function(t){var n,r;return"number"==typeof t?n=t:(r=new Date(t),n=r.getMonth()+1),e.months[n-1]},relativeTime:function(e,t){function n(e,n){m&&(m=t.allUnits,h.push(e+" "+n+(e>1?"s":"")))}var r,o,u,a,s,f,i,m,h=[];return"number"==typeof e?r=e:(s=new Date(e),a=s.getTime(),f=(new Date).getTime(),r=(f-a)/1e3*-1),t||(t={}),t.futureSuffix||(t.futureSuffix="from now"),t.pastSuffix||(t.pastSuffix="ago"),t.presentText||(t.presentText="now"),t.returnObject||(t.returnObject=!1),i=0>r?!0:!1,r=Math.abs(r),o={seconds:Math.floor(r%31536e3%86400%3600%60),minutes:Math.floor(r%31536e3%86400%3600/60),hours:Math.floor(r%31536e3%86400/3600),days:Math.floor(r%31536e3/86400),years:Math.floor(r/31536e3),past:i},t.returnObject?o:0===r?t.presentText:(u=o.past?t.pastSuffix:t.futureSuffix,m=!0,o.years&&n(o.years,"year"),o.days&&n(o.days,"day"),o.hours&&n(o.hours,"hour"),o.minutes&&n(o.minutes,"minute"),o.seconds&&n(o.seconds,"second"),h.join(", ")+" "+u)},prettyPrint:function(e,t){var n,r,o,u,a,s,f,i,m,h;return e?"number"==typeof e&&(e=(new Date).setSeconds(e)):e=new Date,t||(t={}),t.showTime||(t.showTime=!1),n=new Date(e),o=n.getDate(),u=o>3&&21>o?o+"th":o%10===1?o+"st":o%10===2?o+"nd":o%10===3?o+"rd":o+"th",a=n.getFullYear(),s=this.monthName(n.getMonth()+1),r=s+" "+u+", "+a,i=n.getHours(),m=n.getMinutes(),h=i>=12?"pm":"am",i=i%12?i%12:12,m=10>m?"0"+m:m,f=i+":"+m+" "+h,t.showTime?r+" at "+f:r}};if("undefined"!=typeof module&&module.exports)module.exports=e;else{if("function"==typeof define&&define.amd)return define([],function(){return e});this.humandate=e}}(); %>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -260,13 +262,37 @@ section{
     max-width:1200px;
     position: relative;
 }
+.bookingresponseitem {
+    margin-top: 12px;
+    font-size: 12px;
+}
+
+.britemDate {
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.britemContent {
+    opacity: 0.6;
+    margin-top: 4px;
+}
     </style>
     <main>
     <section>
         <% if(locals.selectedbooking) { %>
             <h1 class="pagetitle" style="margin-bottom:6px">Request for <%= selectedbooking.projectname %></h1>
             <p style="color:white;font-size:1.2em;line-height:1.4em;opacity:0.6;"><%- selectedbooking.statustext %></p>
-
+            <%  if(selectedbooking.responses) { %>
+                <h2>Updates</h2>
+            <%  selectedbooking.responses = JSON.parse(selectedbooking.responses)
+                for (let i = 0; i < selectedbooking.responses.length; i++) {
+                    const resp = selectedbooking.responses[i]; %>
+                    <div class="bookingresponseitem">
+                        <div class="britemDate"><%= humandate.prettyPrint(new Date(resp.date), { showTime: true }) %></div>
+                        <div class="britemContent"><%- resp.content %></div>
+                    </div>
+            
+            <% } } %>
         <% } else { %>
         <h1 class="pagetitle" style="margin-bottom:6px">Book equipment</h1>
         <p style="color:white;">If you are a member of AUFS, you can book equipment the society owns. Please select all the equipment you wish to book (and when), and fill out the simple form below.</p>
@@ -365,7 +391,7 @@ let resources = undefined;
 
 let selectedbooking = undefined;
 <% if(locals.selectedbooking) { %>
-    selectedbooking = JSON.parse(`<%- JSON.stringify(locals.selectedbooking) %>`);
+    selectedbooking = <%- JSON.stringify(locals.selectedbooking) %>;
 <% } %>
 
 let bookings = [];
@@ -438,6 +464,7 @@ function reloadBookings(){
                 loadBookings();
                 calendar.removeAllEventSources();
                 calendar.addEventSource(bookings);
+                scrollToSelectedEvents();
                 $(".spinner").hide();
             },
             error: function (err) {
@@ -446,6 +473,18 @@ function reloadBookings(){
             }
         });
     }
+
+function scrollToSelectedEvents(){
+    if(hasselectedbookings){
+        let today = new Date(selectedbooking.start);
+        let startDate = new Date(today.getFullYear()+"-09-01");
+        if(today.getMonth()<8) startDate = new Date((today.getFullYear()-1)+"-09-01");
+
+        let nowIndicator = Math.floor((today - startDate) / (1000 * 60 * 60))-48+":00";
+       console.log("now indic="+nowIndicator);
+        calendar.scrollToTime(nowIndicator);
+    }
+}
 
 
 var calendar;
@@ -629,12 +668,35 @@ document.addEventListener('readystatechange', function() {
         $("#mainform").show();
         $(".spinner").hide();
         let queryyear = undefined;
+        let currentyear = new Date().getFullYear();
         <% if(locals.year) { %> 
-            queryyear = <%= locals.year %>; 
+            queryyear = <%= locals.year %>;
         <% } %>
         if(queryyear){
+            currentyear = queryyear;
             calendar.gotoDate(queryyear+"-09-01")
         }
+        if(hasselectedbookings){
+            let selectedbookingyearStart;
+            let selectedbookingyearEnd;
+            let startmonth = new Date(selectedbooking.start).getMonth();
+            selectedbooking.start = new Date(selectedbooking.start);
+            selectedbooking.end = new Date(selectedbooking.end);
+            if(startmonth<8){
+                selectedbookingyearStart = new Date((selectedbooking.start.getFullYear()-1)+"-09-01");
+                selectedbookingyearEnd = new Date((selectedbooking.start.getFullYear())+"-09-01");
+            } 
+            else{
+                selectedbookingyearStart = new Date((selectedbooking.start.getFullYear())+"-09-01");
+                selectedbookingyearEnd = new Date((selectedbooking.start.getFullYear()+1)+"-09-01");
+            }
+            if(selectedbookingyearStart<calendar.view.currentStart || selectedbooking.end>calendar.view.currentEnd){
+                window.history.replaceState({}, null, UpdateQueryString("year", selectedbookingyearStart.getFullYear()));
+                calendar.gotoDate(selectedbookingyearStart.getFullYear()+"-09-01");
+                reloadBookings();
+            };
+        }
+        scrollToSelectedEvents();
       });
       function removeEvent(id){
           calendar.getEventById(id).remove();
@@ -651,7 +713,7 @@ document.addEventListener('readystatechange', function() {
       }
 
 function updatequery(){
-    let activeyear = calendar.view.activeStart.getFullYear();
+    let activeyear = calendar.view.currentStart.getFullYear();
     let yearquery = undefined;
     if(new Date().getFullYear() != activeyear) {
         yearquery = activeyear;

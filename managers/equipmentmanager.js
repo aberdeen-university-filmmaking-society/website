@@ -311,9 +311,29 @@ equipmentmanager.saveBookingBatch = async function(id, body, resolve){
         }
         else{
             //send email
-            sqlcon.query(`SELECT * From EquipmentBookingBatch WHERE id=?`, [id], function(err2,results2){
-                emailStudentResponse(body.message, results2[0]);
-            });
+            if(body.sendemail){
+                sqlcon.query(`SELECT * From EquipmentBookingBatch WHERE id=?`, [id], function(err2,results2){
+                    let responses = [];
+                    if(results2[0].responses){
+                        try{
+                            responses = JSON.parse(results2[0].responses);
+                        }
+                        catch{
+
+                        }
+                    }
+                    responses.push({
+                        date:Date.now(),
+                        content:body.message
+                    });
+                    sqlcon.query(`UPDATE EquipmentBookingBatch SET responses=? WHERE id=?`, [JSON.stringify(responses), id], function(err3,results3){
+                        if(err3){
+                            console.error(err3);
+                        }
+                    })
+                    //emailStudentResponse(body.message, results2[0]);
+                });
+            }
         }
     });
 }

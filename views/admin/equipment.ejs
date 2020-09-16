@@ -332,6 +332,16 @@
     .preconfirmed{
         border: solid 2px !important;
     }
+
+    .responselistitem{
+        font-size:12px;
+    }
+    .responselistitem p{
+        margin-top:6px;
+    }
+    .responselistdate{
+        font-weight: 600;
+    }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.1.0/main.min.js"
     integrity="sha256-whipTPgW7h5J4dASYqBjimA0wUdvXKQuecTKB5wOkxk=" crossorigin="anonymous"></script>
@@ -448,12 +458,14 @@
         autocomplete="off"><br>
     <button class="bigbtn" onclick="saveEquipment()">SAVE</button>
 </div>
+<div id="modal-bookingresponselist" class="modal">
+    <div id="modal-bookingresponselist-header" class="sectionheader">Response history</div>
+    <div id="modal-bookingresponselist-list">
+
+    </div>
+</div>
 <div id="modal-bookingresponse" class="modal">
     <div id="modal-bookingresponse-header" class="sectionheader">Respond to booking request</div>
-    <p>Please explain why the booking may have been edited or denied, or any additional information about retrieving and
-        dropping off the equipment:</p>
-    <textarea id="bookingresponse-text" style="font-size:12px;"></textarea>
-    <p style="margin-top:0;font-size:10px">Message will be included in confirmation email to <span id="bookingresponse-email"></span></p>
     <div class="togglecontainer">
         <div>
             <input id="bookingresponse-archive" class="toggle" type="checkbox">
@@ -461,11 +473,34 @@
         </div>
         <label for="bookingresponse-archive">Archive Booking Request</label>
     </div>
+    <div class="togglecontainer">
+        <div>
+            <input onchange="sendemailtoggle()" id="bookingresponse-sendemail" class="toggle" type="checkbox" checked>
+            <label for="bookingresponse-sendemail"></label>
+        </div>
+        <label for="bookingresponse-sendemail">Notify student of response</label>
+    </div>
+    <div id="bookingresponse-messagecontainer">
+        <p style="
+        font-size: 12px;margin-bottom: 6px;">Please explain why the booking may have been edited or denied, or any additional information about retrieving and
+            dropping off the equipment:</p>
+        <textarea id="bookingresponse-text" style="font-size:12px;"></textarea>
+        <p style="margin-top:0;font-size:10px">Message will be included in confirmation email to <span id="bookingresponse-email"></span></p>
+    </div>
 
-    <button class="bigbtn" onclick="sendBookingResponse()">CONFIRM RESPONSE</button>
+
+    <button style="margin-top:12px;" class="bigbtn" onclick="sendBookingResponse()">CONFIRM RESPONSE</button>
 </div>
 
 <script>
+    function sendemailtoggle(){
+        if($("#bookingresponse-sendemail").prop("checked")){
+            $("#bookingresponse-messagecontainer").slideDown(300);
+        }
+        else{
+            $("#bookingresponse-messagecontainer").slideUp(300);
+        }
+    }
     function guidGenerator() {
         var S4 = function () {
             return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -705,7 +740,8 @@
             data: JSON.stringify({
                 archive: $("#bookingresponse-archive").is(":checked"),
                 bookings: respondingBookings,
-                message: $("#bookingresponse-text").val()
+                message: $("#bookingresponse-text").val(),
+                sendemail: $("#bookingresponse-sendemail").val()
             }),
             success: function (res) {
                 $(".postlist").removeClass("nopointer");
@@ -961,7 +997,7 @@
     let batchesById = new Map();
     let bookingbatches = {};
     <% if (locals.bookings) { %>
-        bookingbatches = JSON.parse(`<%- JSON.stringify(bookings) %>`) 
+        bookingbatches = <%- JSON.stringify(bookings) %>;
     <% } %>
 
     function reloadBookings(){
@@ -1072,23 +1108,47 @@
                         `
                 }
                 items += "</div>";
-                let archivelogo = "";
+                let logos = "";
                 let setarchive = 1;
                 let archivetext = "Archive request";
                 if(booking.archived) {
-                    archivelogo = `<i class="fas fa-archive"></i>&nbsp;`;
+                    logos += `<i title="Archived request" class="fas fa-archive"></i>&nbsp;`;
                     setarchive = 0;
                     archivetext = "Dearchive request";
                 }
+                if(booking.responses){
+                    try{
+                        booking.responses = JSON.parse(booking.responses);
+                    }
+                    catch{
+                        booking.responses = undefined;
+                    }
+                }
+                if(booking.responses && booking.responses.length > 0){
+                    logos += `<i title="Response sent" class="fas fa-reply"></i>&nbsp;`
+                }
                 let sendresponseText = "CONFIRM RESPONSE";
                 if(anyconfirmed) sendresponseText = "UPDATE RESPONSE";
+                let responseDetails = "";
+                console.log(booking.responses);
+                if(booking.responses && booking.responses.length >0){
+                    responseDetails = `
+                    <div class="studentDetails">
+                        <i class="fas fa-reply"></i>
+                        <div>
+                            <h4>${booking.responses.length} response(s) sent to student</h4>
+                            <h5>Last sent ${timeago.format(booking.responses[booking.responses.length-1].date)}</h5>
+                            <button class="smallbtn" onclick="responsehistory('${booking.id}')">View responses</button>
+                        </div>
+                    </div>`
+                }
                 $("#bookingbatches").append(`
                     <li class="postitem batchid-${booking.id}" onmouseenter="highlightBatch('${booking.id}')" onmouseleave="unhighlightBatch()" style="padding:10px 24px;">
                         <div>
                             <div class="bookingheader">
                                 
                             <h6 style="float:right;margin-top:4px;" class="timeagorender" datetime="${booking.creationtime}"></h6>
-                            <h4>${archivelogo + booking.projectname}</h4>
+                            <h4>${logos + booking.projectname}</h4>
                             <h5>${bookinglength} item(s) requested</h5>
                             </div>
                             <div class="bookingdetails" style="display:none;">
@@ -1107,6 +1167,7 @@
                                         <span>Email:&nbsp;</span><a href="mailto:${booking.studentemail}"><code class="studentDetails-email">${booking.studentemail}</code></a>
                                     </div>
                                 </div>
+                                ${responseDetails}
                                 <div class="eqBookings">
                                     ${items}
                                 </div>
@@ -1123,6 +1184,27 @@
         $("#bookingbatches .bookingheader").click(function (e) {
             $(this).siblings(".bookingdetails").slideToggle(100);
         });
+    }
+
+    function responsehistory(id){
+        let batch = batchesById.get(id);
+        $("#modal-bookingresponselist-list").empty();
+
+        if(batch){
+            batch.responses.reverse();
+            let listhtml = "";
+            for (let i = 0; i < batch.responses.length; i++) {
+                let response = batch.responses[i];
+                listhtml+=`
+                <div class="responselistitem">
+                    <div class="responselistdate">${timeago.format(response.date)}</div>
+                    <p>${response.content}</p>
+                </div>
+                `
+            }
+            $("#modal-bookingresponselist-list").append(listhtml);
+        }
+        $("#modal-bookingresponselist").modal();
     }
 
     function updatecalendareventState(id) {
