@@ -1,0 +1,194 @@
+.video{
+    background-color:black;
+    width:100%;
+    margin-top:12px;
+    margin-bottom:24px;
+}
+.video iframe{
+    width: calc(100vw - (100vw - 100%)); 
+    height: 56.25vw;
+    max-width: 812px;
+    max-height: 450px;
+    margin:auto;
+    display: block;
+}
+
+.film-credit{
+    opacity:1;
+}
+.filmcredit-section{
+    line-height: 20px;
+}
+.film-credited{
+    opacity:0.5;
+}
+.carousell{
+    margin-top:12px;
+}
+.fb-required{
+    color:#ffa400 !important;
+    margin-left: 4px;
+}
+.parsley-errors-list {
+    list-style: none;
+    padding-left:4px;
+    margin-top:4px;
+}
+.parsley-errors-list li {
+    color:#ffa400;
+    font-size:12px;
+}
+input[type=text], input[type=date], input[type=email], textarea, select, .other-val{
+    background-color:rgba(255,255,255,0.05);
+    border:solid 1px rgba(255,255,255,0.5);
+    border-radius: 0px;
+    color:white;
+    margin-top:4px;
+    box-shadow: 0px 0px 12px rgba(0,0,0,0.2);
+    transition:all 0.2s;
+}
+select option:not(:checked) { 
+    color:black;
+}
+input[type=text].parsley-error, input[type=email].parsley-error, input[type=date].parsley-error, textarea.parsley-error, select.parsley-error, .other-val.parsley-error{
+    border: solid 1px #ffa400;
+}
+input[type=text]:hover, input[type=email]:hover, input[type=date]:hover, textarea:hover, select:hover, .other-val:hover{
+    background-color:rgba(255,255,255,0.1);
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+}
+input[type=text]:focus, input[type=email]:focus, input[type=date]:focus, textarea:focus, select:focus, .other-val:focus{
+    background-color:rgba(255,255,255,0.1);
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.4) !important;
+}
+.radio-group label{
+    cursor: pointer;
+}
+input[type=checkbox]
+{
+     -webkit-appearance: none;
+     -moz-appearance: none;
+     appearance: none;
+     display: inline-block;
+     position: relative;
+     background-color: rgba(255,255,255,0.05);
+     color: #666;
+     top: 10px;
+     height: 24px;
+     width: 24px;
+     border:solid 1px rgba(255,255,255,0.5);
+     border-radius: 4px;
+     cursor: pointer;     
+     margin-right: 8px !important;
+     outline: none;
+     margin-top: 6px !important;
+     margin-bottom: 3px !important;
+     transition: all 0.2s;
+}
+input[type=checkbox]::before
+{
+     position: absolute;
+     border-radius: 12px;
+     color:white;
+     font-family: Arial, sans-serif;
+     content: url("/images/check.svg");
+     top:2px;
+     left:2px;
+     opacity:0;
+     transition:opacity 0.1s;
+}
+input[type=checkbox]:checked:before
+{
+     opacity:1;
+}
+input[type=checkbox]:hover
+{
+     background-color: rgba(255,255,255,0.1);
+     box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+}
+input[type=checkbox]:active
+{
+     background-color: rgba(255,255,255,0.25);
+     box-shadow: 0px 0px 20px rgba(0,0,0,0.4) !important;
+}
+input[type=checkbox]:checked
+{
+     background-color: rgba(255,255,255,0.25);
+}
+
+input[type=radio]
+{
+     -webkit-appearance: none;
+     -moz-appearance: none;
+     appearance: none;
+     display: inline-block;
+     position: relative;
+     background-color: rgba(255,255,255,0.05);
+     color: #666;
+     top: 10px;
+     height: 24px;
+     width: 24px;
+     border:solid 1px rgba(255,255,255,0.5);
+     border-radius: 50px;
+     cursor: pointer;     
+     margin-right: 8px !important;
+     outline: none;
+     margin-top: 6px !important;
+     margin-bottom: 3px !important;
+     transition: all 0.2s;
+}
+input[type=radio]:checked::before
+{
+     position: absolute;
+     height:12px;
+     width:12px;
+     border-radius: 12px;
+     background-color:white;
+     left: 5px;
+     top: 5px;
+     content: '';
+     transform: rotate(40deg);
+}
+input[type=radio]:hover
+{
+     background-color: rgba(255,255,255,0.1);
+     box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+}
+input[type=radio]:checked
+{
+     background-color: rgba(255,255,255,0.15);
+     box-shadow: 0px 0px 20px rgba(0,0,0,0.4) !important;
+}
+.disclaimer{
+    font-size: 12px;
+    margin-top:48px;
+}
+.auditionbtn{
+    margin-top:0px;
+    width:100%;
+    outline:none;
+    border:solid 2px rgba(255,255,255,0.8);
+    font-size:18px;
+    padding:24px;
+    font-family:Montserrat;
+    border-radius:6px;
+    color:white;
+    font-weight: 100;
+    background-color:rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0px 0px 24px rgba(0,0,0,0.2);
+}
+.auditionbtn:hover{
+    background-color:rgba(0,0,0,0.2);
+    border:solid 2px rgba(255,255,255,1);
+    box-shadow: 0px 0px 24px rgba(0,0,0,0.4);
+}
+.auditionbtn:active{
+    background-color:rgba(0,0,0,0.4);
+    border:solid 2px rgba(255,255,255,1);
+    box-shadow: 0px 0px 24px rgba(0,0,0,0.4);
+}
+.tooltip-element {
+    background: rgba(255,255,255,0.2) !important;
+}

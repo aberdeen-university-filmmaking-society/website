@@ -109,6 +109,9 @@ transform: translate(-50%, -50%);
     border-radius: 4px;
     width:auto;
   }
+  .smallbtn.inline{
+    display: inline-block;
+  }
    .clearfix:after {
     visibility: hidden;
     display: block;

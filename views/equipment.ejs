@@ -1,0 +1,785 @@
+<!--HumanDate.min.js-->
+<% !function(){var e={months:["January","February","March","April","May","June","July","August","September","October","November","December"],toUTC:function(e){var t=e?new Date(e):new Date;return t=new Date(t.getUTCFullYear(),t.getUTCMonth(),t.getUTCDate(),t.getUTCHours(),t.getUTCMinutes(),t.getUTCSeconds())},monthName:function(t){var n,r;return"number"==typeof t?n=t:(r=new Date(t),n=r.getMonth()+1),e.months[n-1]},relativeTime:function(e,t){function n(e,n){m&&(m=t.allUnits,h.push(e+" "+n+(e>1?"s":"")))}var r,o,u,a,s,f,i,m,h=[];return"number"==typeof e?r=e:(s=new Date(e),a=s.getTime(),f=(new Date).getTime(),r=(f-a)/1e3*-1),t||(t={}),t.futureSuffix||(t.futureSuffix="from now"),t.pastSuffix||(t.pastSuffix="ago"),t.presentText||(t.presentText="now"),t.returnObject||(t.returnObject=!1),i=0>r?!0:!1,r=Math.abs(r),o={seconds:Math.floor(r%31536e3%86400%3600%60),minutes:Math.floor(r%31536e3%86400%3600/60),hours:Math.floor(r%31536e3%86400/3600),days:Math.floor(r%31536e3/86400),years:Math.floor(r/31536e3),past:i},t.returnObject?o:0===r?t.presentText:(u=o.past?t.pastSuffix:t.futureSuffix,m=!0,o.years&&n(o.years,"year"),o.days&&n(o.days,"day"),o.hours&&n(o.hours,"hour"),o.minutes&&n(o.minutes,"minute"),o.seconds&&n(o.seconds,"second"),h.join(", ")+" "+u)},prettyPrint:function(e,t){var n,r,o,u,a,s,f,i,m,h;return e?"number"==typeof e&&(e=(new Date).setSeconds(e)):e=new Date,t||(t={}),t.showTime||(t.showTime=!1),n=new Date(e),o=n.getDate(),u=o>3&&21>o?o+"th":o%10===1?o+"st":o%10===2?o+"nd":o%10===3?o+"rd":o+"th",a=n.getFullYear(),s=this.monthName(n.getMonth()+1),r=s+" "+u+", "+a,i=n.getHours(),m=n.getMinutes(),h=i>=12?"pm":"am",i=i%12?i%12:12,m=10>m?"0"+m:m,f=i+":"+m+" "+h,t.showTime?r+" at "+f:r}};if("undefined"!=typeof module&&module.exports)module.exports=e;else{if("function"==typeof define&&define.amd)return define([],function(){return e});this.humandate=e}}(); %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <title>Equipment Booking | Aberdeen University Filmmaking Society - AUFS</title>
+      <meta property="og:title" content="Equipment Booking">
+      <meta name="description" content="Aberdeen University Filmmaking Society is a place for its members to learn filmmaking (by making films) while having fun and acquiring valuable skills.">
+      <meta property="og:description" content="Aberdeen University Filmmaking Society is a place for its members to learn filmmaking (by making films) while having fun and acquiring valuable skills.">
+      <meta property="og:url" content="<%= process.env.URL_START %>/about"/>
+      <meta property="og:type" content="article"/>
+      <meta property="og:image" content="<%= process.env.URL_START %>/images/cover.jpg">
+
+ <%- include partials/head.ejs %>
+
+ <link rel="stylesheet" href="/stylesheets/inputs.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <link rel="stylesheet" href="/stylesheets/formrender.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.1.0/main.min.css" integrity="sha256-YvJXHfpJcx3ZyGXve2IK1dMIlQGc0u4Cdtma5nlwVZ0=" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.1.0/main.min.js" integrity="sha256-whipTPgW7h5J4dASYqBjimA0wUdvXKQuecTKB5wOkxk=" crossorigin="anonymous"></script>
+    <script src="/javascripts/parsley.min.js"></script>
+</head>
+  <body>
+
+    <%- include partials/header.ejs %>
+    <style>
+
+#calendar{
+    /*box-shadow: 0px 0px 24px rgba(0,0,0,0.2);*/
+    padding-top: 12px;
+    padding-bottom: 4px;
+}
+
+table.fc-scrollgrid {
+    border:none !important;
+}
+.fc-datagrid-body td {border-color: rgba(255,255,255,0.1);}
+
+td.fc-timeline-slot.fc-day-past {
+    border: dashed 1px rgba(255,255,255,0.1);
+}
+.fc-timeline-slot.fc-timeline-slot-major.fc-slot-mon {
+    border-style: solid;
+    border-bottom-style: none;
+    border-color: white;
+}
+
+td.fc-timeline-slot {
+    border-color: rgba(255,255,255,0.2);
+}
+
+.fc-cell-shaded {
+    width: 0;
+}
+
+td.fc-resource-timeline-divider.fc-cell-shaded {width: 0px;}
+span.fc-datagrid-expander {
+    width: 90%;
+    position: absolute;
+}
+
+.fc-resource-group .fc-datagrid-cell-main {
+    margin-left: 22px;
+    user-select: none;
+}
+.fc-timeline-header-row:nth-child(3) .fc-day-past {
+    opacity: 0.5;
+}
+
+.fc-timeline-header-row:nth-child(4) .fc-day-past {
+    opacity: 0.5;
+}
+
+
+span.fc-datagrid-cell-main {
+    display: block;
+    white-space:normal;
+}
+
+.fc-datagrid-expander.fc-datagrid-expander-placeholder{
+    display:none;
+}
+.fc-icon{
+    display: none;
+}
+.fc-timeline-events{
+    height: 100% !important;
+    box-sizing: border-box !important;
+}
+.fc-timeline-event-harness{
+    height:100%;
+}
+.fc-timeline-event{
+    height:100%;
+}
+.equipment-name {
+    font-weight: bold;
+}
+img.equipment-image {
+    float:left;
+    margin-right: 6px;
+    height:32px;
+    width:32px;
+    object-fit:contain;
+}
+
+.equipment-description {
+    font-size: 10px;
+    opacity: 0.75;
+}
+
+.fc-scroller::-webkit-scrollbar {
+  height: 12px;
+
+}
+.fc-scroller::-webkit-scrollbar-track {
+  background: rgba(208,208,208,.15);
+  border-radius:6px;
+}
+.fc-scroller::-webkit-scrollbar-button
+{
+    width:24px;
+    background: url('images/scrollright.svg'), rgba(255, 255, 255, 0);
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius:5px;
+}
+.fc-scroller::-webkit-scrollbar-button:hover {
+    background: url('images/scrollright.svg'), rgba(255, 255, 255, 0.1);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.fc-scroller::-webkit-scrollbar-button:active {
+    background: url('images/scrollright.svg'), rgba(255, 255, 255, 0.5);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.fc-scroller::-webkit-scrollbar-button:decrement
+{
+    width:24px;
+    background: url('images/scrollleft.svg'), rgba(255, 255, 255, 0);
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius:6px;
+}
+.fc-scroller::-webkit-scrollbar-button:decrement:hover {
+    background: url('images/scrollleft.svg'), rgba(255, 255, 255, 0.1);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.fc-scroller::-webkit-scrollbar-button:decrement:active {
+    background: url('images/scrollleft.svg'), rgba(255, 255, 255, 0.5);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Handle */
+.fc-scroller::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.75);
+  border-radius:6px;
+}
+
+/* Handle on hover */
+.fc-scroller::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.fc .fc-scrollgrid>tbody table, .fc .fc-scrollgrid>tfoot table{
+  border-bottom-style:inherit;
+}
+.fc .fc-scrollgrid-section, .fc .fc-scrollgrid-section>td{
+    border-bottom:none;
+    border-right:none;
+}
+
+.fc .fc-timeline-body{
+    margin-bottom:4px;
+}
+.fc-datagrid-body {
+    margin-bottom: 4px;
+}
+
+.fc-event.fc-event-draggable{
+    cursor: move;
+}
+.fc-event-main{
+    width:100%;
+    height:100%;
+}
+.eventRemove{
+    position:absolute;
+    right:4px;
+    top:4px;
+    color:#c10000;
+    cursor:pointer;
+    font-size:14px;
+}
+.eventLength{
+    color: #094c82;
+    position: absolute;
+    bottom: 0;
+    left: 4px;
+    font-weight: 800;
+    font-size: 9px;
+}
+#mainform{
+    display: none;
+}
+.spinner{
+    position: absolute;
+    bottom:-66px;
+}
+.spinner::after{
+    content: "Loading...";
+    font-style: italic;
+    position: absolute;
+    margin-left: 42px;
+    margin-top: 7px;
+    font-size: 16px;
+}
+.fc-header-toolbar .fc-button{
+    background-color:transparent !important;
+    border:none !important;
+    opacity:0.5;
+    transition: opacity 0.2s;
+    outline:none !important;
+    height:22px;
+    width:32px;
+    background-image: url('images/chevron.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.fc-button:hover{
+    opacity:0.75;
+}
+.fc-button:active{
+    opacity:1;
+}
+.fc-prevYearCustom-button{
+    transform:rotate(180deg)
+}
+.fc-header-toolbar{
+    justify-content:flex-end !important;
+}
+
+.caption .box{
+    width:24px;
+    height:12px;
+    display:inline-block;
+    margin-right:12px;
+    border: solid 1px rgba(255,255,255,0.25);
+    margin-bottom:-2px;
+}
+.caption{
+    text-align:left;
+    font-weight: 400;
+    color:rgba(255,255,255,0.75);
+    font-size:10px;
+    line-height: 16px;
+}
+section{
+    max-width:1200px;
+    position: relative;
+}
+.bookingresponseitem {
+    margin-top: 12px;
+    font-size: 12px;
+}
+
+.britemDate {
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.britemContent {
+    opacity: 0.6;
+    margin-top: 4px;
+}
+.thankyousection{
+    background-color: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    padding: 12px 24px;
+    margin-top: 24px;
+}
+    </style>
+    <main>
+    <section>
+        <% if(locals.thankyou != undefined) { %>
+            <div class="thankyousection">
+                <h1>Thank you for booking equipment from AUFS!</h1>
+                <p>We've received your booking request - the society's equipment manager will be in touch soon to confirm everything, or let you know of any changes if necessary. 
+                <br><b style="color:white;font-weight:500;">Any updates to your booking request will also appear on this page.</b><br></p>
+            </div>
+           <% } %>
+        <% if(locals.selectedbooking) { %>
+            <h1 class="pagetitle" style="margin-bottom:6px">Request for <%= selectedbooking.projectname %></h1>
+            <p style="color:white;font-size:1.2em;line-height:1.4em;opacity:0.6;"><%- selectedbooking.statustext %></p>
+            <%  if(selectedbooking.responses) { %>
+                <h2>Updates</h2>
+            <%  selectedbooking.responses = JSON.parse(selectedbooking.responses)
+            selectedbooking.responses.reverse();
+                for (let i = 0; i < selectedbooking.responses.length; i++) {
+                    const resp = selectedbooking.responses[i]; %>
+                    <div class="bookingresponseitem">
+                        <div class="britemDate"><%= humandate.prettyPrint(new Date(resp.date), { showTime: true }) %></div>
+                        <div class="britemContent"><%- resp.content %></div>
+                    </div>
+            
+            <% } } %>
+        <% } else { %>
+        <h1 class="pagetitle" style="margin-bottom:6px">Book equipment</h1>
+        <p style="color:white;">If you are a member of AUFS, you can book equipment the society owns. Please select all the equipment you wish to book (and when), and fill out the simple form below.</p>
+        <p><i>Click and drag to select a time period on each row - tap and hold if using a touchscreen</i></p>
+        <% } %>
+            <div class="spinner"></div>
+    </section>
+    <section style="margin:24px auto;">
+        <div id="calendar"></div>
+    </section>
+    <section style="max-width:512px;margin-top:48px;">
+    <% console.log("show form=" + (!locals.selectedbooking)) %>
+    <% if(!locals.selectedbooking) { %>
+        <form id="mainform" data-parsley-validate="" method="POST" action="/equipment/book">
+            <div>
+                <div class="rendered-form">
+                    <div class="formbuilder-text form-group field-bookingProjectName"><label for="bookingProjectName"
+                            class="formbuilder-text-label">Project Name<span class="formbuilder-required">*</span><span
+                                class="tooltip-element"
+                                tooltip="The name of the film/project for which the equipment will be used">?</span></label><input
+                            type="text" class="form-control" name="bookingProjectName" id="bookingProjectName"
+                            title="The name of the film/project for which the equipment will be used"
+                            required="required" aria-required="true"></div>
+                    <div class="formbuilder-textarea form-group field-bookingProjectDescription"><label
+                            for="bookingProjectDescription" class="formbuilder-textarea-label">Project
+                            Description</label><textarea type="textarea" class="form-control"
+                            name="bookingProjectDescription" id="bookingProjectDescription"></textarea></div>
+                    <div class="formbuilder-text form-group field-bookingStudentName"><label for="bookingStudentName"
+                            class="formbuilder-text-label">Student name<span
+                                class="formbuilder-required">*</span></label><input type="text" class="form-control"
+                            name="bookingStudentName" id="bookingStudentName" required="required" aria-required="true">
+                    </div>
+                    <div class="formbuilder-text form-group field-bookingStudentId"><label for="bookingStudentId"
+                            class="formbuilder-text-label">Student ID<span class="formbuilder-required">*</span><span
+                                class="tooltip-element"
+                                tooltip="We ask this in order to verify that you have bought an AUFS membership">?</span></label><input
+                            type="text" class="form-control" name="bookingStudentId" id="bookingStudentId"
+                            title="We ask this in order to verify that you have bought an AUFS membership"
+                            required="required" aria-required="true"></div>
+                    <div class="formbuilder-text form-group field-bookingStudentEmail"><label for="bookingStudentEmail"
+                            class="formbuilder-text-label">Student email<span class="formbuilder-required">*</span><span
+                                class="tooltip-element"
+                                tooltip="This is required so that we can let you know if your booking has been accepted or denied">?</span></label><input
+                            type="email" class="form-control" name="bookingStudentEmail" id="bookingStudentEmail"
+                            title="This is required so that we can let you know if your booking has been accepted or denied"
+                            required="required" aria-required="true"></div>
+                    <input id="bookingsarray" name="bookingsarray" type="hidden">
+                </div>
+            </div>
+            <p class="disclaimer">By booking equipement through this website, you accept that AUFS will keep this data until the booking period is over, in order to verify your status as a society member and organize equipment handovers with other members.</p>
+            <input type="submit" class="auditionbtn" value="BOOK">
+        </form>
+    <% } %>
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="/javascripts/parsley.min.js"></script>
+    
+    <script>
+
+<% if(locals.thankyou != undefined){ %>
+
+window.history.replaceState({}, null, window.location.href.substring(0, window.location.href.indexOf("&t")));
+
+<% } %>
+
+function guidGenerator() {
+    var S4 = function() {
+       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
+//set up form
+  $('#mainform').submit('form:submit', function() {
+    let events = calendar.getEvents();
+        let bookingsArray = [];
+        for (let i = 0; i < events.length; i++) {
+            if(events[i].title != "useradded") continue;
+            let resid=events[i].getResources()[0].id;
+            if(resid){
+                bookingsArray.push({
+                    start:events[i].startStr,
+                    end:events[i].endStr,
+                    equipmentid:resid
+                })
+            }
+        }
+        $("#bookingsarray").val(JSON.stringify(bookingsArray));
+        if(bookingsArray.length>0){
+            return true;
+        }
+        else{
+            alert("You must select at least one date for at least one item of equipment! You can simply select the days you wish to book on the row of the equipement item you want.")
+            return false;
+        }
+    });
+
+let resources = undefined;
+<% if(locals.equipment) { %>
+    resources = JSON.parse(`<%- JSON.stringify(locals.equipment) %>`);
+<% } %>
+
+let selectedbooking = undefined;
+<% if(locals.selectedbooking) { %>
+    selectedbooking = <%- JSON.stringify(locals.selectedbooking) %>;
+<% } %>
+
+let bookings = [];
+let initialbookings = undefined;
+<% if(locals.bookings) { %>
+    initialbookings = JSON.parse(`<%- JSON.stringify(locals.bookings) %>`);
+<% } %>
+
+let hasselectedbookings = (selectedbooking && selectedbooking.bookings && selectedbooking.bookings.length);
+let ignoredbookings = 0;
+let confirmedbookings = 0;
+let deniedbookings = 0;
+let editedbookings = 0;
+
+function loadBookings(){
+    if(initialbookings){
+        for (let i = 0; i < initialbookings.length; i++) {
+            let b = initialbookings[i];
+            let addtobookings = true;
+            b.display = "background";
+            b.resourceId = initialbookings[i].equipmentid;
+            if(hasselectedbookings){
+                for (let j = 0; j < selectedbooking.bookings.length; j++) {
+                    if(selectedbooking.bookings[j].id == b.id){
+                        addtobookings = false;
+                        break;
+                    }
+                }
+            }
+            if(addtobookings)
+                bookings.push(b);
+        }
+    }
+    if(hasselectedbookings){
+        for (let j = 0; j < selectedbooking.bookings.length; j++) {
+            let b = selectedbooking.bookings[j]
+            b.title = "readonly"
+            b.display = "block"
+            b.resourceId = b.equipmentid;
+            if(b.confirmstate==0){
+                b.color = 'rgba(255, 255, 255, 0.25)'
+                ignoredbookings++;
+            }
+            else if(b.confirmstate==1){
+                b.color = 'rgb(25 149 120)'
+                confirmedbookings++;
+            }
+            if(b.confirmstate==2){
+                b.color = 'rgb(124 55 74)'
+                deniedbookings++;
+            }
+            if(b.confirmstate==3){
+                b.color = 'rgb(149 139 25)'
+                editedbookings++;
+            }
+            bookings.push(b);
+        }
+    }
+}
+loadBookings();
+
+function reloadBookings(){
+        $(".spinner").show();
+        $.ajax({
+            type: "GET",
+            url: UpdateQueryString("ajax",true),
+            success: function (res) {
+                initialbookings = res;
+                bookings = []
+                loadBookings();
+                calendar.removeAllEventSources();
+                calendar.addEventSource(bookings);
+                scrollToSelectedEvents();
+                $(".spinner").hide();
+            },
+            error: function (err) {
+                alert("Failed to reload bookings! " + err);
+                $(".spinner").hide();
+            }
+        });
+    }
+
+function scrollToSelectedEvents(){
+    if(hasselectedbookings){
+        let today = new Date(selectedbooking.start);
+        let startDate = new Date(today.getFullYear()+"-09-01");
+        if(today.getMonth()<8) startDate = new Date((today.getFullYear()-1)+"-09-01");
+
+        let nowIndicator = Math.floor((today - startDate) / (1000 * 60 * 60))-48+":00";
+       console.log("now indic="+nowIndicator);
+        calendar.scrollToTime(nowIndicator);
+    }
+}
+
+
+var calendar;
+document.addEventListener('readystatechange', function() {
+    if(document.readyState!="complete") return;
+    let today = new Date();
+    let startDate = new Date(today.getFullYear()+"-09-01");
+    if(today.getMonth()<8) startDate = new Date((today.getFullYear()-1)+"-09-01");
+
+    let nowIndicator = Math.floor((today - startDate) / (1000 * 60 * 60))-48+":00";
+        var calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'resourceTimelineAcademicYear',
+            headerToolbar:false,
+            slotMinWidth:22,
+            schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+            resourceGroupField: 'category',
+            selectable: true,
+            selectMirror:true,
+            nowIndicator:true,
+            now: new Date(),
+            scrollTime: nowIndicator,
+            contentHeight: "auto",
+            resourcesInitiallyExpanded:true,
+            eventBackgroundColor:"white",
+            selectOverlap:false,
+            events:bookings,
+            customButtons:{
+                prevYearCustom:{
+                    click:function(){
+                        calendar.prevYear();
+                        updatequery();
+                        reloadBookings();
+                    }
+                },
+                nextYearCustom:{
+                    click:function(){
+                        calendar.nextYear();
+                        updatequery();
+                        reloadBookings();
+                    }
+                }
+            },
+            headerToolbar:{
+              start: 'prevYearCustom',
+              center: 'title',
+              end: 'nextYearCustom'
+            },
+            buttonIcons:{
+                prevYearCustom: 'left-double-arrow',
+                nextYearCustom: 'right-double-arrow'
+            },
+            select: function(e){
+                if(selectedbooking) return; //if we're currently viewing a booking, don't allow creating new ones
+                let events = calendar.getEvents();
+                let merged = false;
+                let previousmerge;
+                for (let i = 0; i < events.length; i++) {
+                    if(events[i].display=="background") continue;
+                    let res=events[i].getResources();
+                    if(res[0].id == e.resource.id){
+                        if(events[i].endStr == e.startStr){
+                            if(merged) { merged = false; return;}
+                            events[i].setEnd(e.end);
+                            previousmerge = events[i];
+                            merged = true;
+                        }
+                        if(events[i].startStr == e.endStr){
+                            if(merged) { merged = false; return;}
+                            events[i].setStart(e.start);
+                            previousmerge = events[i];
+                            merged = true;
+                        }
+                    }
+                }
+                if(!merged){
+                    calendar.addEvent({
+                        id:guidGenerator(),
+                        start:e.start,
+                        end:e.end,
+                        editable:true,
+                        resourceId:e.resource.id,
+                        overlap:false,
+                        resourceEditable:true,
+                        title:"useradded"
+                    })
+                }
+            },
+            slotDuration:"12:00:00",
+            slotLabelInterval:"24:00:00",
+            slotLabelFormat: [
+                {year:"numeric"},
+                {month:"long"},
+                {weekday:"short"},
+                {day:"2-digit"}
+            ],
+            views:{
+                resourceTimelineAcademicYear:{
+                    type: 'resourceTimeline',
+                    visibleRange: function(currentDate){
+                        let today = new Date(currentDate.valueOf());
+                        let year = today.getFullYear();
+                        if(today.getMonth()>7){
+                            //after the 1st of September
+                            return{
+                                start: new Date(year+"-09-01"),
+                                end: new Date((year+1)+"-08-31")
+                            }
+                        }
+                        else{
+                            //before the 1st of September
+                            return{
+                                start: new Date((year-1)+"-09-01"),
+                                end: new Date(year+"-08-31")
+                            }
+                        }
+                    }
+                }
+            },
+            resourceOrder: 'position',
+            resources: resources,
+            resourceLabelContent: function(arg) {
+                let props = arg.resource.extendedProps;
+                let html = `
+                  <div data-id="${props.id}">
+                    <img class="equipment-image" src="${props.image}"></img>
+                    <div class="equipment-name">${props.name}</div>
+                    <div class="equipment-description">${props.description}</div>
+                  </div>`
+                innerText = arg.resource.extendedProps.name;
+                return {html:html}
+            },
+            resourceAreaHeaderContent: function(arg){
+                if(hasselectedbookings){
+                    let rows = "";
+
+                        rows+="<div class='caption'><div class='box' style='background-color:rgba(255,255,255,0.25)'></div>Unanswered</div>";
+
+                        rows+="<div class='caption'><div class='box' style='background-color:rgba(25 149 20)'></div>Accepted</div>";
+    
+                        rows+="<div class='caption'><div class='box' style='background-color:rgba(124 55 74)'></div>Denied</div>";
+
+                        rows+="<div class='caption'><div class='box' style='background-color:rgba(149 139 25)'></div>Modified</div>";
+                    
+                    return{html:rows}
+                }
+                else{
+                    return "";
+                }
+            },
+            eventContent:function(arg){
+                if(arg.event.display == "background") return;
+                let daysStyle = "";
+                let daysoffset = getDaysOffset(arg.event);
+                if(daysoffset == "0.5 DAY") {
+                    daysoffset="HALF DAY";
+                    daysStyle="transform:rotate(-90deg);left:-4px;line-height:8px;bottom:4px;";
+                    //daysoffset="<span>0.5</span><br><span style='font-size:6px;'>DAY</span>";
+                }
+                
+                let removeeventbtn = "";
+                if(arg.event.title=="readonly"){
+                    daysStyle+="color:white;"
+                }
+                else{
+                    removeeventbtn = `<i class="fas fa-times eventRemove" onclick="removeEvent('${arg.event.id}')"></i>`
+                }
+                let html = `
+                <div>
+                    ${removeeventbtn}
+                    <div style="${daysStyle}" class="eventLength">${daysoffset}</div>
+                </div>
+                `
+                return {html:html}
+            }
+        });
+        calendar.render();
+        $("#mainform").show();
+        $(".spinner").hide();
+        let queryyear = undefined;
+        let currentyear = new Date().getFullYear();
+        <% if(locals.year) { %> 
+            queryyear = <%= locals.year %>;
+        <% } %>
+        if(queryyear){
+            currentyear = queryyear;
+            calendar.gotoDate(queryyear+"-09-01")
+        }
+        if(hasselectedbookings){
+            let selectedbookingyearStart;
+            let selectedbookingyearEnd;
+            let startmonth = new Date(selectedbooking.start).getMonth();
+            selectedbooking.start = new Date(selectedbooking.start);
+            selectedbooking.end = new Date(selectedbooking.end);
+            if(startmonth<8){
+                selectedbookingyearStart = new Date((selectedbooking.start.getFullYear()-1)+"-09-01");
+                selectedbookingyearEnd = new Date((selectedbooking.start.getFullYear())+"-09-01");
+            } 
+            else{
+                selectedbookingyearStart = new Date((selectedbooking.start.getFullYear())+"-09-01");
+                selectedbookingyearEnd = new Date((selectedbooking.start.getFullYear()+1)+"-09-01");
+            }
+            if(selectedbookingyearStart<calendar.view.currentStart || selectedbooking.end>calendar.view.currentEnd){
+                window.history.replaceState({}, null, UpdateQueryString("year", selectedbookingyearStart.getFullYear()));
+                calendar.gotoDate(selectedbookingyearStart.getFullYear()+"-09-01");
+                reloadBookings();
+            };
+        }
+        scrollToSelectedEvents();
+      });
+      function removeEvent(id){
+          calendar.getEventById(id).remove();
+      }
+      function getDaysOffset(event){
+        let diff = (event.end - event.start)/(1000 * 60 * 60 * 24)
+        if(diff<=1) return diff + " DAY";
+        else return diff + " DAYS";
+      }
+      function getNightsOffset(event){
+        let diff = (event.end - event.start)/(1000 * 60 * 60 * 24)
+        if(diff<=1) return diff + " DAY";
+        else return diff + " DAYS";
+      }
+
+function updatequery(){
+    let activeyear = calendar.view.currentStart.getFullYear();
+    let yearquery = undefined;
+    if(new Date().getFullYear() != activeyear) {
+        yearquery = activeyear;
+    }
+    window.history.replaceState({}, null, UpdateQueryString("year", yearquery));
+}
+
+function UpdateQueryString(key, value, url) {
+    if (!url) url = window.location.href;
+    var re = new RegExp("([?&])" + key + "=.*?(&|#|$)(.*)", "gi"),
+        hash;
+
+    if (re.test(url)) {
+        if (typeof value !== 'undefined' && value !== null) {
+            return url.replace(re, '$1' + key + "=" + value + '$2$3');
+        } 
+        else {
+            hash = url.split('#');
+            url = hash[0].replace(re, '$1$3').replace(/(&|\?)$/, '');
+            if (typeof hash[1] !== 'undefined' && hash[1] !== null) {
+                url += '#' + hash[1];
+            }
+            return url;
+        }
+    }
+    else {
+        if (typeof value !== 'undefined' && value !== null) {
+            var separator = url.indexOf('?') !== -1 ? '&' : '?';
+            hash = url.split('#');
+            url = hash[0] + separator + key + '=' + value;
+            if (typeof hash[1] !== 'undefined' && hash[1] !== null) {
+                url += '#' + hash[1];
+            }
+            return url;
+        }
+        else {
+            return url;
+        }
+    }
+}
+
+
+
+    </script>
+  </main>
+    <%- include partials/footer.ejs %>
+  </body>
+  <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+  integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+</html>

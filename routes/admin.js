@@ -8,6 +8,7 @@ var tagmanager = require('../managers/tagmanager');
 var breakingnews = require('../managers/breakingnews');
 var productionsmanager = require('../managers/productionsmanager');
 var auditionmanager = require('../managers/auditionmanager');
+var equipmentmanager = require('../managers/equipmentmanager');
 
 var committee = require('../managers/committee');
 var settings = require('../managers/settings');
@@ -405,6 +406,90 @@ router.get('/auditions/responses/:id',function(req,res){
       res.render('admin/auditionresponses',{html:table});
     }, false);
   }
+});
+
+router.get('/equipment', function(req,res,next){
+  if(req.query.show==undefined){
+    res.redirect('/admin/equipment?show=active,archived')
+  }
+  else{
+    equipmentmanager.getEquipment(function(err1, equipmentlist){
+      if(err1){
+        res.status(500).render('error', {page:'error', error:{status:500}, message:"Unable to load equipment list!", moreinfo:err1.message })
+      }
+      else{
+        let toshow = [];
+        if(req.query.show) toshow = req.query.show.split(',')
+        equipmentmanager.getBookings(toshow.includes("active"),toshow.includes("archived"),toshow.includes("alltime"),req.query.year, function(err2,bookinglist){
+          if(err2){
+            res.status(500).render('error', {page:'error', error:{status:500}, message:"Unable to load equipment bookings!", moreinfo:err2.message })
+          }
+          else{
+            if(req.query.ajax){
+              res.send(bookinglist);
+            }
+            else{
+              res.render('admin/equipment', { page:"equipment", equipment: equipmentlist, bookings: bookinglist, filtertoshow: toshow, year: req.query.year })
+            }
+          }
+        });
+      }
+    });
+  }
+});
+
+
+router.post('/equipment/items/create',function(req, res) {
+  equipmentmanager.createEquipment(req.body, function(err, result){
+    if(err) res.status(500).send({errors:err});
+    else res.status(200).send(result);
+  })
+});
+router.post('/equipment/items/remove/:id',function(req, res) {
+  equipmentmanager.removeEquipment(req.params.id, function(success){
+    if(success) res.sendStatus(200);
+    else res.sendStatus(500);
+  });
+});
+router.post('/equipment/items/edit/:id',function(req, res) {
+  equipmentmanager.editEquipment(req.params.id, req.body, function(success){
+    if(!res.headersSent){
+      if(success) res.sendStatus(200);
+      else res.sendStatus(500);
+    }
+
+  });
+});
+router.post('/equipment/items/reposition', function(req,res){
+  equipmentmanager.repositionEquipment(req.body, function(success){
+    if(success) res.sendStatus(200);
+    else res.sendStatus(200);
+  });
+});
+router.get('/equipment/items/:id',function(req, res) {
+  equipmentmanager.getEquipmentById(req.params.id, function(err,item){
+    if(err) res.status(500).send(err);
+    else res.status(200).send(item[0]);
+  });
+});
+
+router.post('/equipment/bookings/remove/:id',function(req, res) {
+  equipmentmanager.removeBookingBatch(req.params.id, function(err,item){
+    if(err) res.status(500).send(err);
+    else res.sendStatus(200);
+  })
+});
+router.post('/equipment/bookings/archive/:id/:archivestate',function(req, res) {
+  equipmentmanager.archiveBookingBatch(req.params.id, req.params.archivestate, function(err,item){
+    if(err) res.status(500).send(err);
+    else res.sendStatus(200);
+  })
+});
+router.post('/equipment/bookings/:id',function(req, res) {
+  equipmentmanager.saveBookingBatch(req.params.id, req.body, function(err,item){
+    if(err) res.status(500).send(err);
+    else res.sendStatus(200);
+  });
 });
 
 

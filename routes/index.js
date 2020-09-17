@@ -10,6 +10,7 @@ var tagmanager = require('../managers/tagmanager');
 var moment = require('moment');
 var committee = require('../managers/committee');
 var settings = require('../managers/settings');
+const equipmentmanager = require('../managers/equipmentmanager');
 var QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtmlConverter;
 
 function setdetails(post, timestamp, includeauthor){
@@ -406,6 +407,54 @@ router.get('/tags/:tag', function(req, res, next) {
   });
 });
   
+});
+
+router.get('/equipment', function(req,res,next){
+  equipmentmanager.getEquipment(function(err1,result){
+    if(err1)  res.status(404).render('error',{ page:'error', error:{status:404, stack:""}, message:"No equipment available to book!" });
+    else{
+      equipmentmanager.getConfirmedBookings(req.query.year, function(err2,bookings){
+        if(err2)  res.status(404).render('error',{ page:'error', error:{status:500, stack:""}, message:"Error retrieving existing bookings" });
+        else{
+          if(req.query.ajax){
+            res.send(bookings);
+          }
+          else{
+            if(req.query.view){
+              equipmentmanager.getBookingBatch(req.query.view, function(err3, booking){
+                if(err3 || booking == undefined){
+                  res.status(404).render('error',{ page:'error', error:{status:404, stack:""}, message:"Booking request does not exist" });
+                }
+                else{
+                  res.render('equipment', {page:'equipment', equipment:result, bookings:bookings, selectedbooking:booking, year:req.query.year, thankyou:req.query.t});
+                }
+              });
+            }
+            else{
+              res.render('equipment', {page:'equipment', equipment:result, bookings:bookings, year:req.query.year})
+            }
+          }
+        }
+      });
+    }
+  });
+});
+
+router.post('/equipment/book', function(req,res,next){
+  equipmentmanager.book(req.body, false, function(error, result){
+      if(error){
+        if(error.status && error.message){
+          if(error.stack==undefined) error.stack="";
+          res.status(error.status).render('error',{ page:'error', error:{status:error.status, stack:error.stack}, message:error.message});
+        }
+        else{
+          res.status(500).render('error',{ page:'error', error:{status:500, stack:error}, message:"Unknown error when saving your equipment request - please let us know by sending us an email or DM on social media"});
+        }
+      }
+      else{
+        res.redirect('/equipment?view='+result+'&t');
+      }
+  });
 });
 
 
