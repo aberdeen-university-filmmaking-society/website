@@ -276,15 +276,30 @@ section{
     opacity: 0.6;
     margin-top: 4px;
 }
+.thankyousection{
+    background-color: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    padding: 12px 24px;
+    margin-top: 24px;
+}
     </style>
     <main>
     <section>
+        <% if(locals.thankyou != undefined) { %>
+            <div class="thankyousection">
+                <h1>Thank you for booking equipment from AUFS!</h1>
+                <p>We've received your booking request - the society's equipment manager will be in touch soon to confirm everything, or let you know of any changes if necessary. 
+                <br><b style="color:white;font-weight:500;">Any updates to your booking request will also appear on this page.</b><br></p>
+            </div>
+           <% } %>
         <% if(locals.selectedbooking) { %>
             <h1 class="pagetitle" style="margin-bottom:6px">Request for <%= selectedbooking.projectname %></h1>
             <p style="color:white;font-size:1.2em;line-height:1.4em;opacity:0.6;"><%- selectedbooking.statustext %></p>
             <%  if(selectedbooking.responses) { %>
                 <h2>Updates</h2>
             <%  selectedbooking.responses = JSON.parse(selectedbooking.responses)
+            selectedbooking.responses.reverse();
                 for (let i = 0; i < selectedbooking.responses.length; i++) {
                     const resp = selectedbooking.responses[i]; %>
                     <div class="bookingresponseitem">
@@ -351,6 +366,12 @@ section{
     <script src="/javascripts/parsley.min.js"></script>
     
     <script>
+
+<% if(locals.thankyou != undefined){ %>
+
+window.history.replaceState({}, null, window.location.href.substring(0, window.location.href.indexOf("&t")));
+
+<% } %>
 
 function guidGenerator() {
     var S4 = function() {
@@ -620,18 +641,15 @@ document.addEventListener('readystatechange', function() {
             resourceAreaHeaderContent: function(arg){
                 if(hasselectedbookings){
                     let rows = "";
-                    if(ignoredbookings){
-                        rows+="<div class='caption'><div class='box' style='background-color:rgba(255,255,255,0.25)'></div>Unanswered request</div>";
-                    }
-                    if(confirmedbookings){
-                        rows+="<div class='caption'><div class='box' style='background-color:rgba(25 149 20)'></div>Accepted request</div>";
-                    }
-                    if(deniedbookings){
-                        rows+="<div class='caption'><div class='box' style='background-color:rgba(124 55 74)'></div>Denied request</div>";
-                    }
-                    if(editedbookings){
-                        rows+="<div class='caption'><div class='box' style='background-color:rgba(149 139 25)'></div>Modified request</div>";
-                    }
+
+                        rows+="<div class='caption'><div class='box' style='background-color:rgba(255,255,255,0.25)'></div>Unanswered</div>";
+
+                        rows+="<div class='caption'><div class='box' style='background-color:rgba(25 149 20)'></div>Accepted</div>";
+    
+                        rows+="<div class='caption'><div class='box' style='background-color:rgba(124 55 74)'></div>Denied</div>";
+
+                        rows+="<div class='caption'><div class='box' style='background-color:rgba(149 139 25)'></div>Modified</div>";
+                    
                     return{html:rows}
                 }
                 else{

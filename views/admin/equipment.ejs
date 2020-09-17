@@ -334,19 +334,31 @@
     }
 
     .responselistitem{
-        font-size:12px;
+        padding: 12px 24px;
+        font-size: 12px;
+        margin: 0px -30px;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .responselistitem .error{
+        font-weight: bold;
+        color: rgb(151 0 0);
     }
     .responselistitem p{
-        margin-top:6px;
+        margin-top:4px;
+        margin-bottom:0px;
     }
     .responselistdate{
         font-weight: 600;
+    }
+    #modal-bookingresponselist-header{
+        margin-bottom:0;
     }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.1.0/main.min.js"
     integrity="sha256-whipTPgW7h5J4dASYqBjimA0wUdvXKQuecTKB5wOkxk=" crossorigin="anonymous"></script>
 <script src="/javascripts/timeago.min.js"></script>
 <script src="/javascripts/scrollto.min.js"></script>
+<script src="/javascripts/humandate.min.js"></script>
 <div id="calendarSection" class="section" style="max-width: 2000px;flex-basis: 1200px;">
     <div class="sectionheader">Booking calendar<div id="booking-spinner" class="spinner"></div></div>
     <div style="display: flex;">
@@ -465,7 +477,8 @@
     </div>
 </div>
 <div id="modal-bookingresponse" class="modal">
-    <div id="modal-bookingresponse-header" class="sectionheader">Respond to booking request</div>
+    <div id="modal-bookingresponse-header" class="sectionheader">Respond to booking request<div id="bookingresponse-spinner" class="spinner"></div>
+    </div>
     <div class="togglecontainer">
         <div>
             <input id="bookingresponse-archive" class="toggle" type="checkbox">
@@ -489,7 +502,7 @@
     </div>
 
 
-    <button style="margin-top:12px;" class="bigbtn" onclick="sendBookingResponse()">CONFIRM RESPONSE</button>
+    <button id="bookingresponse-sendbtn" style="margin-top:12px;" class="bigbtn" onclick="sendBookingResponse()">CONFIRM RESPONSE</button>
 </div>
 
 <script>
@@ -732,6 +745,8 @@
     }
 
     function sendBookingResponse() {
+        $("#bookingresponse-spinner").show();
+        $("#bookingresponse-sendbtn").attr("disabled", true);
         $.ajax({
             type: "POST",
             url: '/admin/equipment/bookings/' + respondingId,
@@ -741,16 +756,19 @@
                 archive: $("#bookingresponse-archive").is(":checked"),
                 bookings: respondingBookings,
                 message: $("#bookingresponse-text").val(),
-                sendemail: $("#bookingresponse-sendemail").val()
+                sendemail: $("#bookingresponse-sendemail").is(":checked")
             }),
             success: function (res) {
-                $(".postlist").removeClass("nopointer");
-                $("#equipment-spinner").hide();
+                $("#bookingresponse-spinner").hide();
+                $("#bookingresponse-sendbtn").attr("disabled", false);
+                $.modal.close();
+                reloadBookings();
             },
             error: function (err) {
-                alert("Failed to reposition equipment items!");
-                $(".postlist").removeClass("nopointer");
-                $("#equipment-spinner").hide();
+                alert(err);
+                $("#bookingresponse-spinner").hide();
+                $("#bookingresponse-sendbtn").attr("disabled", false);
+                reloadBookings();
             }
         });
     }
@@ -1138,7 +1156,9 @@
                         <div>
                             <h4>${booking.responses.length} response(s) sent to student</h4>
                             <h5>Last sent ${timeago.format(booking.responses[booking.responses.length-1].date)}</h5>
-                            <button class="smallbtn" onclick="responsehistory('${booking.id}')">View responses</button>
+                            
+                            <button class="smallbtn" onclick="responsehistory('${booking.id}')">View Responses</button>
+                            
                         </div>
                     </div>`
                 }
@@ -1147,7 +1167,7 @@
                         <div>
                             <div class="bookingheader">
                                 
-                            <h6 style="float:right;margin-top:4px;" class="timeagorender" datetime="${booking.creationtime}"></h6>
+                            <h6 style="float:right;margin-top:4px;" title="${humandate.prettyPrint(new Date(booking.creationtime), {showTime:true})}" class="timeagorender" datetime="${booking.creationtime}"></h6>
                             <h4>${logos + booking.projectname}</h4>
                             <h5>${bookinglength} item(s) requested</h5>
                             </div>
@@ -1171,6 +1191,7 @@
                                 <div class="eqBookings">
                                     ${items}
                                 </div>
+                                <a style="font-size:10px;" target="_blank" href="/equipment?view=${booking.id}">View on user-facing website</a>
                                 <button class="bigbtn" onclick="addBookingResponseModal('${booking.id}')">${sendresponseText}</button>
                                 
                                 <button style="width:calc(50% - 2px)" class="smallbtn inline" onclick="deletebooking('${booking.id}')">Delete request</button>
@@ -1197,7 +1218,7 @@
                 let response = batch.responses[i];
                 listhtml+=`
                 <div class="responselistitem">
-                    <div class="responselistdate">${timeago.format(response.date)}</div>
+                    <div class="responselistdate">${humandate.prettyPrint(new Date(response.date), {showTime:true})}</div>
                     <p>${response.content}</p>
                 </div>
                 `

@@ -489,7 +489,7 @@ router.post('/equipment/bookings/:id',function(req, res) {
   equipmentmanager.saveBookingBatch(req.params.id, req.body, function(err,item){
     if(err) res.status(500).send(err);
     else res.sendStatus(200);
-  })
+  });
 });
 
 

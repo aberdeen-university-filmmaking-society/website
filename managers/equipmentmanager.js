@@ -156,7 +156,7 @@ equipmentmanager.getBookingBatch = async function(id, resolve){
         if(err) resolve(err, undefined);
         else{
             if(result[0] && result[0][0]){
-                result[0][0].statustext = makeResponse(result[1]);
+                result[0][0].statustext = makeResponse(result[1], result[0][0].studentemail);
                 result[0][0].bookings = result[1];
                 resolve(undefined, result[0][0]);
             }
@@ -166,7 +166,7 @@ equipmentmanager.getBookingBatch = async function(id, resolve){
         }
     });
 }
-function makeResponse(bookings){
+function makeResponse(bookings, studentemail){
     let statusText = "No bookings!";
     if(bookings && bookings.length){
         let ignored = 0;
@@ -185,7 +185,7 @@ function makeResponse(bookings){
             }
         }
         if(ignored>0 && confirmed==0 && edited==0 && denied==0){
-            statusText= `Your request has not yet been seen by the equipment manager! We'll send an email to ${result[0].studentemail} once your request has been reviewed.`
+            statusText= `Your request has not yet been seen by the equipment manager! We'll send an email to <b>${studentemail}</b> once it has been reviewed.`
         }
         else if(ignored>0){
             statusText = `<b>${ignored}</b> of your equipment requests have not yet been reviewed by the Equipment Manager. ${makeSubResponse(confirmed,denied,edited, ignored)}`
@@ -313,43 +313,50 @@ equipmentmanager.saveBookingBatch = async function(id, body, resolve){
             //send email
             if(body.sendemail){
                 sqlcon.query(`SELECT * From EquipmentBookingBatch WHERE id=?`, [id], function(err2,results2){
-                    let responses = [];
-                    if(results2[0].responses){
-                        try{
-                            responses = JSON.parse(results2[0].responses);
-                        }
-                        catch{
-
-                        }
+                    if(err2){
+                        resolve(err2, undefined);
                     }
-                    responses.push({
-                        date:Date.now(),
-                        content:body.message
-                    });
-                    sqlcon.query(`UPDATE EquipmentBookingBatch SET responses=? WHERE id=?`, [JSON.stringify(responses), id], function(err3,results3){
-                        if(err3){
-                            console.error(err3);
+                    else{
+                        resolve();
+                        let responses = [];
+                        if(results2[0].responses){
+                            try{
+                                responses = JSON.parse(results2[0].responses);
+                            }
+                            catch{
+                            }
                         }
-                    })
-                    //emailStudentResponse(body.message, results2[0]);
+                        responses.push({
+                            date:Date.now(),
+                            content:body.message
+                        });
+                        sqlcon.query(`UPDATE EquipmentBookingBatch SET responses=? WHERE id=?`, [JSON.stringify(responses), id], function(err3,results3){
+                            if(err3){
+                                console.error(err3);
+                            }
+                        });
+                        emailStudentResponse(body.message, results2[0]);
+                    }
                 });
+            }
+            else{
+                resolve();
             }
         }
     });
 }
 
 equipmentmanager.book = async function(form, admin, resolve) {
-    console.log(form);
     let batchid = uuidv4();
     let bookings = [];
     try {
         bookings = JSON.parse(form.bookingsarray);
     } catch {
-        resolve(new Error("Error parsing the equipement booking dates!"));
+        resolve({status:400, message:"Error parsing the equipement booking dates!"});
         return;
     }
     if (bookings.length < 0) {
-        resolve(new Error("You must select at least one booking date!"));
+        resolve({status:400, message:"You must select at least one booking date!"});
         return;
     }
     let earliestStart = new Date();
@@ -370,7 +377,7 @@ equipmentmanager.book = async function(form, admin, resolve) {
     var sql = "INSERT INTO EquipmentBookingBatch (id, projectname, projectdescription, studentname, studentid, studentemail, iscommittee, start, end) VALUES (?,?,?,?,?,?,?,?,?)"
     sqlcon.query(sql, [batchid, form.bookingProjectName, form.bookingProjectDescription, form.bookingStudentName, form.bookingStudentId, form.bookingStudentEmail, admin, earliestStart, latestEnd], function(err1, result1) {
         if (err1) {
-            resolve(err1);
+            resolve({status:500, message:"Failed to add booking request batch to database!", stack:err1});
         }
         else {
             let paramedBookings = [];
@@ -383,9 +390,10 @@ equipmentmanager.book = async function(form, admin, resolve) {
             }
             let escaped = mysql.escape(paramedBookings);
             sqlcon.query("INSERT INTO EquipmentBooking (id, start, end, equipmentid, bookingbatchid, confirmstate) VALUES " + escaped, function (err2, result2) {
-                if (err2) resolve(err2)
+                if (err2)
+                    resolve({status:500, message:"Failed to add individual equipment requests to database!", stack:err1});
                 else {
-                    resolve(result2);
+                    resolve(undefined, batchid);
                     sqlcon.query("SELECT * FROM `Equipment` WHERE id IN (?)", [equipmentIds], function(err3, result3){
                         if(!err3 && result3 && result3.length>0){
                             for (let i = 0; i < bookings.length; i++) {
@@ -422,7 +430,7 @@ function emailAUFS(id, form, formhtml){
         <title>AUFS Equipment Request</title>
       </head>
       <body class="">
-      <h3><a href="${process.env.URL_START}/admin/equipment?request=${id}">Respond to booking request</a></h3>
+      <h3><a href="${process.env.URL_START}/admin/equipment">Respond to booking request</a></h3>
       <p>Please find more information about the request below:</p>
       ${formhtml}
       </body>
@@ -436,12 +444,7 @@ function emailAUFS(id, form, formhtml){
         subject: "Booking request by " + form.bookingStudentName, // Subject line
         html: html
     };
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log(error);
-        }
-        console.log('Message %s sent: %s', info.messageId, info.response);
-    });
+    transporter.sendMail(mailOptions);
 }
 function emailStudent(id, form, formhtml){
     url= process.env.URL_START+"/equipment?view="+id;
@@ -465,18 +468,13 @@ function emailStudent(id, form, formhtml){
     let mailOptions = {
         from: {
             name: "AUFS Equipment Booking",
-            address: "equipment@aufilmmaking.co.uk"
+            address: "equipment@aufilmmaking.co.uk",
         },
         to: form.bookingStudentEmail, // list of receivers
         subject: `Request confirmation for ${form.bookingProjectName}`, // Subject line
         html: html
     };
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log(error);
-        }
-        console.log('Message %s sent: %s', info.messageId, info.response);
-    });
+    transporter.sendMail(mailOptions);
 }
 
 function emailStudentResponse(message, booking){
@@ -505,12 +503,7 @@ function emailStudentResponse(message, booking){
         subject: `Request update for ${booking.projectname}`, // Subject line
         html: html
     };
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log(error);
-        }
-        console.log('Message %s sent: %s', info.messageId, info.response);
-    });
+    transporter.sendMail(mailOptions);
 }
 
 

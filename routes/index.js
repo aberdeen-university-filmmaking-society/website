@@ -426,7 +426,7 @@ router.get('/equipment', function(req,res,next){
                   res.status(404).render('error',{ page:'error', error:{status:404, stack:""}, message:"Booking request does not exist" });
                 }
                 else{
-                  res.render('equipment', {page:'equipment', equipment:result, bookings:bookings, selectedbooking:booking, year:req.query.year});
+                  res.render('equipment', {page:'equipment', equipment:result, bookings:bookings, selectedbooking:booking, year:req.query.year, thankyou:req.query.t});
                 }
               });
             }
@@ -441,8 +441,19 @@ router.get('/equipment', function(req,res,next){
 });
 
 router.post('/equipment/book', function(req,res,next){
-  equipmentmanager.book(req.body, false, function(result){
-    
+  equipmentmanager.book(req.body, false, function(error, result){
+      if(error){
+        if(error.status && error.message){
+          if(error.stack==undefined) error.stack="";
+          res.status(error.status).render('error',{ page:'error', error:{status:error.status, stack:error.stack}, message:error.message});
+        }
+        else{
+          res.status(500).render('error',{ page:'error', error:{status:500, stack:error}, message:"Unknown error when saving your equipment request - please let us know by sending us an email or DM on social media"});
+        }
+      }
+      else{
+        res.redirect('/equipment?view='+result+'&t');
+      }
   });
 });
 
