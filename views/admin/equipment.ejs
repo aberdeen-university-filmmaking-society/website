@@ -544,7 +544,7 @@
     function updatePositions() {
         let positionChanges = [];
 
-        $('.postlist .postitem').each(function (i, el) {
+        $('#equipmentlist .postitem').each(function (i, el) {
             let item = $(el);
             if (item.attr('data-position') != i) {
                 item.attr('data-position', i);
@@ -555,7 +555,7 @@
             }
         });
         if (positionChanges && positionChanges.length > 0) {
-            $(".postlist").addClass("nopointer");
+            $("#equipmentlist").addClass("nopointer");
             $("#equipment-spinner").show();
             $.ajax({
                 type: "POST",
@@ -564,12 +564,12 @@
                 contentType: "application/json",
                 data: JSON.stringify(positionChanges),
                 success: function (res) {
-                    $(".postlist").removeClass("nopointer");
+                    $("#equipmentlist").removeClass("nopointer");
                     $("#equipment-spinner").hide();
                 },
                 error: function (err) {
                     alert("Failed to reposition equipment items!");
-                    $(".postlist").removeClass("nopointer");
+                    $("#equipmentlist").removeClass("nopointer");
                     $("#equipment-spinner").hide();
                 }
             });
@@ -614,7 +614,7 @@
                 type: "POST",
                 url: '/admin/equipment/items/remove/' + id,
                 success: function (res) {
-                    $(`.postlist [data-id='${id}']`).remove();
+                    $(`#equipmentlist [data-id='${id}']`).remove();
                     $("#equipment-spinner").hide();
                 },
                 error: function (err) {
@@ -642,7 +642,7 @@
                 data: JSON.stringify(equipmentObject),
                 success: function (res) {
                     console.log("edit successful");
-                    $(`.postlist [data-id='${editingid}']`).remove();
+                    $(`#equipmentlist [data-id='${editingid}']`).remove();
                     addEquipmentToUI(equipmentObject);
                     $.modal.close();
                     $("#equipment-spinner").hide();
@@ -781,17 +781,19 @@
     }
 
     function addEquipmentToUI(equipmentObject) {
-        $(".postlist").append(`<li class="postitem" style="padding:10px 24px;" data-id="${equipmentObject.id}" data-position="${equipmentObject.position}">
-        <div style="margin-right:174px;">
-            <h4>${equipmentObject.name}</h4>
-            <h5>${equipmentObject.description}</h5>
-        </div>
-        <div class="actions">
-            <button onclick="editEquipment('${equipmentObject.id}')"><i class="far fa-edit"></i></button>
-            <button onclick="removeEquipment('${equipmentObject.id}')"><i class="far fa-trash-alt"></i></button>
-        </div>
-    </li>`);
-        $('.postlist').html($('.postlist .postitem').sort(sortPostItems))
+        $("#equipmentlist").append(`        <li class="postitem" style="padding:10px 24px;" data-id="${equipmentObject.id}" data-position="${equipmentObject.position}">
+            <img src="${equipmentObject.image}">
+            <div style="margin-right:174px;">
+                <h4>${equipmentObject.name}</h4>
+                <h6>${equipmentObject.category}</h6>
+                <h5>${equipmentObject.description}</h5>
+            </div>
+            <div class="actions">
+                <button onclick="editEquipment('${equipmentObject.id}')"><i class="far fa-edit"></i></button>
+                <button onclick="removeEquipment('${equipmentObject.id}')"><i class="far fa-trash-alt"></i></button>
+            </div>
+        </li>`);
+        $('#equipmentlist').html($('#equipmentlist .postitem').sort(sortPostItems))
     }
 
     $("#modal-equipment").on($.modal.CLOSE, function (event, modal) {
