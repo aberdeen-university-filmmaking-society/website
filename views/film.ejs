@@ -71,11 +71,31 @@
                 <% tags.forEach(tag=>{ %><a href="/tags/<%= tag.tagid %>">#<%= tag.tagid %></a>&nbsp;<% }) %>
                 </div>
                 <div class="film-outlinks">
-                    <% if(film.imdb) { %>
-                    <a class="film-outlink" href="https://www.imdb.com/title/<%= film.imdb %>/">
-                        <img src="/images/social/imdb.svg">
-                    </a>
-                    <% } %>
+                    <%
+                        function getLinkImage(url){
+                            if(/(https?):\/\/(www.)?((facebook\.)|(fb\.)).*/.test(url))
+                                return("/images/social/fb.svg");
+                            else if(/(https?):\/\/(www.)?((instagram\.)|(instagr\.am\.)).*/.test(url))
+                                return("/images/social/ig.svg");
+                            else if(/(https?):\/\/(www.)?(imdb\.).*/.test(url))
+                                return("/images/social/imdb.svg");
+                            else if(/(https?):\/\/(www.)?((linkedin\.)|(linked\.in\.)).*/.test(url))
+                                return("/images/social/li.svg");
+                            else if(/(https?):\/\/(www.)?(snapchat\.).*/.test(url))
+                                return("/images/social/sp.svg");
+                            else if(/(https?):\/\/(www.)?((twitter\.)|(t\.co)).*/.test(url))
+                                return("/images/social/tw.svg");
+                            else if(/(https?):\/\/(www.)?((youtube\.)|(youtu\.be)).*/.test(url))
+                                return("/images/social/yt.svg");
+                            else return ("/images/social/internet_white.svg");
+                        }
+                        if(film.links) {
+                        film.links = JSON.parse(film.links);
+                        for (let i = 0; i < film.links.length; i++) { %>
+                        <a class="film-outlink" href="<%= film.links[i] %>">
+                            <img src="<%= getLinkImage(film.links[i]) %>">
+                        </a>
+                    <% } } %>
                 </div>
             </div>
         </section>

@@ -68,7 +68,7 @@
             </div>
             <br>
             <h3>AWARD LAURELS</h3>
-            <p>Please ensure the background is transparent, the foreground is white, and that there are no margins (SVG recommended)</p>
+            <p style="margin:0;font-size:11px; margin-bottom:12px;opacity:0.5">Please ensure the background is transparent, the foreground is white, and that there are no margins (SVG recommended)</p>
             <div id="uploadedAwards">
                 </div>
                 <div>
@@ -79,7 +79,13 @@
             <h3>CUSTOM CSS</h3>
             <div id="codeeditor"></div>
             <br>
-            <input id="createfilm-imdb" type="text" class="smaller" placeholder="IMDb Title (ex: tt11110952)" autocomplete="off"><br>
+            <h3>EXTERNAL LINKS</h3>
+            <p style="margin:0;font-size:11px; margin-bottom:12px;opacity:0.5">Supports logo with Facebook, Instagram, IMDB, LinkedIn, Snapchat, Twitter, and YouTube links</p>
+            <div id="createfilm-linklist">
+                <div class="createfilm-link autoaddlist">
+                    <input type="text" style="width:100%;border-radius:4px;" class="link-link" placeholder="URL" onchange="autoAddList(this)">
+                </div>
+            </div><br>
     </div>
     <script>
     
@@ -192,7 +198,14 @@ function slugify(string) {
     function autoAddList(input){
         var $container = $(input).parent();
         var $inputs = $container.children();
-        if($inputs[0].value=="" && $inputs[1].value==""){
+        let isempty = true;
+        for (let i = 0; i < $inputs.length; i++) {
+            if($inputs[i].value!=""){
+                isempty=false;
+                break;
+            }
+        }
+        if(isempty){
             //It's empty, if it's not last delete it
             if(!$container.is(":last-child")) 
                 $container.remove();
@@ -267,6 +280,12 @@ function slugify(string) {
             if($(this).find(".techspecs-type").val())
                 techspecs[$(this).find(".techspecs-type").val()]=$(this).find(".techspecs-option").val();
         });
+        var links = [];
+        $("#createfilm-linklist .link-link").each(function(){
+            let val = $(this).val();
+            console.log(val);
+            if(val) links.push(val);
+        })
         var filmdate=undefined;
         if(datepicker.selectedDates[0]) filmdate=datepicker.selectedDates[0].getTime();
         var filmobject= {
@@ -283,7 +302,7 @@ function slugify(string) {
             credits:JSON.stringify(credits),
             behindthescenes:JSON.stringify(behindthescenes),
             tags: $("#tags").tagit("assignedTags").join(","),
-            imdb: $("#createfilm-imdb").val(),
+            links: JSON.stringify(links),
             css: csseditor.getValue()
         };
         return filmobject;
@@ -296,6 +315,11 @@ function slugify(string) {
     function autofillrowTechspecs(type, option){
         return `<div class="createfilm-techspec autoaddlist">
                     <input type="text" class="techspecs-type" value="${type}" placeholder="Type" onchange="autoAddList(this)"><input type="text" value="${option}" class="techspecs-option" placeholder="Content" onchange="autoAddList(this)">
+                </div>`
+    }
+    function autofillLink(link){
+        return `<div class="createfilm-link autoaddlist">
+                    <input type="text" style="width:100%;border-radius:4px;" class="link-link" placeholder="URL" onchange="autoAddList(this)" value="${link}">
                 </div>`
     }
     function fillWithFilmObject(film) {
@@ -337,6 +361,14 @@ function slugify(string) {
             $("#createfilm-bts-techspecs").append(autofillrowTechspecs(type, filmtechspecs[type]))
         }
         $("#createfilm-bts-techspecs").append(autofillrowTechspecs("", ""));
+        $("#createfilm-linklist").empty();
+        var links = JSON.parse(film.links);
+        if(links && links.length){
+            for (let i = 0; i < links.length; i++) {
+                $("#createfilm-linklist").append(autofillLink(links[i]));
+            }
+        }
+        $("#createfilm-linklist").append(autofillLink(""));
         if(film.files){
             var parsedFiles = JSON.parse(film.files);
             if(parsedFiles){
