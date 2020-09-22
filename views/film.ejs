@@ -46,6 +46,31 @@
         .carousell{
             margin-top:12px;
         }
+
+        .tabs{
+            margin-left:-12px;
+            margin-bottom:-12px;
+        }
+        .tabs .tab{
+            line-height: 32px;
+            opacity:0.5;
+            display:inline-block;
+            font-size:12px;
+            font-weight:500;
+            margin:0 12px;
+            text-decoration:none;
+            transition: opacity 0.2s;
+        }
+        .tabs .tab:hover{
+            opacity:0.6;
+        }
+        .tabs .tab.selected{
+            border-bottom: white 2px solid;
+            opacity:0.8;
+            pointer-events: none;
+            font-weight: bold;
+            filter: drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.8));
+        }
     </style>
     <%- include partials/header.ejs %>
     <% if(film.css) { %>
@@ -99,10 +124,68 @@
                 </div>
             </div>
         </section>
-    <% if(film.youtubeid) { %>
-    <div class="video">
-        <iframe src="https://www.youtube.com/embed/<%= film.youtubeid%>?rel=0&modestbranding=1&color=white" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    </div>
+    <% if(film.youtubeid) { 
+        function slugify(string) {
+          const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;';
+          const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------';
+          const p = new RegExp(a.split('').join('|'), 'g');
+
+          return string.toString().toLowerCase()
+            .replace(/\s+/g, '-') // Replace spaces with -
+            .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
+            .replace(/&/g, '-and-') // Replace & with 'and'
+            .replace(/[^\w\-]+/g, '') // Remove all non-word characters
+            .replace(/\-\-+/g, '-') // Replace multiple - with single -
+            .replace(/^-+/, '') // Trim - from start of text
+            .replace(/-+$/, ''); // Trim - from end of text
+        }
+        let multiplelinks = false;
+        let youtubelinks = [];
+        try{
+            youtubelinks = JSON.parse(film.youtubeid);
+            multiplelinks = true;
+        }
+        catch{ }
+        let selectedvideoID = film.youtubeid;
+        if(multiplelinks) { %>
+            <section>
+                <div id="videoselection" class="tabs">
+                    <% for (let i = 0; i < youtubelinks.length; i++) {
+                        let slug = slugify(youtubelinks[i][0]);
+                        let link = `${process.env.URL_START}/films/${film.slug}?v=${slug}`;
+                        if(i==0) 
+                            link = `${process.env.URL_START}/films/${film.slug}`;
+                        if((i == 0 && locals.selectedvideo == undefined) || (locals.selectedvideo==slug)) {
+                            selectedvideoID = youtubelinks[i][1];
+                        }
+                        %>
+                        <a class="tab <% if(( i == 0 && locals.selectedvideo == undefined) || (locals.selectedvideo==slug)) { %> selected <% } %>" data-id="<%=youtubelinks[i][1]%>" onclick="switchvideo('<%=youtubelinks[i][1]%>', '<%= link %>');return false;" href="<%= link %>"><%=youtubelinks[i][0]%></a>
+                    <% } %>
+                </div>
+            </section>
+        <% } %>
+        <div class="video">
+            <iframe id="videoframe" src="https://www.youtube.com/embed/<%=selectedvideoID%>?rel=0&modestbranding=1&color=white" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <script>
+            function switchvideo(id, link){
+                var ifr = document.getElementById("videoframe");
+                ifr.contentWindow.location.replace(`https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&color=white`); 
+
+                $("#videoselection .tab").each(function(){
+                    if($(this).attr("data-id") == id){
+                        $(this).addClass("selected");
+                    }
+                    else{
+                        $(this).removeClass("selected");
+                    }
+                });
+                if(id==undefined) $($("#videoselection .tab")[0]).addClass("selected");
+                if(link!=undefined){
+                    history.replaceState("", "", link);
+                }
+            }
+        </script>
     <% } %>
     <% if(film.awards){ %>
         <section>

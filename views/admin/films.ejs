@@ -25,6 +25,14 @@
     <script>
         const datepicker = flatpickr("#createfilm-date", {altInput: true, altFormat: "F j, Y",});
     </script>
+        <h3 style="margin-top:4px;">YOUTUBE LINKS</h3>
+        <p style="margin:0;font-size:11px;opacity:0.5">The title is optional when only one link is given</p>
+        <div id="createfilm-ytlinks">
+            <div class="createfilm-ytlink autoaddlist">
+                <input type="text" class="ytlink-title" placeholder="Title" onchange="autoAddList(this)"><input type="text" class="ytlink-url" placeholder="URL" onchange="autoAddList(this); youtubelinkfix(this)">
+            </div>
+        </div><br>
+
     <input id="createfilm-youtubeid" type="text" class="smaller" placeholder="YouTube URL" autocomplete="off"><br>
     <div id="uploadedPosters">
     </div>
@@ -195,6 +203,8 @@ function slugify(string) {
         });
     }   
 
+
+
     function autoAddList(input){
         var $container = $(input).parent();
         var $inputs = $container.children();
@@ -256,6 +266,10 @@ function slugify(string) {
     });
     quillBts.clipboard.addMatcher(Node.ELEMENT_NODE, pastematcher);
 
+    function youtubelinkfix(input){
+        $(input).val("https://youtu.be/"+extractVideoID($(input).val()))
+    }
+
     function extractVideoID(url){
         var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
         var match = url.match(regExp);
@@ -280,6 +294,16 @@ function slugify(string) {
             if($(this).find(".techspecs-type").val())
                 techspecs[$(this).find(".techspecs-type").val()]=$(this).find(".techspecs-option").val();
         });
+        var ytlinks = [];
+        $("#createfilm-ytlinks .createfilm-ytlink").each(function(){
+            let url = $(this).find(".ytlink-url").val();
+            let title = $(this).find(".ytlink-title").val();
+            if(url){
+                ytlinks.push([title, extractVideoID(url)]);
+            }
+        });
+        console.log("youtubelinks=")
+        console.log(ytlinks);
         var links = [];
         $("#createfilm-linklist .link-link").each(function(){
             let val = $(this).val();
@@ -291,7 +315,7 @@ function slugify(string) {
         var filmobject= {
             title: $("#createfilm-title").val(),
             date: filmdate,
-            youtubeid: extractVideoID($("#createfilm-youtubeid").val()),
+            youtubeid: JSON.stringify(ytlinks),
             files: JSON.stringify(getUploadedFiles()),
             sessionid: getSessionId(),
             slug: $("#createfilm-slug").val(),
@@ -322,6 +346,11 @@ function slugify(string) {
                     <input type="text" style="width:100%;border-radius:4px;" class="link-link" placeholder="URL" onchange="autoAddList(this)" value="${link}">
                 </div>`
     }
+    function autofillYtLink(title, url){
+        return `<div class="createfilm-ytlink autoaddlist">
+                <input type="text" class="ytlink-title" value="${title}" placeholder="Title" onchange="autoAddList(this)"><input type="text" class="ytlink-url" value="${url}" placeholder="URL" onchange="autoAddList(this); youtubelinkfix(this)">
+            </div>`
+    }
     function fillWithFilmObject(film) {
         $("#uploadedPosters").empty();
         $("#uploadedBtsPics").empty();
@@ -330,13 +359,22 @@ function slugify(string) {
         csseditor.setValue("");
         console.log(Number.parseInt(film.date));
         datepicker.setDate(new Date(Number.parseInt(film.date)));
-        if(film.youtubeid)
-            $("#createfilm-youtubeid").val("https://youtu.be/"+film.youtubeid);
-        else
-            $("#createfilm-youtubeid").val("");
+        let youtubeids = [];
+        try{
+            youtubeids = JSON.parse(film.youtubeid);
+        }
+        catch{
+            if(film.youtubeid)
+                youtubeids = [['', film.youtubeid]];
+        }
+        $("#createfilm-ytlinks").empty();
+        for (let i = 0; i < youtubeids.length; i++) {
+            if(youtubeids[i].length)
+                $("#createfilm-ytlinks").append(autofillYtLink(youtubeids[i][0], 'https://youtu.be/'+youtubeids[i][1]))
+        }
+        $("#createfilm-ytlinks").append(autofillYtLink('',''));
         $("#createfilm-poster").val(film.poster);
         $("#createfilm-slug").val(film.slug);
-        $("#createfilm-imdb").val(film.imdb);
         $("#createfilm-hidden").prop("checked", film.hidden);
         $("#createfilm-highlight").prop("checked", film.highlight);
         if(film.css)

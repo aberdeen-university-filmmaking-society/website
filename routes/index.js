@@ -308,7 +308,7 @@ router.get('/films/:slug', function(req, res, next) {
     tagmanager.getTagsForFilm(result.id,function(tags){
       result = polishFilmObject(result);
       filmmanager.getrecommended(result.id, result.dateTimestamp, function(similar){
-        res.render('film', { page:'film', film:result, tags:tags, recommended:similar });
+        res.render('film', { page:'film', film:result, tags:tags, recommended:similar, selectedvideo:req.query.v });
       });
     });
   });
