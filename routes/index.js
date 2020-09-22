@@ -117,9 +117,9 @@ function finishIndexResponse(req,res, results, setsobj, heropost){
       }
 
       if(heropost)
-        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:films, highlightedfilms:iterateover(highlightedfilms, filmFilesToImages), posts:results, heropost: setdetails(heropost, heropost.id, true), productionsfilms:productionsfilmsProcessed});
+        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:iterateover(films, filmFilesToImages), highlightedfilms:iterateover(highlightedfilms, filmFilesToImages), posts:results, heropost: setdetails(heropost, heropost.id, true), productionsfilms:productionsfilmsProcessed});
       else
-        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:films, highlightedfilms:iterateover(highlightedfilms, filmFilesToImages), posts:results, productionsfilms:productionsfilmsProcessed });
+        res.render('index', { page:'home', fadein:req.cookies["fadein"], films:iterateover(films, filmFilesToImages), highlightedfilms:iterateover(highlightedfilms, filmFilesToImages), posts:results, productionsfilms:productionsfilmsProcessed });
     });
 });
 
@@ -224,13 +224,22 @@ router.get('/films', function(req, res, next) {
       result.dateformatted=formatDate(new Date(Number.parseInt(result.date)));
       result.dateprecise=formatDatePrecise(new Date(Number.parseInt(result.date)));
     });
-    res.render('allfilms', { page:'films', films:results });
+    res.render('allfilms', { page:'films', films:iterateover(results, filmFilesToImages) });
   });
 });
 
 function filmFilesToImages(result){
+  result.youtubethumbnail = result.youtubeid;
+  try{
+    let youtubeidarray = JSON.parse(result.youtubeid);
+    result.youtubethumbnail = youtubeidarray[0][1];
+  }
+  catch{
+    
+   }
   if(result.files){
     try{
+
       result.files = JSON.parse(result.files);
       if(result.files.length && result.files.length>0){
         result.files.forEach(file=>{
@@ -294,6 +303,7 @@ function polishFilmObject(film){
 }
 
 function iterateover(films, func){
+  if(films.length == 0) return;
   let output = [];
   if(films.length){
     for (let i = 0; i < films.length; i++) {
