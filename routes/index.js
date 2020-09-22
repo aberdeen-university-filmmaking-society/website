@@ -386,6 +386,7 @@ router.get('/tags/:tag', function(req, res, next) {
         film.timestamp = Number.parseInt(film.date);
         film.dateformatted=formatDate(new Date(film.timestamp));
         film.dateprecise=formatDatePrecise(new Date(Number.parseInt(film.date)));
+        film = filmFilesToImages(film);
         joined.push(film);
       });
     }
