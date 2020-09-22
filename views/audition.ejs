@@ -3,7 +3,7 @@
   <head>
         <title><%= audition.title %> | AUFS</title>
         <meta property="og:title" content="<%= audition.title %>">
-        <meta property="og:image" content="<% if(film.poster) { %><%= process.env.URL_START + film.poster.thumb %><% } else if(film.youtubeid) { %>https://i.ytimg.com/vi/<%= film.youtubeid %>/mqdefault.jpg<% } %>">
+        <meta property="og:image" content="<% if(film.poster) { %><%= process.env.URL_START + film.poster.thumb %><% } else if(film.youtubethumbnail) { %>https://i.ytimg.com/vi/<%= film.youtubethumbnail %>/mqdefault.jpg<% } %>">
      <!--   <script src="https://cdn.alloyui.com/3.0.1/aui/aui-min.js"></script>
     <link href="https://cdn.alloyui.com/3.0.1/aui-css/css/bootstrap.min.css" rel="stylesheet"></link>-->
         <%- include partials/head.ejs %>

@@ -97,7 +97,7 @@
         <a class="film-anchor" href="/films/<%= result.slug %>">
             <div class="film-container">
                 <div class="film-imagecontainer">
-                  <img class="film-image" src="<% if(result.youtubeid) { %>https://i.ytimg.com/vi/<%= result.youtubeid %>/mqdefault.jpg<% } else { %>/images/blankthumbnail.png<% } %>">
+                  <img class="film-image" src="<% if(result.youtubethumbnail) { %>https://i.ytimg.com/vi/<%= result.youtubethumbnail %>/mqdefault.jpg<% } else { %>/images/blankthumbnail.png<% } %>">
                 </div>
                 <div class="film-text">
                     <div class="film-title"><%= result.title %></div>

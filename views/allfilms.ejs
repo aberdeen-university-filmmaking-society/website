@@ -32,7 +32,7 @@
                         <div class="film-container">
                             <div class="film-imagecontainer">
                                 
-                              <img class="film-image" src="<% if(film.youtubeid) { %>https://i.ytimg.com/vi/<%= film.youtubeid %>/mqdefault.jpg<% } else { %>/images/blankthumbnail.png<% } %>">
+                              <img class="film-image" src="<% if(film.youtubethumbnail) { %>https://i.ytimg.com/vi/<%= film.youtubethumbnail %>/mqdefault.jpg<% } else { %>/images/blankthumbnail.png<% } %>">
                               
                             </div>
                             <div class="film-text">
