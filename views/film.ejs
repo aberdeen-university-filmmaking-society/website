@@ -104,6 +104,8 @@
                                 return("/images/social/ig.svg");
                             else if(/(https?):\/\/(www.)?(imdb\.).*/.test(url))
                                 return("/images/social/imdb.svg");
+                                else if(/(https?):\/\/(www.)?((themoviedb\.)|(tmdb\.org\.)).*/.test(url))
+                                return("/images/social/tmdb.svg");
                             else if(/(https?):\/\/(www.)?((linkedin\.)|(linked\.in\.)).*/.test(url))
                                 return("/images/social/li.svg");
                             else if(/(https?):\/\/(www.)?(snapchat\.).*/.test(url))
