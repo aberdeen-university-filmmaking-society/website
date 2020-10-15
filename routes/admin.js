@@ -413,6 +413,7 @@ router.get('/equipment', function(req,res,next){
     res.redirect('/admin/equipment?show=active,archived')
   }
   else{
+    var setsobj = settings.get();
     equipmentmanager.getEquipment(function(err1, equipmentlist){
       if(err1){
         res.status(500).render('error', {page:'error', error:{status:500}, message:"Unable to load equipment list!", moreinfo:err1.message })
@@ -429,7 +430,7 @@ router.get('/equipment', function(req,res,next){
               res.send(bookinglist);
             }
             else{
-              res.render('admin/equipment', { page:"equipment", equipment: equipmentlist, bookings: bookinglist, filtertoshow: toshow, year: req.query.year })
+              res.render('admin/equipment', { page:"equipment", equipment: equipmentlist, bookings: bookinglist, filtertoshow: toshow, year: req.query.year, settings:setsobj })
             }
           }
         });

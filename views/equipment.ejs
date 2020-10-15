@@ -293,6 +293,12 @@ section{
                 <br><b style="color:white;font-weight:500;">Any updates to your booking request will also appear on this page.</b><br></p>
             </div>
            <% } %>
+        <% if(locals.equipmentwarningTitle || locals.equipmentwarningDescription){ %>
+            <div class="thankyousection">
+            <% if(locals.equipmentwarningTitle) { %><h1><%= locals.equipmentwarningTitle %></h1><% } %>
+            <% if(locals.equipmentwarningDescription) { %><p><%= locals.equipmentwarningDescription %></p><% } %>
+            </div>
+        <% } %>
         <% if(locals.selectedbooking) { %>
             <h1 class="pagetitle" style="margin-bottom:6px">Request for <%= selectedbooking.projectname %></h1>
             <p style="color:white;font-size:1.2em;line-height:1.4em;opacity:0.6;"><%- selectedbooking.statustext %></p>
@@ -357,7 +363,7 @@ section{
                     <input id="bookingsarray" name="bookingsarray" type="hidden">
                 </div>
             </div>
-            <p class="disclaimer">By booking equipement through this website, you accept that AUFS will keep this data until the booking period is over, in order to verify your status as a society member and organize equipment handovers with other members.</p>
+            <p class="disclaimer">By booking equipement through this website, you accept that AUFS will use this data in order to verify your status as an AUFS member and organize equipment handovers with other members. If you wish for us to delete your personal data, please contact equipment@aufilmmaking.co.uk</p>
             <input type="submit" class="auditionbtn" value="BOOK">
         </form>
     <% } %>

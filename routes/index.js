@@ -421,6 +421,7 @@ router.get('/tags/:tag', function(req, res, next) {
 });
 
 router.get('/equipment', function(req,res,next){
+  var setsobj = settings.get();
   equipmentmanager.getEquipment(function(err1,result){
     if(err1)  res.status(404).render('error',{ page:'error', error:{status:404, stack:""}, message:"No equipment available to book!" });
     else{
@@ -437,12 +438,12 @@ router.get('/equipment', function(req,res,next){
                   res.status(404).render('error',{ page:'error', error:{status:404, stack:""}, message:"Booking request does not exist" });
                 }
                 else{
-                  res.render('equipment', {page:'equipment', equipment:result, bookings:bookings, selectedbooking:booking, year:req.query.year, thankyou:req.query.t});
+                  res.render('equipment', {page:'equipment', equipment:result, bookings:bookings, selectedbooking:booking, year:req.query.year, thankyou:req.query.t, equipmentwarningDescription:setsobj.equipmentwarningDescription, equipmentwarningTitle:setsobj.equipmentwarningTitle});
                 }
               });
             }
             else{
-              res.render('equipment', {page:'equipment', equipment:result, bookings:bookings, year:req.query.year})
+              res.render('equipment', {page:'equipment', equipment:result, bookings:bookings, year:req.query.year, equipmentwarningDescription:setsobj.equipmentwarningDescription, equipmentwarningTitle:setsobj.equipmentwarningTitle})
             }
           }
         }

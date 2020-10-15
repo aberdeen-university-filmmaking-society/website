@@ -10,7 +10,9 @@ var settingsobj={
     showbreakingnews:true,
     zeroforlast:false,
     hideresultorder:false,
-    novotetext:"There is currently no active vote"
+    novotetext:"There is currently no active vote",
+    equipmentwarningTitle:'',
+    equipmentwarningDescription:''
 };
 var storage = require('./storage');
 
@@ -20,6 +22,16 @@ settings.load = async function(){
     });
 }
 settings.set = async function(item){
+    if(Array.isArray(item)){
+        item.forEach(i => {
+            setindividual(i);
+        });
+    }
+    else{
+        setindividual(i);
+    }
+}
+function setindividual(item){
     if(item.key == "heropost" && settingsobj.heropost==item.value){
         settingsobj.heropost = undefined;
     }

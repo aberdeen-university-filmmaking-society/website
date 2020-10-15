@@ -459,6 +459,14 @@
     </ul><br>
     <button class="smallbtn" onclick="addEquipmentModal(true)">Add equipment</button>
 </div>
+<div class="section">
+    <div class="sectionheader">Settings<div id="equipment-spinner" class="spinner"></div></div>
+    <h3>Warning message</h3>
+    <div style="margin-top:4px;margin-bottom:12px;opacity:0.8;font-size:12px;">If the below title or description aren't empty, they will be displayed on the equipment booking page</div>
+    <input id="settings-warningtitle" type="text" style="font-weight:bold;" class="smaller" placeholder="Title" autocomplete="off" <% if(settings.equipmentwarningTitle){ %>value="<%= settings.equipmentwarningTitle %>"<% } %>><br>
+    <input id="settings-warningdescription" type="text" class="smaller" placeholder="Description" autocomplete="off" <% if(settings.equipmentwarningDescription){ %>value="<%= settings.equipmentwarningDescription %>"<% } %>><br>
+    <button class="bigbtn" onclick="saveSettings()">SAVE</button>
+</div>
 <div id="modal-equipment" class="modal">
     <div id="modal-equipment-header" class="sectionheader">Add Equipment</div>
     <input id="createequipment-name" type="text" class="smaller" placeholder="Name ('Neewer Light Stand')"
@@ -506,6 +514,34 @@
 </div>
 
 <script>
+
+function saveSettings(){
+    $("#settings-spinner").show();
+            $.ajax({
+                type: "POST",
+                url: '/admin/settings',
+                dataType: 'json',
+                contentType: "application/json",
+                async: false,
+                //json object to sent to the authentication url
+                data: JSON.stringify([
+                    {key:"equipmentwarningTitle", value:$("#settings-warningtitle").val()},
+                    {key:"equipmentwarningDescription", value:$("#settings-warningdescription").val()}
+                ]),
+                success: function (res) {
+                    console.log(res);
+                    $("#settings-spinner").hide();
+                    window.alert("Saved settings!");
+                },
+                error: function (res) {
+                    if (res.errors != undefined) {
+                        var alertText = "";
+                        alert(res.errors.join("\n"));
+                        $("#settings-spinner").hide();
+                    }
+                },
+            });
+        }
     function sendemailtoggle(){
         if($("#bookingresponse-sendemail").prop("checked")){
             $("#bookingresponse-messagecontainer").slideDown(300);
