@@ -721,6 +721,7 @@ document.addEventListener('readystatechange', function() {
       }
       function getDaysOffset(event){
         let diff = (event.end - event.start)/(1000 * 60 * 60 * 24)
+        diff = Math.round(diff*10)/10;
         if(diff<=1) return diff + " DAY";
         else return diff + " DAYS";
       }
