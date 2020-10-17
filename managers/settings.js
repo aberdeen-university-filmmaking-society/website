@@ -28,7 +28,7 @@ settings.set = async function(item){
         });
     }
     else{
-        setindividual(i);
+        setindividual(item);
     }
 }
 function setindividual(item){
