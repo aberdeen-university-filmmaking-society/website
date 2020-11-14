@@ -296,7 +296,7 @@ section{
         <% if(locals.equipmentwarningTitle || locals.equipmentwarningDescription){ %>
             <div class="thankyousection">
             <% if(locals.equipmentwarningTitle) { %><h1><%= locals.equipmentwarningTitle %></h1><% } %>
-            <% if(locals.equipmentwarningDescription) { %><p><%= locals.equipmentwarningDescription %></p><% } %>
+            <% if(locals.equipmentwarningDescription) { %><p><%- locals.equipmentwarningDescription %></p><% } %>
             </div>
         <% } %>
         <% if(locals.selectedbooking) { %>
