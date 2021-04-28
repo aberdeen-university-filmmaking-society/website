@@ -130,9 +130,80 @@
           </div>
 
 
-        <% if(locals.committee && locals.committee.members) { %>
-          <div class="pagetitle" style="margin-bottom:6px;text-align: center;margin:auto;"><%= committee.name %></div>
+        <% if(locals.committee && locals.committee.length) { %>
+          <%
+          var committee_selected = locals.committee[0];
+          var committee_selected_index = 0;
+
+          let previousCommitteeURL = undefined;
+          let nextCommitteeURL = undefined;
+
+          console.log(locals.committeeQuery);
+          if(locals.committeeQuery){
+            for (let i = 0; i < locals.committee.length; i++) {
+              if(locals.committeeQuery == locals.committee[i].name){
+                committee_selected = locals.committee[i];
+                committee_selected_index = i;
+                first_committee = (i == locals.committee.length-1);
+                last_committee = (i == 0);
+                break;
+              }
+            }
+          }
+
+          if(locals.committee[committee_selected_index-1]){
+            nextCommitteeURL = encodeURIComponent(locals.committee[committee_selected_index-1].name);
+          }
+          if(locals.committee[committee_selected_index+1]){
+            previousCommitteeURL = encodeURIComponent(locals.committee[committee_selected_index+1].name);
+          }
+
+
+          %>
+          <div>
+            
+            <div class="pagetitle" style="margin-bottom:6px;text-align: center;margin:auto;">
+              <a id="committee-prev" onclick="previousCommittee(event);" class="com-btn com-btn-prev <% if(!previousCommitteeURL) { %>disabled<% } %>" <% if(previousCommitteeURL) { %>href="?committee=<%- previousCommitteeURL %>"<% } %>><img src="/images/chevron.svg"/></a><span id="committee-name"><%= committee_selected.name %></span><a id="committee-next" onclick="nextCommittee(event);" class="com-btn com-btn-next <% if(!nextCommitteeURL) { %>disabled<% } %>" <% if(nextCommitteeURL) { %>href="?committee=<%- nextCommitteeURL %>"<% } %>><img src="/images/chevron.svg"/></a></div>
+          </div>
+          <% if(committee_selected.subtitle) { %>
+          <div id="committee-subtitle"><%= committee_selected.subtitle %></div>
+          <% } else { %>
+          <div id="committee-subtitle" style="user-select: none;">&nbsp;</div>
+          <% } %> 
           <style>
+            #committee-subtitle{
+              text-align: center;
+              opacity: 0.6;
+            }
+            .com-btn{
+              width:12px;
+              display:inline-block;
+              margin-top:4px;
+              transform: translateY(2px);
+              opacity:0.6;
+              transition: all 0.2s;
+              user-select:none;
+              cursor: pointer;
+            }
+            .com-btn.disabled{
+              opacity:0.1;
+              pointer-events: none;
+            }
+            .com-btn:hover{
+              opacity:0.8;
+            }
+            .com-btn:active{
+              opacity:1;
+            }
+            .com-btn-prev{
+              margin-right:12px;
+            }
+            .com-btn-prev img{
+              transform: rotate(180deg);
+            }
+            .com-btn-next{
+              margin-left:12px;
+            }
             .com-list{
               display:flex;
               flex-wrap: wrap;
@@ -211,17 +282,86 @@
               }
             }
           </style>
-          <div class="com-list">
-              <% committee.members.forEach(member=>{ %>
+          <div id="committee-list" class="com-list">
+              <% committee_selected.members.forEach(member=>{ %>
                 <div class="com-member <% if(member.position && member.position.toLowerCase() == 'president') { %>com-fullwidth<% } %>">
-                  <img class="com-memberavatar" src="<%= member.imageurl %>">
+                  <img class="com-memberavatar" src="<%= member.image %>">
                   <div class="com-title"><%= member.position %></div>
                   <div class="com-name"><%= member.name %></div>
                 </div>
               <% }); %>
           </div>
-          
-        <% } %> 
+          <script>
+            let all_committees = JSON.parse(`<%- JSON.stringify(locals.committee) %>`);
+            let committee_selected_index = JSON.parse(`<%- JSON.stringify({index: committee_selected_index}) %>`).index;
+
+            function previousCommittee(e){
+              e.preventDefault();
+              if(all_committees[committee_selected_index+1]){
+                committee_selected_index++;
+                selectCommittee();
+              }
+              return false;
+            }
+            function nextCommittee(e){
+              e.preventDefault();
+              if(all_committees[committee_selected_index-1]){
+                committee_selected_index--;
+                selectCommittee();
+              }
+              return false;
+            }
+
+            function selectCommittee(){
+
+              if (history.replaceState) {
+                  var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?committee='+encodeURIComponent(all_committees[committee_selected_index].name);
+                  window.history.replaceState({path:newurl},'',newurl);
+              }
+
+              $("#committee-name").text(all_committees[committee_selected_index].name);
+              if(all_committees[committee_selected_index].subtitle)
+                $("#committee-subtitle").text(all_committees[committee_selected_index].subtitle).attr('style', '');
+              else{
+                $("#committee-subtitle").html("&nbsp;").attr('style',"user-select:none;");
+              }
+              $("#committee-list").empty();
+              all_committees[committee_selected_index];
+              for (let i = 0; i < all_committees[committee_selected_index].members.length; i++) {
+                const member = all_committees[committee_selected_index].members[i];
+                let classes = "com-member";
+                console.log(member);
+                if(member.position && member.position.toLowerCase().trim()=="president"){
+                  classes = "com-member com-fullwidth";
+                }
+                $("#committee-list").append(
+                  `<div class="${classes}">
+                    <img class="com-memberavatar" src="${member.image}">
+                    <div class="com-title">${member.position}</div>
+                    <div class="com-name">${member.name}</div>
+                  </div>`
+                );
+              }
+              if(all_committees[committee_selected_index-1]){
+                $("#committee-next").removeClass('disabled');
+                $("#committee-next").attr('href', "?committee=" + encodeURIComponent(all_committees[committee_selected_index-1].name));
+              }      
+              else{
+                $("#committee-next").addClass('disabled');
+                $("#committee-next").attr('href', "");
+              }
+ 
+              if(all_committees[committee_selected_index+1]){
+                $("#committee-prev").removeClass('disabled');
+                $("#committee-next").attr('href', "?committee=" + encodeURIComponent(all_committees[committee_selected_index+1].name));
+              }
+              else{
+                $("#committee-prev").addClass('disabled');
+                $("#committee-next").attr('href', "");
+              }
+            }
+          </script>
+        <% } %>
         
       </section>
     <section>
@@ -296,7 +436,6 @@
           </a>
         </div>
     </section>
-    <script></script>
   </main>
     <%- include partials/footer.ejs %>
   </body>

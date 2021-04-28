@@ -20,6 +20,8 @@ These can be set in a `.env` file placed alongside `app.js`
 * **`SESSION_SECRET`**: Any random passcode (used by express-session)
 * **`AUDITION_EMAIL`**: The email address the Auditions are sent from
 * **`AUDITION_PASSWORD`**: The password of the specified email account
+* **`EQUIPMENT_EMAIL`**: The email address the Equipment requests are sent from
+* **`EQUIPMENT_PASSWORD`**: The password of the specified email account
 
 ### Socket message types
 
@@ -34,3 +36,9 @@ These can be set in a `.env` file placed alongside `app.js`
 * `vote.archive(voteobject);`
 * `other.connectedcount`
 * `other.settings.update(settings)`
+
+### Debugging
+
+In order to run a copy on your local machine, all the environment variables need to be set, and logging into the admin panel requires addingd an entry to your hosts file redirecting the `aufilmmaking.com` domain to `127.0.0.1` (localhost). The URL_START environment variable can then be set to `http://aufilmmaking.com`. 
+
+The real domain ends with `.co.uk`, but `.com` is also registered as a valid redirect for the Google login OAuth.

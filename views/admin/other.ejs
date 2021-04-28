@@ -39,8 +39,217 @@ table, th, td {
     padding:12px;
     z-index:10;
 }
+.faq-template{
+    margin-bottom:6px;
+}
+.faq-template > div>input:nth-child(2){
+    font-weight: normal;
+    border-radius: 0;
+}
+.faq-template > div>input:nth-child(3){
+    font-weight: normal;
+    border-radius: 0 0 4px 4px;
+}
+
+.committeelist-empty{
+    display: none;
+    font-size: 11px;
+    opacity:0.6;
+    margin:6px;
+    margin-bottom:6px;
+}
+#committeelist:empty + .committeelist-empty{
+    display:block;
+}
+
 
 </style>
+<div class="section">
+    <div class="sectionheader">Committees</div>
+    <div style="margin-bottom:12px;">
+        <button style="display:inline-block" class="smallbtn" onclick="addCommittee()">ADD COMMITEE</button>
+        <button id="deletecommittee" style="display:inline-block;" class="smallbtn" onclick="deleteCommittee()">DELETE</button>
+    </div>
+    <select id="committeeselector" onchange="committeeSelectionChange()">
+        <option value="none">No Selection</option>
+    </select>
+    <div id="committeeeditor" style="display:none;">
+    <label style="font-size:12px;">Name:</label>
+    <input type="text" id="committeename" placeholder="e.g. '2020-2021 Committee'" class="smaller" onkeyup="syncCommitteeValues()" value="">
+    <label style="font-size:12px;">Subtitle:</label>
+    <input type="text" id="committeesubtitle" placeholder="For a committee's nickname, for example" class="smaller" onkeyup="syncCommitteeValues()" value="">
+    <label style="font-size:12px;">Members:</label>
+    <div id="committeelist"></div><div class="committeelist-empty">No members in the currently selected committee</div>
+    <button class="smallbtn" onclick="addCommitteeMember()">ADD COMMITEE MEMBER</button>
+    </div>
+    <br><br>
+    <label style="font-size:12px;">The names of the committees are ordered alphabetically on save, but the order of the members within each committee can be changed by dragging them around.</label>
+    <button class="bigbtn" onclick="savecommittee()">Save</button>
+    <script>
+        let committeeArray = JSON.parse(`<%- JSON.stringify(committee) %>`);
+        console.log("Committee array=");
+        console.log(committeeArray);
+
+        function addCommittee(){
+            let newId = Date.now();
+            committeeArray.push({
+                id:newId,
+                name:"",
+                members:[]
+            });
+            loadCommitteList();
+            $("#committeeselector").val(newId).change();
+        }
+        function deleteCommittee(){
+            let id = $("#committeeselector").val();
+            if(id == "none"){
+                return;
+            }
+            if(confirm(`Are you sure you want to delete the currently selected committee?`)){
+                for (let i = 0; i < committeeArray.length; i++) {
+                    if(committeeArray[i].id == id){
+                        committeeArray.splice(i,1);
+                        loadCommitteList();
+                        $("#committeeselector").val("none").change();
+                        break;
+                    }
+                }
+            }
+        }
+        function committeeSelectionChange(){
+            let selected = $("#committeeselector").val();
+            loadCommitteeValues(selected);
+            if(selected != "none"){
+                $("#committeeeditor").show();
+                $("#deletecommittee").show();
+            }
+            else{
+                $("#committeeeditor").hide();
+                $("#deletecommittee").hide();
+            }
+        }
+        function loadCommitteList(){
+            $("#committeeselector").empty();
+            $("#committeeselector").append($(document.createElement('option')).text("No selection").val('none'));
+            for (let i = 0; i < committeeArray.length; i++) {
+                $("#committeeselector").append($(document.createElement('option')).text(committeeArray[i].name).val(committeeArray[i].id));
+            }
+        }
+        
+        function savecommittee(){
+
+            committeeArray.sort((a,b)=>(-a.name.localeCompare(b.name)));
+            $.ajax({
+                type: "POST",
+                dataType: 'text',
+                data: JSON.stringify(committeeArray),
+                contentType: 'application/json',
+                url: '/admin/committee/save',
+                success: function (res) {
+                    alert("Successfully updated committee list!");
+                    window.location.reload();
+                },
+                error: function(res){
+                    alert("Failed to sync committee list!");
+                }
+            });
+            
+        }
+
+        function loadCommitteeValues(id){
+            $("#committeename").val('');
+            $("#committeesubtitle").val('');
+            $("#committeelist").empty();
+            for (let i = 0; i < committeeArray.length; i++) {
+                if(committeeArray[i].id == id){
+                    $("#committeename").val(committeeArray[i].name);
+                    $("#committeesubtitle").val(committeeArray[i].subtitle);
+                    for (let j = 0; j < committeeArray[i].members.length; j++) {
+                        addCommitteeMember(committeeArray[i].members[j].name, committeeArray[i].members[j].position, committeeArray[i].members[j].image);
+                    }
+                }
+            }
+        }
+
+        function syncCommitteeValues(){
+            let selectedId = $("#committeeselector").val();
+            if(selectedId != "none"){
+                for (let i = 0; i < committeeArray.length; i++) {
+                    if(committeeArray[i].id == selectedId){
+                        committeeArray[i].name = $("#committeename").val();
+                        committeeArray[i].subtitle = $("#committeesubtitle").val();
+                        $(`#committeeselector > option[value=${selectedId}]`).text(committeeArray[i].name);
+                        newMembersArray = [];
+                        $("#committeelist > .faq-template").each(function(){
+                            newMembersArray.push({
+                                name: $(this).find('.member-name').val(),
+                                position: $(this).find('.member-position').val(),
+                                image: $(this).find('.member-image').val(),
+                            });
+                        });
+                        committeeArray[i].members = newMembersArray;
+                    }
+                }
+            }
+        }
+
+        function prepareCommitteeList(){
+            $('#committeelist').sortable({
+                stop:function(){
+                    syncCommitteeValues()
+                },
+                animation:150,
+                axis:'y'
+            });
+            $('.autogrow').autogrow({vertical: true, horizontal: false});
+        }
+        function buildCommitteeMember(name, position, image){
+            return `<div class="faq-template">
+                <div style="margin-right:36px;">
+                    <input class="member-name" type="text" placeholder="Name" value="${name}" onkeyup="syncCommitteeValues()" autocomplete="new-password">
+                    <input class="member-position notbold" type="text" placeholder="Position" value="${position}" onkeyup="syncCommitteeValues()" autocomplete="new-password">
+                    <input class="member-image notbold" type="text" placeholder="Image URL" value="${image}" onkeyup="syncCommitteeValues()" autocomplete="new-password">
+                </div>
+                <button class="smallbtn" style="position:absolute;font-weight: normal;" onclick="deleteCommitteeMember(this)"><i class="far fa-trash-alt"></i></button>
+                <i class="move fas fa-arrows-alt"></i>
+            </div>`
+        }
+        function addCommitteeMember(name='',position='',image=''){
+            $("#committeelist").append(buildCommitteeMember(name,position,image));
+            prepareCommitteeList();
+        }
+        function deleteCommitteeMember(btn){
+            $(btn).parent().remove();
+            syncCommitteeValues();
+        }
+
+        loadCommitteList();
+        
+    </script>
+</div>
+<div class="section">
+    <script src="/javascripts/eventsource.min.js"></script>
+    <div class="sectionheader">Update</div>
+    <p>This will trigger a git pull, if necessary an npm install, and restart the website: please ensure no important operations are underway</p>
+    <p>If for some reason this crashes the website, you will need to login to the CPanel in order to restore it.</p>
+    <b>Current version:</b>&nbsp;<span><%=websiteversion %></span><br>
+    <b>Latest version:</b>&nbsp;<span id="update-latestversion">...</span>
+    <button class="smallbtn" style="float:right;margin-bottom:12px;" onclick="restartwebsite()">RESTART WEBSITE</button>
+    <button class="bigbtn" onclick="updatewebsite()">UPDATE WEBSITE</button>
+    <%
+    function format(seconds){
+        function pad(s){
+          return (s < 10 ? '0' : '') + s;
+        }
+        var hours = Math.floor(seconds / (60*60));
+        var minutes = Math.floor(seconds % (60*60) / 60);
+        var seconds = Math.floor(seconds % 60);
+      
+        return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+      }
+    %>
+    <p style="font-size:10px;opacity:0.5px;margin-top:4px;margin-bottom:0;text-align:right;">Time since previous restart: <%= format(process.uptime()) %></p>
+</div>
 <div class="section">
         <div class="sectionheader">Topics</div>
         <p>Any tag can be given a full name and an optional description, transforming it into a "topic". Topics exist even if no post or film is tagged with one, and are given more importance when calculating related films/posts</p>
@@ -82,41 +291,12 @@ table, th, td {
         <input id="sqlquery" type="text" style="margin-top:4px;font-family: Consolas, 'Courier New', Courier, monospace" placeholder="Query">
         <button class="smallbtn" onclick="sendsql()">SEND</button>
     </div>
-    <div class="section">
-            <div class="sectionheader">Committee</div>
-            <input type="text" id="committeename" placeholder="Committee year" style="font-weight: bold;" value="<% if(committee && committee.name) { %><%= committee.name %><% } %>">
-            <b style="display:block;margin-top:12px;margin-bottom:2px;">Automatically fetch committee details from AUSA website</b>
-            <input type="text" id="ausaURL" value="<%  if(committee && committee.ausaurl) { %><%= committee.ausaurl %><% } %>" placeholder="Society page on AUSA's website">
-            <button class="bigbtn" style="margin-top:0;" onclick="updatecommittee()">Get committee from AUSA website</button>
-            <b style="display:block;margin-top:12px;margin-bottom:2px;">Manually edit committee details</b>
-            <div style="height:256px;" id="codeeditor_committee"><%= JSON.stringify(locals.committee, null, '\t') %></div>
-            <button class="bigbtn" onclick="savecommittee()">Save</button>
-        </div>
+
         <div class="section">
-            <script src="/javascripts/eventsource.min.js"></script>
-            <div class="sectionheader">Update</div>
-            <p>This will trigger a git pull, if necessary an npm install, and restart the website: please ensure no important operations are underway</p>
-            <p>If for some reason this crashes the website, you will need to login to the CPanel in order to restore it.</p>
-            <b>Current version:</b>&nbsp;<span><%=websiteversion %></span><br>
-            <b>Latest version:</b>&nbsp;<span id="update-latestversion">...</span>
-            <button class="smallbtn" style="float:right;margin-bottom:12px;" onclick="restartwebsite()">RESTART WEBSITE</button>
-            <button class="bigbtn" onclick="updatewebsite()">UPDATE WEBSITE</button>
-            <%
-            function format(seconds){
-                function pad(s){
-                  return (s < 10 ? '0' : '') + s;
-                }
-                var hours = Math.floor(seconds / (60*60));
-                var minutes = Math.floor(seconds % (60*60) / 60);
-                var seconds = Math.floor(seconds % 60);
-              
-                return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
-              }
-            %>
-            <p style="font-size:10px;opacity:0.5px;margin-top:4px;margin-bottom:0;text-align:right;">Time since previous restart: <%= format(process.uptime()) %></p>
+<div class="sectionheader">AUFS Productions</div>
+<p>AUFS Productions was deprecated in 2020, however you can still access the user-facing website <a target="_blank" href="/productions">here</a> and the admin panel <a href="/admin/productions" target="_blank">here</a>.</p>
         </div>
         <div id="terminal" style="display:none;">
-
         </div>
     <script>
         $.getJSON("https://raw.githubusercontent.com/aberdeen-university-filmmaking-society/website/master/package.json", function( data ) {
@@ -189,43 +369,6 @@ table, th, td {
                 error: function(res){
                     console.log(res);
                     alert(res);
-                }
-            });
-        }
-
-        var committeeeditor = ace.edit("codeeditor_committee");
-        //editor.setTheme("ace/theme/monokai");
-        committeeeditor.session.setMode("ace/mode/json");
-        function updatecommittee(){
-            $.ajax({
-                type: "POST",
-                dataType: 'text',
-                data: JSON.stringify({ausaurl:$("#ausaURL").val(), committeename:$("#committeename").val()}),
-                contentType: 'application/json',
-                url: '/admin/committee/update',
-                success: function (res) {
-                    committeeeditor.session.setValue(JSON.stringify(JSON.parse(res), null, '\t'));
-                    alert("Succesfully synced the committee! Click save in order to keep the changes");
-                },
-                error: function(res){
-                    console.log(res);
-                    alert("Failed to get committee list!");
-                }
-            });
-        }
-
-        function savecommittee(){
-            $.ajax({
-                type: "POST",
-                dataType: 'text',
-                data: committeeeditor.getValue(),
-                contentType: 'application/json',
-                url: '/admin/committee/save',
-                success: function (res) {
-                    alert("Successfully updated committee list!");
-                },
-                error: function(res){
-                    alert("Failed to sync committee list!");
                 }
             });
         }

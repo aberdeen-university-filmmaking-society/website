@@ -274,12 +274,6 @@ router.post('/productions/past', function(req,res,next){
   productionsmanager.setPastProjects(JSON.parse(req.body.projects));
   res.sendStatus(200);
 });
-router.post('/committee/update', function(req,res,next){
-  committee.sync(req.body.ausaurl, req.body.committeename, function(result){
-    if(result==undefined) res.sendStatus(500);
-    else res.send(result);
-  });
-});
 
 router.post('/committee/save', function(req,res,next){
   committee.save(req.body, function(result){
@@ -352,6 +346,7 @@ router.get('/update', function(req,res,next){
   });
 });
 var filemanager = require('../managers/filemanager');
+const storage = require('../managers/storage');
 router.use(filemanager.router);
 
 router.get('/auditions', function(req, res) {

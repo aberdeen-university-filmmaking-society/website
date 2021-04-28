@@ -126,7 +126,9 @@ function finishIndexResponse(req,res, results, setsobj, heropost){
 }
 
 router.get('/about', function(req, res, next) {
-  res.render('about', { page:'about', committee: committee.get() });
+  let committee_array = committee.get();
+//  if(req.query.committee != undefined && req.query.committee[0])
+  res.render('about', { page:'about', committee: committee_array, committeeQuery: req.query.committee });
 });
 router.get('/about/constitution', function(req, res, next) {
   res.render('constitution', { page:'constitution'});
