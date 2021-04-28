@@ -92,10 +92,16 @@ equipmentmanager.getConfirmedBookings = async function(year, resolve){
 }
 
 function makeDateQuery(year){
-    if(year==undefined) year= new Date().getFullYear(); //if the year isn't specified, assume the current year
+    let today = new Date();
+    if(year==undefined) year= today.getFullYear(); //if the year isn't specified, assume the current year
     year = Number(year);
-    let startdate = new Date(year+"-08-31"); //for year 2020, start date is 31/08/20 (01/09/20 in UI)
-    let enddate = new Date((year+1)+"-09-01"); //for year 2020, end date is 01/09/21 (31/08/21 in UI)
+    if(new Date(year+"-08-31")>today){
+        year--; 
+        //If we're before the 31st of August of the current year, then the start date should be earlier
+        //Example: On 25/08/2020, current year is 2019-2020, if on 01/09/2020, current year is 2020-2021
+    }
+    let startdate = new Date(year+"-08-31"); //start date is 31/08 (01/09 in UI)
+    let enddate = new Date((year+1)+"-09-01"); //end date is 01/09 (31/08 in UI)
     return `AND EquipmentBookingBatch.start >= ${mysql.escape(startdate)} AND EquipmentBookingBatch.end <= ${mysql.escape(enddate)}`;
 }
 
