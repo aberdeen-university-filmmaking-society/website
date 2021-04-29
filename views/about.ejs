@@ -285,7 +285,7 @@
           <div id="committee-list" class="com-list">
               <% committee_selected.members.forEach(member=>{ %>
                 <div class="com-member <% if(member.position && member.position.toLowerCase() == 'president') { %>com-fullwidth<% } %>">
-                  <img class="com-memberavatar" src="<%= member.image %>">
+                  <img class="com-memberavatar" src="<%= (member.image || "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=") %>">
                   <div class="com-title"><%= member.position %></div>
                   <div class="com-name"><%= member.name %></div>
                 </div>
@@ -336,7 +336,7 @@
                 }
                 $("#committee-list").append(
                   `<div class="${classes}">
-                    <img class="com-memberavatar" src="${member.image}">
+                    <img class="com-memberavatar" src="${(member.image || "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=")}">
                     <div class="com-title">${member.position}</div>
                     <div class="com-name">${member.name}</div>
                   </div>`
