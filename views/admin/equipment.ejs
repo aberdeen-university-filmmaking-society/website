@@ -1363,7 +1363,7 @@ function saveSettings(){
         var dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
         var dayName = dayNames[input.getDay()]
         var date = input.getDate();
-        return `${dayName} ${input.getDate()}/${input.getMonth()}`;
+        return `${dayName} ${input.getDate()}/${input.getMonth()+1}`;
     }
 
     function deletebooking(id) {
